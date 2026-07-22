@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Centro de Estudios Máster — Rediseño Home (V1 baseline)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: oklch(98% 0.012 85);
+    --ink: oklch(20% 0.02 260);
+    --ink-soft: oklch(45% 0.02 260);
+    --ink-strong: oklch(16% 0.02 260);
+    --primary: oklch(30% 0.09 255);
+    --primary-soft: oklch(38% 0.08 255);
+    --primary-tint: oklch(94% 0.03 255);
+    --accent: oklch(66% 0.17 45);
+    --line: oklch(91% 0.01 85);
+    --surface: oklch(99.5% 0.004 85);
+    --tint: oklch(96% 0.012 85);
+    --dark: oklch(15% 0.02 260);
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:'Work Sans',sans-serif;}
+  a{color:var(--primary);text-decoration:none;}
+  a:hover{color:var(--accent);}
+  h1,h2,h3{font-family:'Sora',sans-serif;}
+  .wrap{width:100%;max-width:1920px;margin:0 auto;overflow-x:hidden;}
+  .ph{background:repeating-linear-gradient(135deg, oklch(93% 0.02 255) 0px, oklch(93% 0.02 255) 12px, oklch(96% 0.012 255) 12px, oklch(96% 0.012 255) 24px);display:flex;align-items:center;justify-content:center;text-align:center;}
+  .ph span{font-family:monospace;font-size:11.5px;color:oklch(40% 0.05 255);padding:6px 10px;}
+  @media (prefers-reduced-motion: reduce){ *{animation-duration:0.001ms !important; transition-duration:0.001ms !important;} }
+
+  /* header */
+  header{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:16px 56px;background:oklch(99.5% 0.004 85 / 0.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
+  .logo-slot{width:150px;height:38px;flex-shrink:0;border:1.5px dashed oklch(80% 0.01 85);border-radius:8px;}
+  nav.sitenav{display:flex;align-items:center;gap:28px;flex-shrink:1;min-width:0;}
+  .nav-primary{display:flex;align-items:center;gap:28px;}
+  nav a{white-space:nowrap;font-size:15px;font-weight:500;color:var(--ink);}
+  .nav-secondary{font-size:14px;font-weight:500;color:var(--ink-soft);border-right:1px solid var(--line);padding-right:24px;}
+  .cta-pill{white-space:nowrap;flex-shrink:0;font-size:15px;font-weight:600;color:var(--surface);background:var(--accent);padding:11px 22px;border-radius:100px;}
+
+  /* hero */
+  .hero{position:relative;display:grid;grid-template-columns:0.95fr 1.1fr;align-items:stretch;min-height:600px;}
+  .hero-copy{display:flex;flex-direction:column;justify-content:center;padding:72px 64px;position:relative;z-index:2;}
+  .hero-blob{position:absolute;top:80px;left:-60px;width:220px;height:220px;border-radius:50%;background:var(--primary-tint);z-index:-1;}
+  .hero-tag{display:inline-flex;align-items:center;gap:8px;background:var(--primary-tint);color:var(--primary);font-size:13px;font-weight:600;padding:7px 14px;border-radius:100px;margin-bottom:26px;width:fit-content;}
+  .hero-tag i{width:6px;height:6px;border-radius:50%;background:var(--primary);}
+  .hero h1{font-weight:700;font-size:54px;line-height:1.05;letter-spacing:-0.02em;margin:0 0 22px;color:var(--ink-strong);max-width:560px;text-wrap:balance;}
+  .hero p{font-size:18px;line-height:1.55;color:var(--ink-soft);max-width:460px;margin:0 0 36px;text-wrap:pretty;}
+  .hero-actions{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+  .btn-primary{font-size:16px;font-weight:600;color:var(--surface);background:var(--primary);padding:16px 28px;border-radius:100px;}
+  .btn-outline{font-size:16px;font-weight:600;color:var(--ink);background:transparent;padding:16px 28px;border-radius:100px;border:1.5px solid oklch(82% 0.01 85);}
+  .hero-photo-col{position:relative;}
+  .hero-photo{width:100%;height:100%;position:absolute;inset:0;}
+  .hero-badge{position:absolute;left:-28px;bottom:48px;background:var(--surface);border-radius:16px;padding:18px 22px;box-shadow:0 12px 32px oklch(20% 0.02 260 / 0.14);max-width:250px;z-index:3;}
+  .hero-badge b{font-weight:700;font-size:14.5px;color:var(--ink);display:block;margin-bottom:4px;}
+  .hero-badge span{font-size:13px;color:var(--ink-soft);line-height:1.4;}
+
+  /* discover */
+  .discover-section{padding:96px 56px;}
+  .discover-panel{background:var(--primary);border-radius:28px;padding:52px;display:grid;grid-template-columns:1.3fr auto 1fr;gap:40px;}
+  .discover-panel h2{color:var(--surface);margin:0 0 6px;}
+  .discover-panel p{color:oklch(85% 0.02 255);margin:0 0 24px;font-size:14.5px;}
+  .search-row{display:flex;gap:12px;margin-bottom:14px;}
+  .search-row input{flex:1;font-size:15.5px;font-family:'Work Sans',sans-serif;padding:15px 18px;border-radius:14px;border:none;background:var(--surface);color:var(--ink);}
+  .search-row button{font-size:14.5px;font-weight:600;color:var(--primary);background:var(--surface);border:none;padding:0 26px;border-radius:14px;cursor:pointer;}
+  .filters-row{display:flex;gap:10px;flex-wrap:wrap;}
+  .filters-row select{font-size:13.5px;font-family:'Work Sans',sans-serif;padding:10px 14px;border-radius:10px;border:none;background:var(--primary-soft);color:var(--surface);}
+  .discover-divider{width:1px;background:oklch(50% 0.06 255);}
+  .profile-list{display:flex;flex-direction:column;gap:10px;}
+  .profile-list a{display:flex;align-items:center;justify-content:space-between;font-size:14px;font-weight:500;color:var(--surface);border:1px solid oklch(50% 0.06 255);padding:12px 16px;border-radius:12px;}
+
+  /* courses */
+  .courses-section{padding:0 56px 96px;}
+  .courses-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:32px;}
+  .eyebrow{font-size:13px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;}
+  .courses-head h2{font-weight:700;font-size:34px;margin:0;color:var(--ink-strong);}
+  .courses-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;}
+  .course-card{background:var(--surface);border:1px solid var(--line);border-radius:20px;overflow:hidden;}
+  .course-photo{position:relative;aspect-ratio:4/3;}
+  .course-status{position:absolute;top:12px;left:12px;font-size:11px;font-weight:700;color:var(--surface);padding:5px 11px;border-radius:100px;z-index:2;}
+  .course-body{padding:22px;}
+  .course-tags{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;}
+  .tag-modalidad{font-size:11px;font-weight:600;color:oklch(40% 0.09 200);background:oklch(94% 0.03 200);padding:4px 10px;border-radius:100px;}
+  .tag-isla{font-size:11px;font-weight:600;color:var(--ink-soft);background:oklch(93% 0.008 85);padding:4px 10px;border-radius:100px;}
+  .course-card h3{font-weight:600;font-size:16.5px;margin:0 0 6px;color:var(--ink-strong);line-height:1.25;}
+  .course-card .meta{font-size:12.5px;color:var(--ink-soft);margin:0 0 4px;}
+  .course-foot{display:flex;align-items:center;justify-content:space-between;border-top:1px solid oklch(93% 0.008 85);padding-top:14px;margin-top:16px;}
+  .course-foot .price{font-size:12.5px;color:var(--ink-soft);}
+  .course-foot .price b{font-weight:600;color:var(--ink-strong);}
+  .course-foot a{font-size:13px;font-weight:600;}
+
+  /* stats */
+  .stats-section{padding:80px 56px;background:var(--primary);}
+  .stats-section h2{color:var(--surface);font-weight:700;font-size:32px;margin:0 0 40px;}
+  .stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+  .stat-value{font-weight:800;font-size:42px;color:var(--accent);margin-bottom:8px;}
+  .stat-label{font-size:15px;color:oklch(90% 0.02 255);line-height:1.4;max-width:260px;}
+
+  /* value props */
+  .valueprop-section{padding:96px 56px;background:var(--tint);}
+  .valueprop-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;}
+  .valueprop-photo{width:100%;aspect-ratio:4/3.3;border-radius:24px;}
+  .valueprop-grid h2{font-weight:700;font-size:32px;margin:0 0 32px;color:var(--ink-strong);}
+  .vp-item{display:flex;gap:16px;margin-bottom:24px;}
+  .vp-item:last-child{margin-bottom:0;}
+  .vp-bar{flex-shrink:0;width:3px;background:var(--accent);border-radius:2px;}
+  .vp-item h3{font-weight:600;font-size:17px;margin:0 0 6px;color:var(--ink-strong);}
+  .vp-item p{font-size:14px;color:var(--ink-soft);line-height:1.5;margin:0;}
+
+  /* sedes */
+  .sedes-section{padding:96px 56px;}
+  .sedes-section > h2{font-weight:700;font-size:32px;margin:0 0 8px;color:var(--ink-strong);}
+  .sedes-section > p.lead{font-size:15px;color:var(--ink-soft);margin:0 0 40px;max-width:560px;}
+  .sede-group{margin-bottom:40px;}
+  .sede-group-head{display:flex;align-items:center;gap:10px;margin-bottom:20px;}
+  .sede-group-head i{width:9px;height:9px;border-radius:50%;background:var(--accent);}
+  .sede-group-head span{font-weight:600;font-size:16px;color:var(--ink-strong);}
+  .sede-cards{display:grid;grid-template-columns:repeat(2,1fr);gap:24px;}
+  .sede-card{display:grid;grid-template-columns:1fr 1.3fr;border-radius:20px;overflow:hidden;border:1px solid var(--line);background:var(--surface);}
+  .sede-card .ph{width:100%;height:100%;}
+  .sede-card .body{padding:22px;}
+  .sede-card h3{font-weight:600;font-size:18px;margin:0 0 10px;color:var(--ink-strong);}
+  .sede-card p{font-size:13px;color:var(--ink-soft);line-height:1.5;margin:0 0 4px;}
+  .sede-card .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;}
+  .sede-card .actions a.solid{font-size:12.5px;font-weight:600;color:var(--surface);background:var(--primary);padding:8px 14px;border-radius:100px;}
+  .sede-card .actions a.outline{font-size:12.5px;font-weight:600;color:var(--ink);border:1px solid oklch(85% 0.01 85);padding:8px 14px;border-radius:100px;}
+  .sedes-footnote{font-size:12px;color:oklch(55% 0.02 260);font-style:italic;margin:0;}
+
+  /* collaborators */
+  .collab-section{padding:0 56px 96px;}
+  .collab-panel{background:var(--tint);border-radius:24px;padding:44px 48px;}
+  .collab-panel h2{font-weight:600;font-size:19px;margin:0 0 4px;color:var(--ink-strong);}
+  .collab-panel > p{font-size:13.5px;color:var(--ink-soft);margin:0 0 28px;}
+  .collab-group{margin-bottom:22px;}
+  .collab-group:last-child{margin-bottom:0;}
+  .collab-group-label{font-size:11.5px;font-weight:600;color:var(--ink-soft);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:12px;}
+  .collab-logos{display:flex;gap:14px;flex-wrap:wrap;}
+  .collab-logo{width:132px;height:52px;border:1.5px dashed oklch(80% 0.01 85);border-radius:10px;display:flex;align-items:center;justify-content:center;background:var(--surface);}
+  .collab-logo span{font-family:monospace;font-size:10.5px;color:var(--ink-soft);text-align:center;padding:0 8px;}
+
+  /* cta final */
+  .cta-final{padding:88px 56px;text-align:center;background:var(--primary-tint);}
+  .cta-final h2{font-weight:700;font-size:36px;margin:0 0 14px;color:var(--ink-strong);}
+  .cta-final p{font-size:16px;color:var(--ink-soft);margin:0 0 32px;}
+  .cta-final .actions{display:flex;gap:14px;justify-content:center;}
+  .cta-final .btn-outline{border-color:oklch(78% 0.02 255);}
+
+  /* footer */
+  footer{padding:64px 56px 32px;background:var(--dark);color:oklch(85% 0.008 260);}
+  .footer-grid{display:grid;grid-template-columns:1.3fr repeat(4,1fr);gap:32px;margin-bottom:48px;}
+  .footer-logo-slot{width:150px;height:38px;margin-bottom:16px;border:1.5px dashed oklch(40% 0.02 260);border-radius:8px;}
+  .footer-grid p{font-size:13.5px;line-height:1.6;color:oklch(65% 0.01 260);max-width:260px;margin:0 0 16px;}
+  .social-row{display:flex;gap:14px;}
+  .social-row a{font-size:13px;color:oklch(75% 0.01 260);}
+  .footer-col-title{font-size:12.5px;font-weight:600;color:oklch(97% 0.004 85);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:16px;}
+  .footer-col a{display:block;font-size:13.5px;color:oklch(75% 0.01 260);margin-bottom:10px;}
+  .footer-bottom{display:flex;justify-content:space-between;align-items:center;padding-top:28px;border-top:1px solid oklch(28% 0.02 260);font-size:12.5px;color:oklch(60% 0.01 260);flex-wrap:wrap;gap:12px;}
+
+  @media (max-width: 1180px){
+    header{padding-left:28px;padding-right:28px;}
+    .sitenav{gap:16px;}
+    .nav-secondary{display:none;}
+    .hero{grid-template-columns:1fr;}
+    .hero-photo-col{order:-1;aspect-ratio:16/10;}
+    .discover-panel{grid-template-columns:1fr;}
+    .discover-divider{display:none;}
+    .valueprop-grid{grid-template-columns:1fr;}
+    .courses-grid{grid-template-columns:repeat(2,1fr);}
+    .sede-cards{grid-template-columns:1fr;}
+  }
+  @media (max-width: 860px){
+    .nav-primary{display:none;}
+    .courses-grid{grid-template-columns:1fr;}
+    .stats-grid{grid-template-columns:1fr;}
+    .footer-grid{grid-template-columns:1fr 1fr;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap" data-screen-label="Home">
+
+  <header>
+    <div class="logo-slot" title="Logotipo CEM"></div>
+    <nav class="sitenav">
+      <span class="nav-primary">
+        <a href="#cursos">Formación</a>
+        <a href="#empleo">Empleo</a>
+        <a href="#nosotros">Sobre nosotros</a>
+        <a href="#contacto">Contacto</a>
+      </span>
+      <a href="#" class="nav-secondary">Campus Virtual ↗</a>
+      <a href="#buscador" class="cta-pill">Encuentra tu curso</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div class="hero-copy">
+      <div class="hero-blob"></div>
+      <div class="hero-tag"><i></i>Formación para el empleo en Canarias</div>
+      <h1>La formación que te acerca a tu próximo empleo</h1>
+      <p>Cursos gratuitos y privados, certificados de profesionalidad y teleformación en Gran Canaria y Tenerife. Presencial u online, según lo que necesites ahora.</p>
+      <div class="hero-actions">
+        <a href="#buscador" class="btn-primary">Encuentra tu curso</a>
+        <a href="#cursos" class="btn-outline">Ver oferta formativa</a>
+      </div>
+    </div>
+    <div class="hero-photo-col">
+      <div class="ph hero-photo"><span>Foto: alumnado en taller práctico</span></div>
+      <div class="hero-badge"><b>Certificados de profesionalidad</b><span>Formación oficial, gratuita para personas desempleadas y ocupadas.</span></div>
+    </div>
+  </section>
+
+  <section class="discover-section" id="buscador">
+    <div class="discover-panel">
+      <div>
+        <h2>Sé qué quiero estudiar</h2>
+        <p>Busca por nombre o filtra por isla, situación laboral y modalidad.</p>
+        <div class="search-row">
+          <input id="q" placeholder="Ej. peluquería, socorrismo, ofimática…">
+          <button id="searchBtn">Buscar</button>
+        </div>
+        <div class="filters-row">
+          <select id="isla">
+            <option value="todas">Isla: todas</option>
+            <option value="Gran Canaria">Gran Canaria</option>
+            <option value="Tenerife">Tenerife</option>
+            <option value="La Palma">La Palma</option>
+            <option value="Fuerteventura">Fuerteventura</option>
+            <option value="Lanzarote">Lanzarote</option>
+          </select>
+          <select id="situacion">
+            <option value="todas">Situación: cualquiera</option>
+            <option value="Desempleado">Desempleado/a</option>
+            <option value="Ocupado">Ocupado/a</option>
+            <option value="Privado">Formación privada</option>
+          </select>
+          <select id="modalidad">
+            <option value="todas">Modalidad: cualquiera</option>
+            <option value="Presencial">Presencial</option>
+            <option value="Teleformación">Teleformación</option>
+          </select>
+        </div>
+      </div>
+      <div class="discover-divider"></div>
+      <div>
+        <h2 style="font-size:20px;">¿No lo tienes claro?</h2>
+        <p>Elige tu situación y te llevamos a la oferta correspondiente.</p>
+        <div class="profile-list">
+          <a href="#">Estoy desempleado/a <span>→</span></a>
+          <a href="#">Estoy trabajando <span>→</span></a>
+          <a href="#">Formación privada <span>→</span></a>
+          <a href="#">Estudiar online <span>→</span></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="courses-section" id="cursos">
+    <div class="courses-head">
+      <div>
+        <div class="eyebrow">Oferta formativa</div>
+        <h2 id="coursesTitle">Cursos destacados</h2>
+      </div>
+      <a href="#">Ver toda la oferta formativa →</a>
+    </div>
+    <div class="courses-grid" id="coursesGrid"></div>
+  </section>
+
+  <section class="stats-section" id="nosotros">
+    <h2>Por qué Centro de Estudios Máster</h2>
+    <div class="stats-grid">
+      <div><div class="stat-value">+25</div><div class="stat-label">años de experiencia en formación para el empleo</div></div>
+      <div><div class="stat-value">+80</div><div class="stat-label">acciones formativas cada año</div></div>
+      <div><div class="stat-value">+1.000</div><div class="stat-label">alumnos formados cada año</div></div>
+    </div>
+  </section>
+
+  <section class="valueprop-section">
+    <div class="valueprop-grid">
+      <div class="ph valueprop-photo"><span>Foto: docente con alumnado en aula</span></div>
+      <div>
+        <h2>Nuestra forma de formar</h2>
+        <div class="vp-item"><div class="vp-bar"></div><div><h3>Orientado al empleo real</h3><p>Programas diseñados junto a empresas colaboradoras del sector.</p></div></div>
+        <div class="vp-item"><div class="vp-bar"></div><div><h3>Docentes especializados</h3><p>Formadores con experiencia práctica en cada área profesional.</p></div></div>
+        <div class="vp-item"><div class="vp-bar"></div><div><h3>Prácticas en empresa</h3><p>Convenios que acercan al alumnado al mercado laboral canario.</p></div></div>
+        <div class="vp-item"><div class="vp-bar"></div><div><h3>Presencial y online</h3><p>Elige la modalidad que mejor encaja con tu día a día.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sedes-section">
+    <h2>Nuestras sedes</h2>
+    <p class="lead">Centros en Gran Canaria y Tenerife.<sup>*</sup></p>
+
+    <div class="sede-group">
+      <div class="sede-group-head"><i></i><span>Gran Canaria</span></div>
+      <div class="sede-cards">
+        <div class="sede-card">
+          <div class="ph"><span>Foto: fachada</span></div>
+          <div class="body">
+            <h3>Vecindario</h3>
+            <p>Avenida de Canarias nº 380, Vecindario</p>
+            <p>928 75 51 05</p>
+            <div class="actions"><a href="#" class="solid">Ver sede</a><a href="#" class="outline">Cómo llegar</a></div>
+          </div>
+        </div>
+        <div class="sede-card">
+          <div class="ph"><span>Foto: fachada</span></div>
+          <div class="body">
+            <h3>Maspalomas</h3>
+            <p>Avenida de Gáldar s/n, Maspalomas</p>
+            <p>928 77 45 70</p>
+            <div class="actions"><a href="#" class="solid">Ver sede</a><a href="#" class="outline">Cómo llegar</a></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sede-group">
+      <div class="sede-group-head"><i></i><span>Tenerife</span></div>
+      <div class="sede-cards">
+        <div class="sede-card">
+          <div class="ph"><span>Foto: fachada</span></div>
+          <div class="body">
+            <h3>Santa Cruz de Tenerife</h3>
+            <p>Pérez de Rozas nº 35, Sta. Cruz de Tenerife</p>
+            <p>922 29 60 00</p>
+            <div class="actions"><a href="#" class="solid">Ver sede</a><a href="#" class="outline">Cómo llegar</a></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="sedes-footnote">* Verificar el número total de sedes activas antes de publicar.</p>
+  </section>
+
+  <section class="collab-section">
+    <div class="collab-panel">
+      <h2>Confianza y colaboradores</h2>
+      <p>Organismos, administraciones y entidades con quienes trabajamos.</p>
+
+      <div class="collab-group">
+        <div class="collab-group-label">Organismos y financiadores</div>
+        <div class="collab-logos">
+          <div class="collab-logo"><span>SEPE</span></div>
+          <div class="collab-logo"><span>Fondo Social Europeo / Next Gen UE</span></div>
+        </div>
+      </div>
+      <div class="collab-group">
+        <div class="collab-group-label">Administraciones</div>
+        <div class="collab-logos">
+          <div class="collab-logo"><span>Servicio Canario de Empleo</span></div>
+          <div class="collab-logo"><span>PIEC</span></div>
+        </div>
+      </div>
+      <div class="collab-group">
+        <div class="collab-group-label">Entidades colaboradoras</div>
+        <div class="collab-logos">
+          <div class="collab-logo"><span>Cruz Roja</span></div>
+          <div class="collab-logo"><span>Opciónate</span></div>
+          <div class="collab-logo"><span>Desarrollo Social</span></div>
+          <div class="collab-logo"><span>A ti Mujer</span></div>
+        </div>
+      </div>
+      <div class="collab-group">
+        <div class="collab-group-label">Certificación de calidad</div>
+        <div class="collab-logos">
+          <div class="collab-logo"><span>ISO 9001 · Kiwa</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-final">
+    <h2>Tu próxima oportunidad puede empezar aquí</h2>
+    <p>Encuentra el curso que necesitas o habla con nuestro equipo de orientación.</p>
+    <div class="actions">
+      <a href="#buscador" class="btn-primary">Encontrar un curso</a>
+      <a href="#contacto" class="btn-outline">Contactar</a>
+    </div>
+  </section>
+
+  <footer id="contacto">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-logo-slot" title="Logotipo CEM"></div>
+        <p>Formación para el empleo en Canarias desde hace más de 25 años.</p>
+        <div class="social-row">
+          <a href="https://www.instagram.com/centrodeestudiosmaster/">Instagram</a>
+          <a href="https://www.facebook.com/CentroDeEstudiosMaster/">Facebook</a>
+          <a href="https://www.tiktok.com/@centrodeestudiosmaster">Tiktok</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Formación</div>
+        <a href="#">Cursos</a><a href="#">Desempleados</a><a href="#">Ocupados</a><a href="#">Formación privada</a><a href="#">Teleformación</a>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Centro</div>
+        <a href="#">Sobre nosotros</a><a href="#">Centros</a><a href="#">Contacto</a><a href="#">Empleo</a>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Accesos</div>
+        <a href="#">Campus Virtual</a><a href="#">Portal de transparencia</a><a href="#">Docentes</a><a href="#">Canal de denuncias</a>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Legal</div>
+        <a href="#">Privacidad</a><a href="#">Cookies</a><a href="#">Aviso legal</a><a href="#">Canal de denuncias</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Centro de Estudios Máster. Todos los derechos reservados.</span>
+      <span>928 75 51 05 · secretariavc@centromaster.com</span>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+  var COURSES = [
+    { name: 'Socorrismo en instalaciones acuáticas', type: 'Certificado de profesionalidad Nivel 2', modalidad: 'Presencial', isla: 'Tenerife', duration: '370h', price: 'Gratuito', status: 'Matrícula abierta', statusColor: 'oklch(52% 0.14 150)', startDate: 'Septiembre 2026' },
+    { name: 'Inserción laboral de personas con discapacidad', type: 'Certificado de profesionalidad Nivel 3', modalidad: 'Presencial', isla: 'Gran Canaria', duration: '470h', price: 'Gratuito', status: 'Últimas plazas', statusColor: 'oklch(58% 0.17 40)', startDate: 'Agosto 2026' },
+    { name: 'DESA · Desfibrilador semiautomático', type: 'Curso privado', modalidad: 'Presencial', isla: 'Gran Canaria', duration: 'Varias fechas', price: 'Privado', status: 'Matrícula abierta', statusColor: 'oklch(52% 0.14 150)', startDate: 'Varias fechas' },
+    { name: 'Ofimática', type: 'Programa formativo', modalidad: 'Presencial', isla: 'Gran Canaria', duration: '100h', price: 'Gratuito', status: 'Próximamente', statusColor: 'oklch(45% 0.02 260)', startDate: 'Otoño 2026' },
+  ];
+
+  function renderCourses(list) {
+    var grid = document.getElementById('coursesGrid');
+    var title = document.getElementById('coursesTitle');
+    title.textContent = list.length ? 'Cursos destacados' : 'Sin resultados para tu búsqueda';
+    grid.innerHTML = list.map(function (c) {
+      return '<div class="course-card">' +
+        '<div class="course-photo ph"><span class="course-status" style="background:' + c.statusColor + '">' + c.status + '</span><span>Foto: curso</span></div>' +
+        '<div class="course-body">' +
+          '<div class="course-tags"><span class="tag-modalidad">' + c.modalidad + '</span><span class="tag-isla">' + c.isla + '</span></div>' +
+          '<h3>' + c.name + '</h3>' +
+          '<p class="meta">' + c.type + '</p>' +
+          '<p class="meta">Inicio: ' + c.startDate + '</p>' +
+          '<div class="course-foot"><div class="price">' + c.duration + ' · <b>' + c.price + '</b></div><a href="#">Ver curso →</a></div>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  function applyFilters() {
+    var q = document.getElementById('q').value.trim().toLowerCase();
+    var isla = document.getElementById('isla').value;
+    var situacion = document.getElementById('situacion').value;
+    var modalidad = document.getElementById('modalidad').value;
+    var filtered = COURSES.filter(function (c) {
+      var matchQ = !q || c.name.toLowerCase().indexOf(q) !== -1 || c.type.toLowerCase().indexOf(q) !== -1;
+      var matchIsla = isla === 'todas' || c.isla === isla;
+      var matchModalidad = modalidad === 'todas' || c.modalidad === modalidad;
+      var matchSituacion = situacion === 'todas' || (situacion === 'Privado' ? c.price === 'Privado' : c.price === 'Gratuito');
+      return matchQ && matchIsla && matchModalidad && matchSituacion;
+    });
+    renderCourses(filtered);
+  }
+
+  document.getElementById('searchBtn').addEventListener('click', applyFilters);
+  document.getElementById('q').addEventListener('input', applyFilters);
+  document.getElementById('isla').addEventListener('change', applyFilters);
+  document.getElementById('situacion').addEventListener('change', applyFilters);
+  document.getElementById('modalidad').addEventListener('change', applyFilters);
+
+  renderCourses(COURSES);
+</script>
+</body>
+</html>
