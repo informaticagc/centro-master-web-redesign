@@ -1,6 +1,8 @@
 # Centro de Estudios Máster — Rediseño Home
 
-Prototipo de la nueva página principal (V1 baseline, aprobada). Sin cambios visuales respecto a la iteración validada en Claude Design.
+Prototipo de la nueva página principal — **V2 aprobada** (refinamiento visual y de experiencia sobre la V1 baseline). Sin cambios adicionales respecto a la iteración validada.
+
+V2 respecto a V1: hero fotográfico a sangre, buscador como tarjeta flotante, cursos destacados en composición editorial (1 destacado + 3 secundarios), sección "Encuentra tu formación" con tiles fotográficos, sección de confianza narrativa con foto de fondo, "Nuestra forma de formar" en filas alternadas con testimonio pendiente, sedes con foto dominante, colaboradores categorizados. Todas las fotos/logos siguen siendo placeholders claramente marcados (`[FOTO: …]`, `[LOGO: …]`) y los datos no verificados están señalados (`[DATO PENDIENTE]`).
 
 ## Estructura
 
