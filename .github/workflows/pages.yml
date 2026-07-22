@@ -2,7 +2,7 @@ name: Deploy Pages
 
 on:
   push:
-    branches: [main]
+    branches: [main, design]
   workflow_dispatch:
 
 permissions:
@@ -18,8 +18,24 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout main (producción)
         uses: actions/checkout@v4
+        with:
+          ref: main
+          path: site-main
+
+      - name: Checkout design (preview)
+        uses: actions/checkout@v4
+        with:
+          ref: design
+          path: site-design
+
+      - name: Ensamblar sitio combinado
+        run: |
+          mkdir -p _site
+          cp -r site-main/web/. _site/
+          mkdir -p _site/design-preview
+          cp -r site-design/web/. _site/design-preview/
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
@@ -27,7 +43,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: web
+          path: _site
 
   deploy:
     needs: build
