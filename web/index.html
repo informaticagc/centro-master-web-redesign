@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Centro de Estudios Máster — Rediseño Home (V2)</title>
+<title>Centro de Estudios Máster — Rediseño Home (V2.1)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -18,6 +18,7 @@
     --surface: oklch(99.5% 0.004 85);
     --tint: oklch(96% 0.012 85);
     --dark: oklch(15% 0.02 260);
+    --brand-bg: oklch(97% 0.01 85);
   }
   *{box-sizing:border-box;}
   body{margin:0;background:var(--bg);color:var(--ink);font-family:'Work Sans',sans-serif;}
@@ -34,9 +35,25 @@
   .nav-primary{display:flex;align-items:center;gap:28px;}
   nav a{white-space:nowrap;font-size:15px;font-weight:500;color:var(--ink);}
   .nav-secondary{font-size:14px;font-weight:500;color:var(--ink-soft);border-right:1px solid var(--line);padding-right:24px;}
-  .cta-pill{white-space:nowrap;font-size:15px;font-weight:600;color:var(--surface);background:var(--accent);padding:11px 22px;border-radius:100px;transition:transform .15s,box-shadow .15s;}
+  .cta-pill{white-space:nowrap;font-size:15px;font-weight:600;color:var(--surface);background:var(--accent);padding:14px 22px;border-radius:100px;transition:transform .15s,box-shadow .15s;}
   .cta-pill:hover{transform:translateY(-1px);box-shadow:0 6px 16px oklch(20% 0.02 260 / .18);}
   .cta-pill:focus-visible{outline:2px solid var(--primary);outline-offset:2px;}
+
+  .nav-toggle{display:none;flex-shrink:0;align-items:center;justify-content:center;width:44px;height:44px;border-radius:10px;border:1px solid var(--line);background:var(--surface);cursor:pointer;padding:0;}
+  .nav-toggle:focus-visible{outline:2px solid var(--primary);outline-offset:2px;}
+  .nav-toggle .bars{display:flex;flex-direction:column;gap:4px;width:20px;}
+  .nav-toggle .bars span{display:block;height:2px;width:100%;background:var(--ink);border-radius:2px;}
+
+  #mobileOverlay{position:fixed;inset:0;background:oklch(12% 0.03 260 / .55);z-index:60;}
+  #mobileDrawer{position:fixed;top:0;right:0;height:100%;width:min(320px,86vw);background:var(--surface);box-shadow:-12px 0 32px oklch(20% 0.02 260 / .18);z-index:61;display:flex;flex-direction:column;padding:20px;overflow-y:auto;}
+  #mobileOverlay[hidden], #mobileDrawer[hidden]{display:none;}
+  .drawer-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;}
+  .drawer-close{width:44px;height:44px;flex-shrink:0;display:flex;align-items:center;justify-content:center;border-radius:10px;border:1px solid var(--line);background:oklch(98% 0.008 85);font-size:22px;line-height:1;cursor:pointer;color:var(--ink);}
+  .drawer-close:focus-visible{outline:2px solid var(--primary);outline-offset:2px;}
+  .drawer-nav{display:flex;flex-direction:column;gap:2px;}
+  .drawer-nav a{font-size:16px;font-weight:600;color:var(--ink);padding:14px 10px;border-radius:10px;min-height:44px;display:flex;align-items:center;}
+  .drawer-nav a:hover{background:var(--tint);}
+  .drawer-nav a.campus{font-size:15px;font-weight:500;color:var(--ink-soft);border-top:1px solid var(--line);margin-top:8px;}
 
   .hero{position:relative;min-height:660px;display:flex;align-items:flex-end;}
   .hero .ph{position:absolute;inset:0;width:100%;height:100%;justify-content:flex-start;}
@@ -58,7 +75,7 @@
   .search-row{display:flex;gap:10px;margin-bottom:12px;}
   .search-row input{flex:1;font-size:15px;font-family:'Work Sans',sans-serif;padding:13px 16px;border-radius:12px;border:1px solid var(--line);background:oklch(98% 0.008 85);color:var(--ink);}
   .search-row input:focus-visible{outline:2px solid var(--accent);outline-offset:1px;}
-  .search-row button{font-size:14.5px;font-weight:600;color:var(--surface);background:var(--primary);border:none;padding:0 24px;border-radius:12px;cursor:pointer;transition:opacity .15s;}
+  .search-row button{font-size:14.5px;font-weight:600;color:var(--surface);background:var(--primary);border:none;padding:0 24px;border-radius:12px;cursor:pointer;transition:opacity .15s;min-height:46px;}
   .search-row button:hover{opacity:.88;}
   .filters-row{display:flex;gap:8px;flex-wrap:wrap;}
   .filters-row select{font-size:13px;font-family:'Work Sans',sans-serif;padding:8px 12px;border-radius:8px;border:1px solid var(--line);background:oklch(98% 0.008 85);color:oklch(30% 0.02 260);}
@@ -154,9 +171,9 @@
   .collab-group{margin-bottom:26px;}
   .collab-group:last-child{margin-bottom:0;}
   .collab-group-label{font-size:11.5px;font-weight:600;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.05em;margin-bottom:14px;}
-  .collab-logos{display:flex;gap:16px;flex-wrap:wrap;}
-  .collab-logo{width:140px;height:56px;border:1.5px dashed oklch(80% 0.01 85);border-radius:10px;display:flex;align-items:center;justify-content:center;background:var(--surface);}
-  .collab-logo span{font-family:monospace;font-size:10.5px;color:var(--ink-soft);text-align:center;padding:0 8px;}
+  .collab-logos{display:flex;gap:16px;flex-wrap:wrap;align-items:center;}
+  .collab-logo{width:152px;height:68px;display:flex;align-items:center;justify-content:center;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 18px;}
+  .collab-logo img{width:100%;height:100%;object-fit:contain;}
 
   .cta-final{padding:96px 56px;text-align:center;background:var(--primary);}
   .cta-final h2{font-weight:700;font-size:36px;margin:0 0 14px;color:var(--surface);}
@@ -167,9 +184,11 @@
 
   footer{padding:64px 56px 32px;background:var(--dark);color:oklch(85% 0.008 260);}
   .footer-grid{display:grid;grid-template-columns:1.3fr repeat(4,1fr);gap:32px;margin-bottom:48px;}
-  .footer-grid p{font-size:13.5px;line-height:1.6;color:oklch(65% 0.01 260);max-width:260px;margin:0 0 16px;}
+  .footer-brand{margin:-64px 0 0 -56px;padding:48px 40px 40px 56px;background:var(--brand-bg);display:flex;flex-direction:column;justify-content:flex-start;}
+  .footer-brand img{width:190px;height:auto;object-fit:contain;margin-bottom:20px;}
+  .footer-brand p{font-size:13.5px;line-height:1.6;color:oklch(42% 0.02 260);max-width:250px;margin:0 0 16px;}
   .social-row{display:flex;gap:14px;}
-  .social-row a{font-size:13px;color:oklch(75% 0.01 260);}
+  .social-row a{font-size:13px;font-weight:500;color:var(--primary);}
   .footer-col-title{font-size:12.5px;font-weight:600;color:oklch(97% 0.004 85);text-transform:uppercase;letter-spacing:.05em;margin-bottom:16px;}
   .footer-col a{display:block;font-size:13.5px;color:oklch(75% 0.01 260);margin-bottom:10px;}
   .footer-bottom{display:flex;justify-content:space-between;align-items:center;padding-top:28px;border-top:1px solid oklch(28% 0.02 260);font-size:12.5px;color:oklch(60% 0.01 260);flex-wrap:wrap;gap:12px;}
@@ -181,6 +200,7 @@
     .hero-text{max-width:100%;padding:48px 32px;}
     .hero-text h1{font-size:40px;}
     .search-float{margin:-40px 32px 0;padding:24px;grid-template-columns:1fr;}
+    .quick-access{border-left:none;border-top:1px solid var(--line);padding-left:0;padding-top:16px;margin-top:4px;}
     .courses-editorial{grid-template-columns:1fr;}
     .tiles-grid{grid-template-columns:repeat(2,1fr);}
     .vp-row{grid-template-columns:1fr;}
@@ -189,15 +209,19 @@
   }
   @media (max-width: 860px){
     .nav-primary{display:none;}
+    .nav-toggle{display:inline-flex;}
     .tiles-grid{grid-template-columns:1fr;}
     .stats-inline{flex-direction:column;align-items:flex-start;gap:20px;}
     .footer-grid{grid-template-columns:1fr 1fr;}
+    .footer-brand{grid-column:1 / -1;margin:-64px -56px 24px -56px;padding:32px 28px;}
+    .collab-section{padding:0 20px 64px;}
+    .collab-panel{padding:32px 24px;}
     .collab-logos{justify-content:flex-start;}
   }
 </style>
 </head>
 <body>
-<div class="wrap" data-screen-label="Home V2">
+<div class="wrap" data-screen-label="Home V2.1">
 
   <header>
     <img src="assets/logo-cem.png" alt="Centro de Estudios Máster" style="width:150px;height:38px;flex-shrink:0;object-fit:contain;" loading="eager" decoding="async">
@@ -210,8 +234,26 @@
       </span>
       <a href="#" class="nav-secondary">Campus Virtual ↗</a>
       <a href="#buscador" class="cta-pill">Encontrar un curso</a>
+      <button id="navToggle" class="nav-toggle" type="button" aria-expanded="false" aria-controls="mobileDrawer" aria-label="Abrir menú">
+        <span class="bars"><span></span><span></span><span></span></span>
+      </button>
     </nav>
   </header>
+
+  <div id="mobileOverlay" hidden></div>
+  <div id="mobileDrawer" role="dialog" aria-modal="true" aria-label="Menú de navegación" hidden>
+    <div class="drawer-head">
+      <img src="assets/logo-cem.png" alt="Centro de Estudios Máster" style="width:130px;height:34px;object-fit:contain;">
+      <button id="drawerClose" class="drawer-close" type="button" aria-label="Cerrar menú">×</button>
+    </div>
+    <nav class="drawer-nav">
+      <a href="#cursos">Formación</a>
+      <a href="#empleo">Empleo</a>
+      <a href="#nosotros">Sobre nosotros</a>
+      <a href="#contacto">Contacto</a>
+      <a href="#" class="campus">Campus Virtual ↗</a>
+    </nav>
+  </div>
 
   <section class="hero">
     <img src="assets/hero-1200.webp"
@@ -332,7 +374,7 @@
       <div><div class="vp-index">03</div><h3>Prácticas en empresa</h3><p>Convenios que acercan al alumnado al mercado laboral canario.</p></div>
     </div>
     <div class="vp-row">
-      <div class="ph vp-photo"><span>[FOTO: aula equipada y conexión de teleformación]</span></div>
+      <img class="vp-photo" src="assets/aula-teleformacion-1200.webp" srcset="assets/aula-teleformacion-800.webp 800w, assets/aula-teleformacion-1200.webp 1200w, assets/aula-teleformacion-1920.webp 1920w" sizes="(max-width: 1180px) 90vw, 45vw" alt="Aula equipada para formación presencial y conexión de teleformación" style="object-fit:cover;object-position:center;" loading="lazy" decoding="async">
       <div><div class="vp-index">04</div><h3>Presencial y online</h3><p>Elige la modalidad que mejor encaja con tu día a día.</p></div>
     </div>
 
@@ -395,30 +437,30 @@
       <div class="collab-group">
         <div class="collab-group-label">Organismos y financiadores</div>
         <div class="collab-logos">
-          <img class="collab-logo" style="border:none;object-fit:contain;" src="assets/logo-sepe.png" alt="Servicio Público de Empleo Estatal (SEPE)" loading="lazy" decoding="async">
-          <img class="collab-logo" style="border:none;object-fit:contain;" src="assets/logo-fse.png" alt="Financiado por la Unión Europea — NextGenerationEU" loading="lazy" decoding="async">
+          <div class="collab-logo"><img src="assets/logo-sepe.png" alt="Servicio Público de Empleo Estatal (SEPE)" loading="lazy" decoding="async"></div>
+          <div class="collab-logo"><img src="assets/logo-fse.png" alt="Financiado por la Unión Europea — NextGenerationEU" loading="lazy" decoding="async"></div>
         </div>
       </div>
       <div class="collab-group">
         <div class="collab-group-label">Administraciones</div>
         <div class="collab-logos">
-          <img class="collab-logo" style="border:none;object-fit:contain;" src="assets/logo-sce.png" alt="Gobierno de Canarias — Servicio Canario de Empleo" loading="lazy" decoding="async">
-          <div class="collab-logo"><span>[LOGO: PIEC]</span></div>
+          <div class="collab-logo"><img src="assets/logo-sce.png" alt="Gobierno de Canarias — Servicio Canario de Empleo" loading="lazy" decoding="async"></div>
+          <div class="collab-logo"><img src="assets/logo-piec.png" alt="PIEC" loading="lazy" decoding="async"></div>
         </div>
       </div>
       <div class="collab-group">
         <div class="collab-group-label">Entidades colaboradoras</div>
         <div class="collab-logos">
-          <img class="collab-logo" style="border:none;object-fit:contain;" src="assets/logo-cruzroja.png" alt="Cruz Roja" loading="lazy" decoding="async">
-          <img class="collab-logo" style="border:none;object-fit:contain;" src="assets/logo-opcionate.png" alt="Opciónate — mejora tu vida, mejora el mundo" loading="lazy" decoding="async">
-          <img class="collab-logo" style="border:none;object-fit:contain;" src="assets/logo-desarrollosocial.png" alt="Desarrollo Social" loading="lazy" decoding="async">
-          <img class="collab-logo" style="border:none;object-fit:contain;" src="assets/logo-atimujer.png" alt="A ti Mujer — apoyo integral a la mujer" loading="lazy" decoding="async">
+          <div class="collab-logo"><img src="assets/logo-cruzroja.png" alt="Cruz Roja" loading="lazy" decoding="async"></div>
+          <div class="collab-logo"><img src="assets/logo-opcionate.png" alt="Opciónate — mejora tu vida, mejora el mundo" loading="lazy" decoding="async"></div>
+          <div class="collab-logo"><img src="assets/logo-desarrollosocial.png" alt="Desarrollo Social" loading="lazy" decoding="async"></div>
+          <div class="collab-logo"><img src="assets/logo-atimujer.png" alt="A ti Mujer — apoyo integral a la mujer" loading="lazy" decoding="async"></div>
         </div>
       </div>
       <div class="collab-group">
         <div class="collab-group-label">Certificación de calidad</div>
         <div class="collab-logos">
-          <div class="collab-logo"><span>[LOGO: ISO 9001 · Kiwa]</span></div>
+          <div class="collab-logo"><img src="assets/logo-iso9001-sgs.png" alt="Certificación ISO 9001 — SGS" loading="lazy" decoding="async"></div>
         </div>
       </div>
     </div>
@@ -435,8 +477,8 @@
 
   <footer id="contacto">
     <div class="footer-grid">
-      <div>
-        <img src="assets/logo-cem.png" alt="Centro de Estudios Máster" style="width:150px;height:38px;margin-bottom:16px;object-fit:contain;" loading="lazy" decoding="async">
+      <div class="footer-brand">
+        <img src="assets/logo-cem.png" alt="Centro de Estudios Máster" loading="lazy" decoding="async">
         <p>Formación para el empleo en Canarias desde hace más de 25 años.</p>
         <div class="social-row">
           <a href="https://www.instagram.com/centrodeestudiosmaster/">Instagram</a>
@@ -540,6 +582,40 @@
   document.getElementById('modalidad').addEventListener('change', applyFilters);
 
   renderCourses(COURSES);
+
+  // Mobile nav drawer
+  var navToggle = document.getElementById('navToggle');
+  var drawer = document.getElementById('mobileDrawer');
+  var overlay = document.getElementById('mobileOverlay');
+  var drawerClose = document.getElementById('drawerClose');
+
+  function openDrawer() {
+    drawer.hidden = false;
+    overlay.hidden = false;
+    navToggle.setAttribute('aria-expanded', 'true');
+    navToggle.setAttribute('aria-label', 'Cerrar menú');
+    document.body.style.overflow = 'hidden';
+    drawerClose.focus();
+  }
+  function closeDrawer() {
+    drawer.hidden = true;
+    overlay.hidden = true;
+    navToggle.setAttribute('aria-expanded', 'false');
+    navToggle.setAttribute('aria-label', 'Abrir menú');
+    document.body.style.overflow = '';
+    navToggle.focus();
+  }
+  navToggle.addEventListener('click', function () {
+    if (drawer.hidden) openDrawer(); else closeDrawer();
+  });
+  drawerClose.addEventListener('click', closeDrawer);
+  overlay.addEventListener('click', closeDrawer);
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && !drawer.hidden) closeDrawer();
+  });
+  Array.prototype.forEach.call(drawer.querySelectorAll('a'), function (a) {
+    a.addEventListener('click', closeDrawer);
+  });
 </script>
 </body>
 </html>

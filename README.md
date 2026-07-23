@@ -1,8 +1,14 @@
 # Centro de Estudios Máster — Rediseño Home
 
-Prototipo de la nueva página principal — **V2 aprobada** (refinamiento visual y de experiencia sobre la V1 baseline). Sin cambios adicionales respecto a la iteración validada.
+Prototipo de la nueva página principal — **V2.1 aprobada visualmente** (refinamiento de V2: menú
+hamburguesa en tablet/móvil, ajustes responsive, nueva integración de marca en el footer, y los
+recursos reales restantes integrados: aula/teleformación, logo PIEC, certificación ISO 9001 · SGS).
 
-V2 respecto a V1: hero fotográfico a sangre, buscador como tarjeta flotante, cursos destacados en composición editorial (1 destacado + 3 secundarios), sección "Encuentra tu formación" con tiles fotográficos, sección de confianza narrativa con foto de fondo, "Nuestra forma de formar" en filas alternadas con testimonio pendiente, sedes con foto dominante, colaboradores categorizados. Todas las fotos/logos siguen siendo placeholders claramente marcados (`[FOTO: …]`, `[LOGO: …]`) y los datos no verificados están señalados (`[DATO PENDIENTE]`).
+V2.1 respecto a V2: header con menú hamburguesa accesible (drawer lateral, foco gestionado, cierre
+con Escape/clic fuera/botón), footer con una franja de marca diferenciada (en vez de logo en tarjeta
+flotante), y sustitución de los 5 placeholders de imagen/logo que quedaban en V2. Verificado visual y
+funcionalmente a 1440, 1024, 768 y 390 px; los breakpoints CSS principales del diseño siguen siendo
+1180 px y 860 px.
 
 ## Estructura
 
@@ -15,19 +21,16 @@ V2 respecto a V1: hero fotográfico a sangre, buscador como tarjeta flotante, cu
 /web/index.html          Versión standalone: HTML + CSS + JS vanilla, sin dependencias externas
                          (aparte de la fuente de Google Fonts). Se abre directamente en cualquier
                          navegador y es lo que debe publicarse en GitHub Pages.
+/web/assets/             Fotografías y logos reales usados por /web/index.html (y referenciados por
+                         /design/Home.dc.html vía ../web/assets/).
 ```
-
-`/web/index.html` sustituye los `<image-slot>` interactivos por bloques de marcador de posición estáticos
-(recuadro punteado + etiqueta) porque ese componente depende del runtime de Claude Design para el
-guardado de imágenes. Sirve para visualizar y compartir el diseño; para seguir iterando visualmente,
-edita `/design/Home.dc.html` dentro de Claude Design.
 
 ## Cómo actualizar el repositorio en futuras iteraciones
 
 1. Trabaja las iteraciones de diseño en la rama `design`.
 2. Cada versión relevante: actualiza `/design/Home.dc.html` (y `/design/image-slot.js` si cambia) y
    regenera `/web/index.html` a partir del estado aprobado.
-3. Haz commit en `design` con un mensaje descriptivo (`design: hero editorial v2`, `design: rediseño colaboradores`, etc.).
+3. Haz commit en `design` con un mensaje descriptivo (`design: menú hamburguesa + footer v2.1`, etc.).
 4. Cuando una versión quede aprobada para publicar, haz merge de `design` a `main` (o cherry-pick el commit)
    — `main` debe reflejar siempre solo versiones aprobadas y publicables.
 5. Con GitHub Pages apuntando a `main` (carpeta `/web` o raíz, según configuración), la URL pública se
@@ -39,10 +42,10 @@ En GitHub: Settings → Pages → Source: rama `main`, carpeta `/web` (o mueve `
 de una rama `gh-pages` dedicada, si prefieres esa convención). La URL resultante es fija y no requiere
 pasos manuales adicionales tras cada push.
 
-## Contenido y datos
+## Contenido y datos pendientes
 
-Todos los textos, cifras y datos de contacto proceden de la auditoría de centroformacionmaster.com
-(páginas de formación, sedes y colaboradores). Dos puntos quedan señalados como pendientes de
-verificación antes de publicar:
-- El número total de sedes activas (se muestran 3; la web original mencionaba "4 sedes").
-- Cualquier cifra de inserción laboral (no incluida en esta versión hasta poder verificarse).
+Todos los textos, cifras y datos de contacto proceden de la auditoría de centroformacionmaster.com.
+Quedan dos puntos señalados como pendientes de verificación antes de publicar (marcados en el propio
+diseño con corchetes):
+- La cita y el nombre del testimonio de una persona egresada (sección "Nuestra forma de formar").
+- El número total de sedes activas (nota a pie de la sección "Sedes").
