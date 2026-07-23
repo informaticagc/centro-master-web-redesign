@@ -17,6 +17,7 @@ Generados con [sharp](https://sharp.pixelplumbing.com/) — fotografías a WebP 
 | `logo-sepe.png` | `recursos/organismos/logo_SEPE.jpg` | Logo colaborador SEPE | 1206×250 | PNG (paleta) | 57.9 KB |
 | `logo-sce.png` | `recursos/organismos/logo_SCE.JPG` | Logo colaborador Servicio Canario de Empleo | 700×243 | PNG (paleta) | 23.2 KB |
 | `logo-fse.png` | `recursos/marca/logo FSE_Next Generation EU.png` | Logo colaborador Fondo Social Europeo / Next Generation EU | 700×183 | PNG (alpha) | 50.1 KB |
+| `logo-piec.png` | `recursos/organismos/logo_PIEC.jpg` | Logo colaborador PIEC (Plan Integral de Empleo de Canarias) | 700×392 | PNG | 72.2 KB |
 
 ## Colaboradores
 
@@ -28,6 +29,14 @@ Generados con [sharp](https://sharp.pixelplumbing.com/) — fotografías a WebP 
 | `logo-atimujer.png` | `recursos/colaboradores/a ti mujer.jpg` | Logo colaborador A ti Mujer | 912×456 | PNG (paleta) | 113.3 KB |
 
 *(`logo-atimujer.png` pesa más que su original JPEG de 64 KB: la regla de no servir logos en JPEG obliga a reencodear a PNG, y el degradado/sombra ya presente en el JPEG de origen no cuantiza tan bien como un gráfico plano. Sigue siendo un peso razonable para un logo — no requiere una segunda pasada.)*
+
+## Certificaciones
+
+| Archivo final | Origen | Uso previsto | Dimensiones | Formato | Peso |
+|---|---|---|---|---|---|
+| `logo-iso9001-sgs.png` | `recursos/certificaciones/ISO 9001 · Kiwa.png` | Logo certificación ISO 9001 | 600×586 | PNG (alpha) | 97.3 KB |
+
+**Importante:** pese a que el archivo original se llama "ISO 9001 · Kiwa.png", el sello impreso en la propia imagen identifica a **SGS** ("SYSTEM CERTIFICATION · SGS"), no a Kiwa. El archivo final se ha nombrado `logo-iso9001-sgs.png` para reflejar la entidad certificadora real. **Esta corrección todavía no se ha aplicado al texto del placeholder en `design/Home.dc.html` / `web/index.html`** (sigue diciendo `[LOGO: ISO 9001 · Kiwa]`) — queda pendiente de la próxima integración de diseño, donde debe sustituirse "Kiwa" por "SGS".
 
 ## Hero
 
@@ -53,6 +62,16 @@ Generados con [sharp](https://sharp.pixelplumbing.com/) — fotografías a WebP 
 | `docentes-metodologia-1200.webp` | ídem | VP "Docentes especializados" — desktop | 1200×751 | WebP q82 | 66.1 KB |
 
 *(No se genera variante 1920: el original (1586 px) es más estrecho; ampliarlo introduciría pérdida de calidad.)*
+
+## Presencial y online (value prop)
+
+| Archivo final | Origen | Uso previsto | Dimensiones | Formato | Peso |
+|---|---|---|---|---|---|
+| `aula-teleformacion-800.webp` | `recursos/fotografias/formacion/aula equipada y conexión de teleformación.jpg` | VP "Presencial y online" — mobile/tablet | 800×533 | WebP q82 | 46.1 KB |
+| `aula-teleformacion-1200.webp` | ídem | VP "Presencial y online" — desktop | 1200×800 | WebP q82 | 81.3 KB |
+| `aula-teleformacion-1920.webp` | ídem | VP "Presencial y online" — desktop grande | 1920×1280 | WebP q82 | 163.3 KB |
+
+Original de 3000×2000 px, el más grande procesado hasta ahora — justifica las tres variantes responsive sin ampliar. Aún no integrado en `design/Home.dc.html`.
 
 ## Sedes
 
@@ -109,10 +128,15 @@ Se conserva el encuadre completo del original en un único tamaño; el recorte v
 |---|---|
 | Originales seleccionados — 1ª tanda (14 archivos) | 21.80 MB |
 | Originales seleccionados — 2ª tanda (8 archivos: socorrismo, DESA, formación privada, FSE, Cruz Roja, Opciónate, Desarrollo Social, A ti Mujer) | 6.93 MB |
-| **Originales seleccionados, total (22 archivos, banco `/recursos`)** | **28.72 MB** |
-| Assets finales generados (35 imágenes, `/web/assets`) | 2.97 MB |
-| **Reducción** | **≈ 89.7 %** |
+| Originales seleccionados — 3ª tanda (3 archivos: aula/teleformación, PIEC, ISO 9001/SGS) | 0.85 MB |
+| **Originales seleccionados, total (25 archivos, banco `/recursos`)** | **29.57 MB** |
+| Assets finales generados (40 imágenes, `/web/assets`) | 3.42 MB |
+| **Reducción** | **≈ 88.4 %** |
 
-## Pendiente para más adelante (no incluido en esta selección)
+## Procesado pero aún no integrado en el diseño
 
-Siguen sin recurso adecuado y se conservan como placeholder: VP "Presencial y online" (aula equipada/teleformación), logo PIEC individual, logo ISO 9001 con la entidad certificadora correcta (el sello disponible es "ISO 9001 · SGS", no "Kiwa"), testimonio de alumnado egresado y el dato del número total de sedes activas. Se incorporarán cuando exista material o dato adecuado — no se ha forzado ninguno.
+Los 3 assets de esta tanda (`aula-teleformacion-*.webp`, `logo-piec.png`, `logo-iso9001-sgs.png`) están optimizados y disponibles en `/web/assets`, pero **todavía no se han enlazado** en `design/Home.dc.html` ni en `web/index.html` — esos archivos siguen mostrando sus placeholders originales (`[FOTO: aula equipada y conexión de teleformación]`, `[LOGO: PIEC]`, `[LOGO: ISO 9001 · Kiwa]`). La integración de diseño, incluyendo la corrección de texto "Kiwa" → "SGS", queda pendiente para un paso posterior.
+
+## Pendiente para más adelante (sin recurso todavía)
+
+Siguen sin recurso adecuado y se conservan como placeholder: cursos "Inserción laboral" y "Ofimática" (aunque ya existen candidatos en `/recursos` sin seleccionar todavía — `sesion de orientacion laboral.png`, `alumnado en aula de informatica.png`), testimonio de alumnado egresado y el dato del número total de sedes activas. Se incorporarán cuando se confirme el material o dato adecuado — no se ha forzado ninguno.
