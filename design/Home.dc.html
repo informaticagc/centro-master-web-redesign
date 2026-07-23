@@ -44,7 +44,7 @@
 
   <!-- HEADER -->
   <header class="site-header" style="position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:16px 56px;background:oklch(99.5% 0.004 85 / 0.92);backdrop-filter:blur(10px);border-bottom:1px solid oklch(90% 0.01 85);">
-    <image-slot id="logo-header" style="width:150px;height:38px;flex-shrink:0;" shape="rect" fit="contain" placeholder="[LOGO: Centro de Estudios Máster]"></image-slot>
+    <img src="../web/assets/logo-cem.png" alt="Centro de Estudios Máster" style="width:150px;height:38px;flex-shrink:0;object-fit:contain;" loading="eager" decoding="async">
     <nav class="site-nav" style="display:flex;align-items:center;gap:28px;flex-shrink:1;min-width:0;">
       <span class="nav-primary" style="display:flex;align-items:center;gap:28px;">
         <a href="#cursos" style="white-space:nowrap;font-size:15px;font-weight:500;color:oklch(20% 0.02 260);">Formación ⌄</a>
@@ -59,7 +59,12 @@
 
   <!-- HERO -->
   <section style="position:relative;min-height:660px;display:flex;align-items:flex-end;">
-    <image-slot id="hero-photo" style="position:absolute;inset:0;width:100%;height:100%;" shape="rect" placeholder="[FOTO: alumnado y docente en taller práctico]"></image-slot>
+    <img src="../web/assets/hero-1200.webp"
+         srcset="../web/assets/hero-800.webp 800w, ../web/assets/hero-1200.webp 1200w, ../web/assets/hero-1920.webp 1920w"
+         sizes="100vw"
+         alt="Grupo de alumnado y formadores trabajando juntos en una sesión de formación práctica"
+         style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 35%;"
+         loading="eager" fetchpriority="high" decoding="async">
     <div style="position:absolute;inset:0;background:linear-gradient(0deg, oklch(12% 0.03 260 / 0.92) 0%, oklch(12% 0.03 260 / 0.6) 45%, oklch(12% 0.03 260 / 0.15) 100%);"></div>
     <div class="hero-text" style="position:relative;z-index:2;padding:64px 64px 96px;max-width:760px;backdrop-filter:blur(2px);">
       <div style="display:inline-flex;align-items:center;gap:8px;background:oklch(99% 0.004 85 / 0.15);border:1px solid oklch(99% 0.004 85 / 0.35);color:oklch(99% 0.004 85);font-size:13px;font-weight:600;padding:7px 14px;border-radius:100px;margin-bottom:24px;backdrop-filter:blur(4px);">
@@ -134,7 +139,12 @@
       <sc-if value="{{ featuredCourse }}">
         <div style="background:oklch(99.5% 0.004 85);border:1px solid oklch(91% 0.01 85);border-radius:24px;overflow:hidden;display:flex;flex-direction:column;transition:box-shadow 0.2s,transform 0.2s;" style-hover="box-shadow:0 18px 40px oklch(20% 0.02 260 / 0.1);transform:translateY(-2px);">
           <div style="position:relative;aspect-ratio:16/10;">
-            <image-slot id="{{ featuredCourse.slotId }}" style="width:100%;height:100%;" shape="rect" placeholder="{{ featuredCourse.photo }}"></image-slot>
+            <sc-if value="{{ featuredCourse.photoSrc }}">
+              <img src="{{ featuredCourse.photoSrc }}" srcset="{{ featuredCourse.photoSrcset }}" sizes="(max-width: 1180px) 90vw, 55vw" alt="{{ featuredCourse.photoAlt }}" style="width:100%;height:100%;object-fit:cover;object-position:center;" loading="lazy" decoding="async">
+            </sc-if>
+            <sc-if value="{{ featuredCourse.photoMissing }}">
+              <image-slot id="{{ featuredCourse.slotId }}" style="width:100%;height:100%;" shape="rect" placeholder="{{ featuredCourse.photo }}"></image-slot>
+            </sc-if>
             <span style="position:absolute;top:16px;left:16px;font-size:11.5px;font-weight:700;color:oklch(99% 0.004 85);background:{{ featuredCourse.statusColor }};padding:6px 12px;border-radius:100px;z-index:2;">{{ featuredCourse.status }}</span>
           </div>
           <div style="padding:32px;display:flex;flex-direction:column;flex:1;">
@@ -156,7 +166,12 @@
         <sc-for list="{{ secondaryCourses }}" as="c" hint-placeholder-count="3">
           <div style="display:grid;grid-template-columns:120px 1fr;gap:16px;background:oklch(99.5% 0.004 85);border:1px solid oklch(91% 0.01 85);border-radius:16px;overflow:hidden;transition:box-shadow 0.2s;" style-hover="box-shadow:0 10px 24px oklch(20% 0.02 260 / 0.08);">
             <div style="position:relative;">
-              <image-slot id="{{ c.slotId }}" style="width:100%;height:100%;" shape="rect" placeholder="{{ c.photo }}"></image-slot>
+              <sc-if value="{{ c.photoSrc }}">
+                <img src="{{ c.photoSrc }}" srcset="{{ c.photoSrcset }}" sizes="120px" alt="{{ c.photoAlt }}" style="width:100%;height:100%;object-fit:cover;object-position:center;" loading="lazy" decoding="async">
+              </sc-if>
+              <sc-if value="{{ c.photoMissing }}">
+                <image-slot id="{{ c.slotId }}" style="width:100%;height:100%;" shape="rect" placeholder="{{ c.photo }}"></image-slot>
+              </sc-if>
             </div>
             <div style="padding:16px 18px 16px 0;display:flex;flex-direction:column;justify-content:center;">
               <div style="display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap;">
@@ -179,7 +194,12 @@
     <div class="tiles-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:20px;">
       <sc-for list="{{ profileTiles }}" as="t" hint-placeholder-count="4">
         <a href="#" style="position:relative;display:block;aspect-ratio:3/4;border-radius:20px;overflow:hidden;transition:transform 0.2s;" style-hover="transform:translateY(-4px);">
-          <image-slot id="{{ t.slotId }}" style="position:absolute;inset:0;width:100%;height:100%;" shape="rect" placeholder="{{ t.photo }}"></image-slot>
+          <sc-if value="{{ t.photoSrc }}">
+            <img src="{{ t.photoSrc }}" alt="{{ t.photoAlt }}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:{{ t.photoPos }};" loading="lazy" decoding="async">
+          </sc-if>
+          <sc-if value="{{ t.photoMissing }}">
+            <image-slot id="{{ t.slotId }}" style="position:absolute;inset:0;width:100%;height:100%;" shape="rect" placeholder="{{ t.photo }}"></image-slot>
+          </sc-if>
           <div style="position:absolute;inset:0;background:linear-gradient(0deg, oklch(10% 0.02 260 / 0.82) 0%, oklch(10% 0.02 260 / 0.1) 60%);"></div>
           <div style="position:absolute;left:20px;right:20px;bottom:20px;z-index:2;">
             <h3 style="font-family:'Sora',sans-serif;font-weight:600;font-size:17px;margin:0 0 6px;color:oklch(99% 0.004 85);">{{ t.label }}</h3>
@@ -192,7 +212,12 @@
 
   <!-- POR QUE CEM: NARRATIVA + CONFIANZA -->
   <section id="nosotros" style="position:relative;padding:100px 56px;overflow:hidden;">
-    <image-slot id="trust-photo" style="position:absolute;inset:0;width:100%;height:100%;" shape="rect" placeholder="[FOTO: grupo de alumnado en aula, plano abierto]"></image-slot>
+    <img src="../web/assets/confianza-1200.webp"
+         srcset="../web/assets/confianza-800.webp 800w, ../web/assets/confianza-1200.webp 1200w, ../web/assets/confianza-1920.webp 1920w"
+         sizes="100vw"
+         alt="Grupo de alumnado en una sesión formativa en el aula"
+         style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 40%;"
+         loading="lazy" decoding="async">
     <div style="position:absolute;inset:0;background:linear-gradient(100deg, oklch(14% 0.03 260 / 0.92) 0%, oklch(14% 0.03 260 / 0.75) 55%, oklch(14% 0.03 260 / 0.5) 100%);"></div>
     <div style="position:relative;z-index:2;max-width:620px;">
       <h2 style="font-family:'Sora',sans-serif;font-weight:700;font-size:32px;margin:0 0 20px;color:oklch(99% 0.004 85);">Un centro consolidado, pensado para el empleo real</h2>
@@ -216,7 +241,12 @@
     </div>
     <sc-for list="{{ valueProps }}" as="v" hint-placeholder-count="4">
       <div class="vp-row" style="display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center;margin-bottom:64px;">
-        <image-slot id="{{ v.slotId }}" class="vp-photo" style="width:100%;aspect-ratio:4/3;border-radius:20px;" shape="rounded" radius="20" placeholder="{{ v.photo }}"></image-slot>
+        <sc-if value="{{ v.photoSrc }}">
+          <img src="{{ v.photoSrc }}" srcset="{{ v.photoSrcset }}" sizes="(max-width: 1180px) 90vw, 45vw" alt="{{ v.photoAlt }}" class="vp-photo" style="width:100%;aspect-ratio:4/3;border-radius:20px;object-fit:cover;object-position:{{ v.photoPos }};" loading="lazy" decoding="async">
+        </sc-if>
+        <sc-if value="{{ v.photoMissing }}">
+          <image-slot id="{{ v.slotId }}" class="vp-photo" style="width:100%;aspect-ratio:4/3;border-radius:20px;" shape="rounded" radius="20" placeholder="{{ v.photo }}"></image-slot>
+        </sc-if>
         <div>
           <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:14px;color:{{ accentColor }};margin-bottom:10px;">{{ v.index }}</div>
           <h3 style="font-family:'Sora',sans-serif;font-weight:600;font-size:24px;margin:0 0 10px;color:oklch(16% 0.02 260);">{{ v.title }}</h3>
@@ -243,7 +273,12 @@
         <div style="display:flex;flex-direction:column;gap:20px;">
           <sc-for list="{{ grp.items }}" as="sede" hint-placeholder-count="2">
             <div class="sede-split" style="display:grid;grid-template-columns:1.2fr 1fr;border-radius:20px;overflow:hidden;border:1px solid oklch(91% 0.01 85);background:oklch(99.5% 0.004 85);min-height:220px;">
-              <image-slot id="{{ sede.slotId }}" style="width:100%;height:100%;" shape="rect" placeholder="{{ sede.photo }}"></image-slot>
+              <sc-if value="{{ sede.photoSrc }}">
+                <img src="{{ sede.photoSrc }}" srcset="{{ sede.photoSrcset }}" sizes="(max-width: 1180px) 100vw, 50vw" alt="{{ sede.photoAlt }}" style="width:100%;height:100%;object-fit:cover;object-position:center;" loading="lazy" decoding="async">
+              </sc-if>
+              <sc-if value="{{ sede.photoMissing }}">
+                <image-slot id="{{ sede.slotId }}" style="width:100%;height:100%;" shape="rect" placeholder="{{ sede.photo }}"></image-slot>
+              </sc-if>
               <div style="padding:28px;display:flex;flex-direction:column;justify-content:center;">
                 <h3 style="font-family:'Sora',sans-serif;font-weight:600;font-size:19px;margin:0 0 10px;color:oklch(16% 0.02 260);">{{ sede.city }}</h3>
                 <p style="font-size:13.5px;color:oklch(45% 0.02 260);line-height:1.5;margin:0 0 4px;">{{ sede.address }}</p>
@@ -271,7 +306,12 @@
           <div style="font-size:11.5px;font-weight:600;color:oklch(45% 0.02 260);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:14px;">{{ g.label }}</div>
           <div class="collab-logos" style="display:flex;gap:16px;flex-wrap:wrap;">
             <sc-for list="{{ g.items }}" as="item" hint-placeholder-count="3">
-              <image-slot id="{{ item.slotId }}" style="width:140px;height:56px;" shape="rounded" radius="10" placeholder="{{ item.name }}"></image-slot>
+              <sc-if value="{{ item.photoSrc }}">
+                <img src="{{ item.photoSrc }}" alt="{{ item.photoAlt }}" style="width:140px;height:56px;object-fit:contain;border-radius:10px;" loading="lazy" decoding="async">
+              </sc-if>
+              <sc-if value="{{ item.photoMissing }}">
+                <image-slot id="{{ item.slotId }}" style="width:140px;height:56px;" shape="rounded" radius="10" placeholder="{{ item.name }}"></image-slot>
+              </sc-if>
             </sc-for>
           </div>
         </div>
@@ -293,7 +333,7 @@
   <footer id="contacto" style="padding:64px 56px 32px;background:oklch(15% 0.02 260);color:oklch(85% 0.008 260);">
     <div class="footer-grid" style="display:grid;grid-template-columns:1.3fr repeat(4,1fr);gap:32px;margin-bottom:48px;">
       <div>
-        <image-slot id="logo-footer" style="width:150px;height:38px;margin-bottom:16px;" shape="rect" fit="contain" placeholder="[LOGO: Centro de Estudios Máster]"></image-slot>
+        <img src="../web/assets/logo-cem.png" alt="Centro de Estudios Máster" style="width:150px;height:38px;margin-bottom:16px;object-fit:contain;" loading="lazy" decoding="async">
         <p style="font-size:13.5px;line-height:1.6;color:oklch(65% 0.01 260);max-width:260px;margin:0 0 16px;">Formación para el empleo en Canarias desde hace más de 25 años.</p>
         <div style="display:flex;gap:14px;">
           <a href="https://www.instagram.com/centrodeestudiosmaster/" style="font-size:13px;color:oklch(75% 0.01 260);">Instagram</a>
@@ -326,10 +366,10 @@ class Component extends DCLogic {
   state = { query: '', isla: 'todas', situacion: 'todas', modalidad: 'todas' };
 
   courses = [
-    { name: 'Socorrismo en instalaciones acuáticas', type: 'Certificado de profesionalidad Nivel 2', modalidad: 'Presencial', isla: 'Tenerife', duration: '370h', price: 'Gratuito', status: 'Matrícula abierta', statusColor: 'oklch(52% 0.14 150)', startDate: 'Septiembre 2026', slotId: 'curso-socorrismo', photo: '[FOTO: prácticas de socorrismo en piscina]' },
-    { name: 'Inserción laboral de personas con discapacidad', type: 'Certificado de profesionalidad Nivel 3', modalidad: 'Presencial', isla: 'Gran Canaria', duration: '470h', price: 'Gratuito', status: 'Últimas plazas', statusColor: 'oklch(58% 0.17 40)', startDate: 'Agosto 2026', slotId: 'curso-insercion', photo: '[FOTO: sesión de orientación laboral]' },
-    { name: 'DESA · Desfibrilador semiautomático', type: 'Curso privado', modalidad: 'Presencial', isla: 'Gran Canaria', duration: 'Varias fechas', price: 'Privado', status: 'Matrícula abierta', statusColor: 'oklch(52% 0.14 150)', startDate: 'Varias fechas', slotId: 'curso-desa', photo: '[FOTO: práctica con desfibrilador]' },
-    { name: 'Ofimática', type: 'Programa formativo', modalidad: 'Presencial', isla: 'Gran Canaria', duration: '100h', price: 'Gratuito', status: 'Próximamente', statusColor: 'oklch(45% 0.02 260)', startDate: 'Otoño 2026', slotId: 'curso-ofimatica', photo: '[FOTO: alumnado en aula de informática]' },
+    { name: 'Socorrismo en instalaciones acuáticas', type: 'Certificado de profesionalidad Nivel 2', modalidad: 'Presencial', isla: 'Tenerife', duration: '370h', price: 'Gratuito', status: 'Matrícula abierta', statusColor: 'oklch(52% 0.14 150)', startDate: 'Septiembre 2026', slotId: 'curso-socorrismo', photo: '[FOTO: prácticas de socorrismo en piscina]', photoSrc: '../web/assets/curso-socorrismo-1200.webp', photoSrcset: '../web/assets/curso-socorrismo-800.webp 800w, ../web/assets/curso-socorrismo-1200.webp 1200w', photoAlt: 'Socorristas practicando una maniobra de rescate en el borde de una piscina', photoMissing: false },
+    { name: 'Inserción laboral de personas con discapacidad', type: 'Certificado de profesionalidad Nivel 3', modalidad: 'Presencial', isla: 'Gran Canaria', duration: '470h', price: 'Gratuito', status: 'Últimas plazas', statusColor: 'oklch(58% 0.17 40)', startDate: 'Agosto 2026', slotId: 'curso-insercion', photo: '[FOTO: sesión de orientación laboral]', photoSrc: null, photoSrcset: '', photoAlt: '', photoMissing: true },
+    { name: 'DESA · Desfibrilador semiautomático', type: 'Curso privado', modalidad: 'Presencial', isla: 'Gran Canaria', duration: 'Varias fechas', price: 'Privado', status: 'Matrícula abierta', statusColor: 'oklch(52% 0.14 150)', startDate: 'Varias fechas', slotId: 'curso-desa', photo: '[FOTO: práctica con desfibrilador]', photoSrc: '../web/assets/curso-desa-1200.webp', photoSrcset: '../web/assets/curso-desa-800.webp 800w, ../web/assets/curso-desa-1200.webp 1200w', photoAlt: 'Alumnado practicando una reanimación con desfibrilador semiautomático sobre un maniquí', photoMissing: false },
+    { name: 'Ofimática', type: 'Programa formativo', modalidad: 'Presencial', isla: 'Gran Canaria', duration: '100h', price: 'Gratuito', status: 'Próximamente', statusColor: 'oklch(45% 0.02 260)', startDate: 'Otoño 2026', slotId: 'curso-ofimatica', photo: '[FOTO: alumnado en aula de informática]', photoSrc: null, photoSrcset: '', photoAlt: '', photoMissing: true },
   ];
 
   profiles = [
@@ -340,10 +380,10 @@ class Component extends DCLogic {
   ];
 
   profileTilesBase = [
-    { label: 'Estoy desempleado/a', link: 'Ver formación', slotId: 'tile-desempleado', photo: '[FOTO: sesión de orientación laboral]' },
-    { label: 'Estoy trabajando', link: 'Ver formación bonificada', slotId: 'tile-ocupado', photo: '[FOTO: formación compatible con jornada laboral]' },
-    { label: 'Formación privada', link: 'Ver cursos', slotId: 'tile-privada', photo: '[FOTO: taller especializado curso privado]' },
-    { label: 'Estudiar online', link: 'Ver teleformación', slotId: 'tile-online', photo: '[FOTO: alumno en sesión de teleformación]' },
+    { label: 'Estoy desempleado/a', link: 'Ver formación', slotId: 'tile-desempleado', photo: '[FOTO: sesión de orientación laboral]', photoSrc: '../web/assets/tile-desempleado-700.webp', photoAlt: 'Persona en formación para el empleo, sonriendo junto a su portátil y apuntes', photoPos: 'center 15%', photoMissing: false },
+    { label: 'Estoy trabajando', link: 'Ver formación bonificada', slotId: 'tile-ocupado', photo: '[FOTO: formación compatible con jornada laboral]', photoSrc: '../web/assets/tile-trabajando-700.webp', photoAlt: 'Persona en formación profesional compatible con su jornada laboral', photoPos: 'center 15%', photoMissing: false },
+    { label: 'Formación privada', link: 'Ver cursos', slotId: 'tile-privada', photo: '[FOTO: taller especializado curso privado]', photoSrc: '../web/assets/tile-privada-900.webp', photoAlt: 'Formadora explicando liderazgo y trabajo en equipo a un grupo de profesionales en una sesión de formación privada', photoPos: '78% 30%', photoMissing: false },
+    { label: 'Estudiar online', link: 'Ver teleformación', slotId: 'tile-online', photo: '[FOTO: alumno en sesión de teleformación]', photoSrc: '../web/assets/tile-online-700.webp', photoAlt: 'Alumno siguiendo un curso de teleformación en Moodle desde su ordenador', photoPos: 'center 15%', photoMissing: false },
   ];
 
   stats = [
@@ -353,39 +393,39 @@ class Component extends DCLogic {
   ];
 
   valueProps = [
-    { index: '01', title: 'Orientado al empleo real', desc: 'Programas diseñados junto a empresas colaboradoras del sector.', slotId: 'vp-empleo', photo: '[FOTO: prácticas en empresa colaboradora]' },
-    { index: '02', title: 'Docentes especializados', desc: 'Formadores con experiencia práctica en cada área profesional.', slotId: 'vp-docentes', photo: '[FOTO: docente explicando en aula]' },
-    { index: '03', title: 'Prácticas en empresa', desc: 'Convenios que acercan al alumnado al mercado laboral canario.', slotId: 'vp-practicas', photo: '[FOTO: alumnado realizando prácticas reales]' },
-    { index: '04', title: 'Presencial y online', desc: 'Elige la modalidad que mejor encaja con tu día a día.', slotId: 'vp-modalidad', photo: '[FOTO: aula equipada y conexión de teleformación]' },
+    { index: '01', title: 'Orientado al empleo real', desc: 'Programas diseñados junto a empresas colaboradoras del sector.', slotId: 'vp-empleo', photo: '[FOTO: prácticas en empresa colaboradora]', photoSrc: '../web/assets/practicas-hosteleria-1200.webp', photoSrcset: '../web/assets/practicas-hosteleria-800.webp 800w, ../web/assets/practicas-hosteleria-1200.webp 1200w', photoAlt: 'Alumnado en prácticas de cocina en el restaurante escuela, junto al chef instructor', photoPos: 'center', photoMissing: false },
+    { index: '02', title: 'Docentes especializados', desc: 'Formadores con experiencia práctica en cada área profesional.', slotId: 'vp-docentes', photo: '[FOTO: docente explicando en aula]', photoSrc: '../web/assets/docentes-metodologia-1200.webp', photoSrcset: '../web/assets/docentes-metodologia-800.webp 800w, ../web/assets/docentes-metodologia-1200.webp 1200w', photoAlt: 'Docente explicando contenidos a una alumna en el aula', photoPos: 'center', photoMissing: false },
+    { index: '03', title: 'Prácticas en empresa', desc: 'Convenios que acercan al alumnado al mercado laboral canario.', slotId: 'vp-practicas', photo: '[FOTO: alumnado realizando prácticas reales]', photoSrc: '../web/assets/practicas-administracion-1200.webp', photoSrcset: '../web/assets/practicas-administracion-800.webp 800w, ../web/assets/practicas-administracion-1200.webp 1200w', photoAlt: 'Alumnado adulto realizando una práctica real de gestión administrativa en el aula', photoPos: 'center', photoMissing: false },
+    { index: '04', title: 'Presencial y online', desc: 'Elige la modalidad que mejor encaja con tu día a día.', slotId: 'vp-modalidad', photo: '[FOTO: aula equipada y conexión de teleformación]', photoSrc: null, photoSrcset: '', photoAlt: '', photoPos: 'center', photoMissing: true },
   ];
 
   sedeGroups = [
     { region: 'Gran Canaria', items: [
-      { city: 'Vecindario', address: 'Avenida de Canarias nº 380, Vecindario', phone: '928 75 51 05', slotId: 'sede-vecindario', photo: '[FOTO: fachada sede Vecindario]' },
-      { city: 'Maspalomas', address: 'Avenida de Gáldar s/n, Maspalomas', phone: '928 77 45 70', slotId: 'sede-maspalomas', photo: '[FOTO: fachada sede Maspalomas]' },
+      { city: 'Vecindario', address: 'Avenida de Canarias nº 380, Vecindario', phone: '928 75 51 05', slotId: 'sede-vecindario', photo: '[FOTO: fachada sede Vecindario]', photoSrc: '../web/assets/sede-vecindario-1200.webp', photoSrcset: '../web/assets/sede-vecindario-800.webp 800w, ../web/assets/sede-vecindario-1200.webp 1200w, ../web/assets/sede-vecindario-1920.webp 1920w', photoAlt: 'Fachada de la sede de Centro de Estudios Máster en Vecindario', photoMissing: false },
+      { city: 'Maspalomas', address: 'Avenida de Gáldar s/n, Maspalomas', phone: '928 77 45 70', slotId: 'sede-maspalomas', photo: '[FOTO: fachada sede Maspalomas]', photoSrc: '../web/assets/sede-maspalomas-1200.webp', photoSrcset: '../web/assets/sede-maspalomas-800.webp 800w, ../web/assets/sede-maspalomas-1200.webp 1200w', photoAlt: 'Fachada de la sede de Centro de Estudios Máster en Maspalomas', photoMissing: false },
     ]},
     { region: 'Tenerife', items: [
-      { city: 'Santa Cruz de Tenerife', address: 'Pérez de Rozas nº 35, Sta. Cruz de Tenerife', phone: '922 29 60 00', slotId: 'sede-santacruz', photo: '[FOTO: fachada sede Santa Cruz de Tenerife]' },
+      { city: 'Santa Cruz de Tenerife', address: 'Pérez de Rozas nº 35, Sta. Cruz de Tenerife', phone: '922 29 60 00', slotId: 'sede-santacruz', photo: '[FOTO: fachada sede Santa Cruz de Tenerife]', photoSrc: '../web/assets/sede-tenerife-1200.webp', photoSrcset: '../web/assets/sede-tenerife-800.webp 800w, ../web/assets/sede-tenerife-1200.webp 1200w', photoAlt: 'Fachada de la sede de Centro de Estudios Máster en Santa Cruz de Tenerife', photoMissing: false },
     ]},
   ];
 
   collabGroups = [
     { label: 'Organismos y financiadores', items: [
-      { name: '[LOGO: SEPE]', slotId: 'logo-sepe' },
-      { name: '[LOGO: Fondo Social Europeo / Next Gen UE]', slotId: 'logo-fse' },
+      { name: '[LOGO: SEPE]', slotId: 'logo-sepe', photoSrc: '../web/assets/logo-sepe.png', photoAlt: 'Servicio Público de Empleo Estatal (SEPE)', photoMissing: false },
+      { name: '[LOGO: Fondo Social Europeo / Next Gen UE]', slotId: 'logo-fse', photoSrc: '../web/assets/logo-fse.png', photoAlt: 'Financiado por la Unión Europea — NextGenerationEU', photoMissing: false },
     ]},
     { label: 'Administraciones', items: [
-      { name: '[LOGO: Servicio Canario de Empleo]', slotId: 'logo-sce' },
-      { name: '[LOGO: PIEC]', slotId: 'logo-piec' },
+      { name: '[LOGO: Servicio Canario de Empleo]', slotId: 'logo-sce', photoSrc: '../web/assets/logo-sce.png', photoAlt: 'Gobierno de Canarias — Servicio Canario de Empleo', photoMissing: false },
+      { name: '[LOGO: PIEC]', slotId: 'logo-piec', photoSrc: null, photoAlt: '', photoMissing: true },
     ]},
     { label: 'Entidades colaboradoras', items: [
-      { name: '[LOGO: Cruz Roja]', slotId: 'logo-cruzroja' },
-      { name: '[LOGO: Opciónate]', slotId: 'logo-opcionate' },
-      { name: '[LOGO: Desarrollo Social]', slotId: 'logo-desarrollosocial' },
-      { name: '[LOGO: A ti Mujer]', slotId: 'logo-atimujer' },
+      { name: '[LOGO: Cruz Roja]', slotId: 'logo-cruzroja', photoSrc: '../web/assets/logo-cruzroja.png', photoAlt: 'Cruz Roja', photoMissing: false },
+      { name: '[LOGO: Opciónate]', slotId: 'logo-opcionate', photoSrc: '../web/assets/logo-opcionate.png', photoAlt: 'Opciónate — mejora tu vida, mejora el mundo', photoMissing: false },
+      { name: '[LOGO: Desarrollo Social]', slotId: 'logo-desarrollosocial', photoSrc: '../web/assets/logo-desarrollosocial.png', photoAlt: 'Desarrollo Social', photoMissing: false },
+      { name: '[LOGO: A ti Mujer]', slotId: 'logo-atimujer', photoSrc: '../web/assets/logo-atimujer.png', photoAlt: 'A ti Mujer — apoyo integral a la mujer', photoMissing: false },
     ]},
     { label: 'Certificación de calidad', items: [
-      { name: '[LOGO: ISO 9001 · Kiwa]', slotId: 'logo-iso' },
+      { name: '[LOGO: ISO 9001 · Kiwa]', slotId: 'logo-iso', photoSrc: null, photoAlt: '', photoMissing: true },
     ]},
   ];
 

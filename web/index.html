@@ -30,7 +30,6 @@
   @media (prefers-reduced-motion: reduce){ *{animation-duration:0.001ms !important; transition-duration:0.001ms !important; transition:none !important;} }
 
   header{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:16px 56px;background:oklch(99.5% 0.004 85 / 0.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
-  .logo-slot{width:150px;height:38px;flex-shrink:0;border:1.5px dashed oklch(80% 0.01 85);border-radius:8px;}
   nav.sitenav{display:flex;align-items:center;gap:28px;flex-shrink:1;min-width:0;}
   .nav-primary{display:flex;align-items:center;gap:28px;}
   nav a{white-space:nowrap;font-size:15px;font-weight:500;color:var(--ink);}
@@ -168,7 +167,6 @@
 
   footer{padding:64px 56px 32px;background:var(--dark);color:oklch(85% 0.008 260);}
   .footer-grid{display:grid;grid-template-columns:1.3fr repeat(4,1fr);gap:32px;margin-bottom:48px;}
-  .footer-logo-slot{width:150px;height:38px;margin-bottom:16px;border:1.5px dashed oklch(40% 0.02 260);border-radius:8px;}
   .footer-grid p{font-size:13.5px;line-height:1.6;color:oklch(65% 0.01 260);max-width:260px;margin:0 0 16px;}
   .social-row{display:flex;gap:14px;}
   .social-row a{font-size:13px;color:oklch(75% 0.01 260);}
@@ -202,7 +200,7 @@
 <div class="wrap" data-screen-label="Home V2">
 
   <header>
-    <div class="logo-slot" title="[LOGO: Centro de Estudios Máster]"></div>
+    <img src="assets/logo-cem.png" alt="Centro de Estudios Máster" style="width:150px;height:38px;flex-shrink:0;object-fit:contain;" loading="eager" decoding="async">
     <nav class="sitenav">
       <span class="nav-primary">
         <a href="#cursos">Formación ⌄</a>
@@ -216,7 +214,12 @@
   </header>
 
   <section class="hero">
-    <div class="ph"><span>[FOTO: alumnado y docente en taller práctico]</span></div>
+    <img src="assets/hero-1200.webp"
+         srcset="assets/hero-800.webp 800w, assets/hero-1200.webp 1200w, assets/hero-1920.webp 1920w"
+         sizes="100vw"
+         alt="Grupo de alumnado y formadores trabajando juntos en una sesión de formación práctica"
+         style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 35%;"
+         loading="eager" fetchpriority="high" decoding="async">
     <div class="hero-scrim"></div>
     <div class="hero-text">
       <div class="hero-tag">+25 años formando en Canarias</div>
@@ -284,15 +287,20 @@
     <h2>Encuentra la formación que encaja contigo</h2>
     <p>Elige tu situación y te llevamos directamente a la oferta correspondiente.</p>
     <div class="tiles-grid">
-      <a href="#" class="tile"><div class="ph"><span>[FOTO: sesión de orientación laboral]</span></div><div class="tile-scrim"></div><div class="tile-copy"><h3>Estoy desempleado/a</h3><span>Ver formación →</span></div></a>
-      <a href="#" class="tile"><div class="ph"><span>[FOTO: formación compatible con jornada laboral]</span></div><div class="tile-scrim"></div><div class="tile-copy"><h3>Estoy trabajando</h3><span>Ver formación bonificada →</span></div></a>
-      <a href="#" class="tile"><div class="ph"><span>[FOTO: taller especializado curso privado]</span></div><div class="tile-scrim"></div><div class="tile-copy"><h3>Formación privada</h3><span>Ver cursos →</span></div></a>
-      <a href="#" class="tile"><div class="ph"><span>[FOTO: alumno en sesión de teleformación]</span></div><div class="tile-scrim"></div><div class="tile-copy"><h3>Estudiar online</h3><span>Ver teleformación →</span></div></a>
+      <a href="#" class="tile"><img src="assets/tile-desempleado-700.webp" alt="Persona en formación para el empleo, sonriendo junto a su portátil y apuntes" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 15%;" loading="lazy" decoding="async"><div class="tile-scrim"></div><div class="tile-copy"><h3>Estoy desempleado/a</h3><span>Ver formación →</span></div></a>
+      <a href="#" class="tile"><img src="assets/tile-trabajando-700.webp" alt="Persona en formación profesional compatible con su jornada laboral" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 15%;" loading="lazy" decoding="async"><div class="tile-scrim"></div><div class="tile-copy"><h3>Estoy trabajando</h3><span>Ver formación bonificada →</span></div></a>
+      <a href="#" class="tile"><img src="assets/tile-privada-900.webp" alt="Formadora explicando liderazgo y trabajo en equipo a un grupo de profesionales en una sesión de formación privada" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:78% 30%;" loading="lazy" decoding="async"><div class="tile-scrim"></div><div class="tile-copy"><h3>Formación privada</h3><span>Ver cursos →</span></div></a>
+      <a href="#" class="tile"><img src="assets/tile-online-700.webp" alt="Alumno siguiendo un curso de teleformación en Moodle desde su ordenador" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 15%;" loading="lazy" decoding="async"><div class="tile-scrim"></div><div class="tile-copy"><h3>Estudiar online</h3><span>Ver teleformación →</span></div></a>
     </div>
   </section>
 
   <section class="trust-section" id="nosotros">
-    <div class="ph"><span>[FOTO: grupo de alumnado en aula, plano abierto]</span></div>
+    <img src="assets/confianza-1200.webp"
+         srcset="assets/confianza-800.webp 800w, assets/confianza-1200.webp 1200w, assets/confianza-1920.webp 1920w"
+         sizes="100vw"
+         alt="Grupo de alumnado en una sesión formativa en el aula"
+         style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 40%;"
+         loading="lazy" decoding="async">
     <div class="trust-scrim"></div>
     <div class="trust-copy">
       <h2>Un centro consolidado, pensado para el empleo real</h2>
@@ -312,15 +320,15 @@
     </div>
 
     <div class="vp-row">
-      <div class="ph vp-photo"><span>[FOTO: prácticas en empresa colaboradora]</span></div>
+      <img class="vp-photo" src="assets/practicas-hosteleria-1200.webp" srcset="assets/practicas-hosteleria-800.webp 800w, assets/practicas-hosteleria-1200.webp 1200w" sizes="(max-width: 1180px) 90vw, 45vw" alt="Alumnado en prácticas de cocina en el restaurante escuela, junto al chef instructor" style="object-fit:cover;object-position:center;" loading="lazy" decoding="async">
       <div><div class="vp-index">01</div><h3>Orientado al empleo real</h3><p>Programas diseñados junto a empresas colaboradoras del sector.</p></div>
     </div>
     <div class="vp-row">
-      <div class="ph vp-photo"><span>[FOTO: docente explicando en aula]</span></div>
+      <img class="vp-photo" src="assets/docentes-metodologia-1200.webp" srcset="assets/docentes-metodologia-800.webp 800w, assets/docentes-metodologia-1200.webp 1200w" sizes="(max-width: 1180px) 90vw, 45vw" alt="Docente explicando contenidos a una alumna en el aula" style="object-fit:cover;object-position:center;" loading="lazy" decoding="async">
       <div><div class="vp-index">02</div><h3>Docentes especializados</h3><p>Formadores con experiencia práctica en cada área profesional.</p></div>
     </div>
     <div class="vp-row">
-      <div class="ph vp-photo"><span>[FOTO: alumnado realizando prácticas reales]</span></div>
+      <img class="vp-photo" src="assets/practicas-administracion-1200.webp" srcset="assets/practicas-administracion-800.webp 800w, assets/practicas-administracion-1200.webp 1200w" sizes="(max-width: 1180px) 90vw, 45vw" alt="Alumnado adulto realizando una práctica real de gestión administrativa en el aula" style="object-fit:cover;object-position:center;" loading="lazy" decoding="async">
       <div><div class="vp-index">03</div><h3>Prácticas en empresa</h3><p>Convenios que acercan al alumnado al mercado laboral canario.</p></div>
     </div>
     <div class="vp-row">
@@ -342,7 +350,7 @@
       <div class="sede-group-head"><i></i><span>Gran Canaria</span></div>
       <div class="sede-list">
         <div class="sede-split">
-          <div class="ph"><span>[FOTO: fachada sede Vecindario]</span></div>
+          <img src="assets/sede-vecindario-1200.webp" srcset="assets/sede-vecindario-800.webp 800w, assets/sede-vecindario-1200.webp 1200w, assets/sede-vecindario-1920.webp 1920w" sizes="(max-width: 1180px) 100vw, 50vw" alt="Fachada de la sede de Centro de Estudios Máster en Vecindario" style="width:100%;height:100%;object-fit:cover;object-position:center;" loading="lazy" decoding="async">
           <div class="body">
             <h3>Vecindario</h3>
             <p>Avenida de Canarias nº 380, Vecindario</p>
@@ -351,7 +359,7 @@
           </div>
         </div>
         <div class="sede-split">
-          <div class="ph"><span>[FOTO: fachada sede Maspalomas]</span></div>
+          <img src="assets/sede-maspalomas-1200.webp" srcset="assets/sede-maspalomas-800.webp 800w, assets/sede-maspalomas-1200.webp 1200w" sizes="(max-width: 1180px) 100vw, 50vw" alt="Fachada de la sede de Centro de Estudios Máster en Maspalomas" style="width:100%;height:100%;object-fit:cover;object-position:center;" loading="lazy" decoding="async">
           <div class="body">
             <h3>Maspalomas</h3>
             <p>Avenida de Gáldar s/n, Maspalomas</p>
@@ -366,7 +374,7 @@
       <div class="sede-group-head"><i></i><span>Tenerife</span></div>
       <div class="sede-list">
         <div class="sede-split">
-          <div class="ph"><span>[FOTO: fachada sede Santa Cruz de Tenerife]</span></div>
+          <img src="assets/sede-tenerife-1200.webp" srcset="assets/sede-tenerife-800.webp 800w, assets/sede-tenerife-1200.webp 1200w" sizes="(max-width: 1180px) 100vw, 50vw" alt="Fachada de la sede de Centro de Estudios Máster en Santa Cruz de Tenerife" style="width:100%;height:100%;object-fit:cover;object-position:center;" loading="lazy" decoding="async">
           <div class="body">
             <h3>Santa Cruz de Tenerife</h3>
             <p>Pérez de Rozas nº 35, Sta. Cruz de Tenerife</p>
@@ -387,24 +395,24 @@
       <div class="collab-group">
         <div class="collab-group-label">Organismos y financiadores</div>
         <div class="collab-logos">
-          <div class="collab-logo"><span>[LOGO: SEPE]</span></div>
-          <div class="collab-logo"><span>[LOGO: Fondo Social Europeo / Next Gen UE]</span></div>
+          <img class="collab-logo" style="border:none;object-fit:contain;" src="assets/logo-sepe.png" alt="Servicio Público de Empleo Estatal (SEPE)" loading="lazy" decoding="async">
+          <img class="collab-logo" style="border:none;object-fit:contain;" src="assets/logo-fse.png" alt="Financiado por la Unión Europea — NextGenerationEU" loading="lazy" decoding="async">
         </div>
       </div>
       <div class="collab-group">
         <div class="collab-group-label">Administraciones</div>
         <div class="collab-logos">
-          <div class="collab-logo"><span>[LOGO: Servicio Canario de Empleo]</span></div>
+          <img class="collab-logo" style="border:none;object-fit:contain;" src="assets/logo-sce.png" alt="Gobierno de Canarias — Servicio Canario de Empleo" loading="lazy" decoding="async">
           <div class="collab-logo"><span>[LOGO: PIEC]</span></div>
         </div>
       </div>
       <div class="collab-group">
         <div class="collab-group-label">Entidades colaboradoras</div>
         <div class="collab-logos">
-          <div class="collab-logo"><span>[LOGO: Cruz Roja]</span></div>
-          <div class="collab-logo"><span>[LOGO: Opciónate]</span></div>
-          <div class="collab-logo"><span>[LOGO: Desarrollo Social]</span></div>
-          <div class="collab-logo"><span>[LOGO: A ti Mujer]</span></div>
+          <img class="collab-logo" style="border:none;object-fit:contain;" src="assets/logo-cruzroja.png" alt="Cruz Roja" loading="lazy" decoding="async">
+          <img class="collab-logo" style="border:none;object-fit:contain;" src="assets/logo-opcionate.png" alt="Opciónate — mejora tu vida, mejora el mundo" loading="lazy" decoding="async">
+          <img class="collab-logo" style="border:none;object-fit:contain;" src="assets/logo-desarrollosocial.png" alt="Desarrollo Social" loading="lazy" decoding="async">
+          <img class="collab-logo" style="border:none;object-fit:contain;" src="assets/logo-atimujer.png" alt="A ti Mujer — apoyo integral a la mujer" loading="lazy" decoding="async">
         </div>
       </div>
       <div class="collab-group">
@@ -428,7 +436,7 @@
   <footer id="contacto">
     <div class="footer-grid">
       <div>
-        <div class="footer-logo-slot" title="[LOGO: Centro de Estudios Máster]"></div>
+        <img src="assets/logo-cem.png" alt="Centro de Estudios Máster" style="width:150px;height:38px;margin-bottom:16px;object-fit:contain;" loading="lazy" decoding="async">
         <p>Formación para el empleo en Canarias desde hace más de 25 años.</p>
         <div class="social-row">
           <a href="https://www.instagram.com/centrodeestudiosmaster/">Instagram</a>
@@ -463,15 +471,22 @@
 
 <script>
   var COURSES = [
-    { name: 'Socorrismo en instalaciones acuáticas', type: 'Certificado de profesionalidad Nivel 2', modalidad: 'Presencial', isla: 'Tenerife', duration: '370h', price: 'Gratuito', status: 'Matrícula abierta', statusColor: 'oklch(52% 0.14 150)', startDate: 'Septiembre 2026', photo: '[FOTO: prácticas de socorrismo en piscina]' },
-    { name: 'Inserción laboral de personas con discapacidad', type: 'Certificado de profesionalidad Nivel 3', modalidad: 'Presencial', isla: 'Gran Canaria', duration: '470h', price: 'Gratuito', status: 'Últimas plazas', statusColor: 'oklch(58% 0.17 40)', startDate: 'Agosto 2026', photo: '[FOTO: sesión de orientación laboral]' },
-    { name: 'DESA · Desfibrilador semiautomático', type: 'Curso privado', modalidad: 'Presencial', isla: 'Gran Canaria', duration: 'Varias fechas', price: 'Privado', status: 'Matrícula abierta', statusColor: 'oklch(52% 0.14 150)', startDate: 'Varias fechas', photo: '[FOTO: práctica con desfibrilador]' },
-    { name: 'Ofimática', type: 'Programa formativo', modalidad: 'Presencial', isla: 'Gran Canaria', duration: '100h', price: 'Gratuito', status: 'Próximamente', statusColor: 'oklch(45% 0.02 260)', startDate: 'Otoño 2026', photo: '[FOTO: alumnado en aula de informática]' },
+    { name: 'Socorrismo en instalaciones acuáticas', type: 'Certificado de profesionalidad Nivel 2', modalidad: 'Presencial', isla: 'Tenerife', duration: '370h', price: 'Gratuito', status: 'Matrícula abierta', statusColor: 'oklch(52% 0.14 150)', startDate: 'Septiembre 2026', photo: '[FOTO: prácticas de socorrismo en piscina]', photoSrc: 'assets/curso-socorrismo-1200.webp', photoSrcset: 'assets/curso-socorrismo-800.webp 800w, assets/curso-socorrismo-1200.webp 1200w', photoAlt: 'Socorristas practicando una maniobra de rescate en el borde de una piscina' },
+    { name: 'Inserción laboral de personas con discapacidad', type: 'Certificado de profesionalidad Nivel 3', modalidad: 'Presencial', isla: 'Gran Canaria', duration: '470h', price: 'Gratuito', status: 'Últimas plazas', statusColor: 'oklch(58% 0.17 40)', startDate: 'Agosto 2026', photo: '[FOTO: sesión de orientación laboral]', photoSrc: null, photoSrcset: '', photoAlt: '' },
+    { name: 'DESA · Desfibrilador semiautomático', type: 'Curso privado', modalidad: 'Presencial', isla: 'Gran Canaria', duration: 'Varias fechas', price: 'Privado', status: 'Matrícula abierta', statusColor: 'oklch(52% 0.14 150)', startDate: 'Varias fechas', photo: '[FOTO: práctica con desfibrilador]', photoSrc: 'assets/curso-desa-1200.webp', photoSrcset: 'assets/curso-desa-800.webp 800w, assets/curso-desa-1200.webp 1200w', photoAlt: 'Alumnado practicando una reanimación con desfibrilador semiautomático sobre un maniquí' },
+    { name: 'Ofimática', type: 'Programa formativo', modalidad: 'Presencial', isla: 'Gran Canaria', duration: '100h', price: 'Gratuito', status: 'Próximamente', statusColor: 'oklch(45% 0.02 260)', startDate: 'Otoño 2026', photo: '[FOTO: alumnado en aula de informática]', photoSrc: null, photoSrcset: '', photoAlt: '' },
   ];
+
+  function coursePhotoHTML(c, sizes) {
+    if (c.photoSrc) {
+      return '<img src="' + c.photoSrc + '" srcset="' + c.photoSrcset + '" sizes="' + sizes + '" alt="' + c.photoAlt + '" style="width:100%;height:100%;object-fit:cover;object-position:center;" loading="lazy" decoding="async">';
+    }
+    return '<div class="ph" style="width:100%;height:100%;"><span>' + c.photo + '</span></div>';
+  }
 
   function featuredCardHTML(c) {
     return '<div class="course-featured">' +
-      '<div class="photo ph"><span class="course-status" style="background:' + c.statusColor + '">' + c.status + '</span><span>' + c.photo + '</span></div>' +
+      '<div class="photo">' + coursePhotoHTML(c, '(max-width: 1180px) 90vw, 55vw') + '<span class="course-status" style="background:' + c.statusColor + '">' + c.status + '</span></div>' +
       '<div class="body">' +
         '<div class="tag-row"><span class="tag-modalidad">' + c.modalidad + '</span><span class="tag-isla">' + c.isla + '</span></div>' +
         '<h3>' + c.name + '</h3>' +
@@ -483,7 +498,7 @@
   }
   function secondaryCardHTML(c) {
     return '<div class="course-secondary">' +
-      '<div class="ph"><span>' + c.photo + '</span></div>' +
+      coursePhotoHTML(c, '120px') +
       '<div class="body">' +
         '<div class="meta-row"><b style="color:' + c.statusColor + '">' + c.status + '</b><span style="color:oklch(60% 0.01 260)">· ' + c.modalidad + ' · ' + c.isla + '</span></div>' +
         '<h3>' + c.name + '</h3>' +

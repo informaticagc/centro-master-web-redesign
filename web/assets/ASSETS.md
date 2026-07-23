@@ -16,6 +16,18 @@ Generados con [sharp](https://sharp.pixelplumbing.com/) — fotografías a WebP 
 |---|---|---|---|---|---|
 | `logo-sepe.png` | `recursos/organismos/logo_SEPE.jpg` | Logo colaborador SEPE | 1206×250 | PNG (paleta) | 57.9 KB |
 | `logo-sce.png` | `recursos/organismos/logo_SCE.JPG` | Logo colaborador Servicio Canario de Empleo | 700×243 | PNG (paleta) | 23.2 KB |
+| `logo-fse.png` | `recursos/marca/logo FSE_Next Generation EU.png` | Logo colaborador Fondo Social Europeo / Next Generation EU | 700×183 | PNG (alpha) | 50.1 KB |
+
+## Colaboradores
+
+| Archivo final | Origen | Uso previsto | Dimensiones | Formato | Peso |
+|---|---|---|---|---|---|
+| `logo-cruzroja.png` | `recursos/colaboradores/cruz roja.png` | Logo colaborador Cruz Roja | 745×232 | PNG (paleta) | 6.2 KB |
+| `logo-opcionate.png` | `recursos/colaboradores/opcionate.png` | Logo colaborador Opciónate | 742×150 | PNG (paleta) | 12.0 KB |
+| `logo-desarrollosocial.png` | `recursos/colaboradores/desarrollo social.png` | Logo colaborador Desarrollo Social | 498×277 | PNG (alpha) | 48.8 KB |
+| `logo-atimujer.png` | `recursos/colaboradores/a ti mujer.jpg` | Logo colaborador A ti Mujer | 912×456 | PNG (paleta) | 113.3 KB |
+
+*(`logo-atimujer.png` pesa más que su original JPEG de 64 KB: la regla de no servir logos en JPEG obliga a reencodear a PNG, y el degradado/sombra ya presente en el JPEG de origen no cuantiza tan bien como un gráfico plano. Sigue siendo un peso razonable para un logo — no requiere una segunda pasada.)*
 
 ## Hero
 
@@ -67,6 +79,17 @@ Generados con [sharp](https://sharp.pixelplumbing.com/) — fotografías a WebP 
 
 *(Sin variante 1920 en ninguna: el original, 1536 px, es más estrecho.)*
 
+## Cursos destacados
+
+| Archivo final | Origen | Uso previsto | Dimensiones | Formato | Peso |
+|---|---|---|---|---|---|
+| `curso-socorrismo-800.webp` | `recursos/fotografias/alumnado/socorrismopiscina.png` | Curso "Socorrismo en instalaciones acuáticas" — mobile/tablet | 800×533 | WebP q82 | 77.1 KB |
+| `curso-socorrismo-1200.webp` | ídem | Curso "Socorrismo en instalaciones acuáticas" — desktop | 1200×800 | WebP q82 | 136.9 KB |
+| `curso-desa-800.webp` | `recursos/fotografias/alumnado/DESAdesfibrilador.png` | Curso "DESA · Desfibrilador semiautomático" — mobile/tablet | 800×600 | WebP q82 | 52.7 KB |
+| `curso-desa-1200.webp` | ídem | Curso "DESA · Desfibrilador semiautomático" — desktop | 1200×900 | WebP q82 | 91.8 KB |
+
+*(Sin variante 1920 en ninguna: los originales, 1536 px y 1448 px, son más estrechos. Ambas fotos sirven tanto para la tarjeta destacada (16:10) como para la miniatura secundaria (120px), según qué curso quede primero al filtrar.)*
+
 ## Tiles de perfil ("Encuentra la formación que encaja")
 
 | Archivo final | Origen | Uso previsto | Dimensiones | Formato | Peso |
@@ -74,8 +97,9 @@ Generados con [sharp](https://sharp.pixelplumbing.com/) — fotografías a WebP 
 | `tile-desempleado-700.webp` | `recursos/fotografias/formacion/Estoy desempleado.png` | Tile "Estoy desempleado/a" | 700×1050 | WebP q82 | 71.0 KB |
 | `tile-trabajando-700.webp` | `recursos/fotografias/formacion/Estoy trabajando.png` | Tile "Estoy trabajando" | 700×1050 | WebP q82 | 64.7 KB |
 | `tile-online-700.webp` | `recursos/fotografias/formacion/Quiero estudiar online.png` | Tile "Estudiar online" | 700×1050 | WebP q82 | 56.4 KB |
+| `tile-privada-900.webp` | `recursos/fotografias/formacion/formacion privada.png` | Tile "Formación privada" | 900×600 | WebP q82 | 69.5 KB |
 
-Se conserva el encuadre completo del original (proporción 2:3) en un único tamaño; el recorte visual al 3:4 del slot se resuelve en CSS (`object-fit`), no de forma destructiva sobre el archivo.
+Se conserva el encuadre completo del original en un único tamaño; el recorte visual al 3:4 del slot se resuelve en CSS (`object-fit`/`object-position`), no de forma destructiva sobre el archivo. `tile-privada-900.webp` procede de una foto horizontal (3:2) — a diferencia de las otras tres, que ya son verticales — por lo que requiere un `object-position` deliberadamente desplazado a la derecha para conservar a la formadora y la pantalla dentro del recorte (ver nota de encuadre en el informe de integración).
 
 ---
 
@@ -83,10 +107,12 @@ Se conserva el encuadre completo del original (proporción 2:3) en un único tam
 
 | | Peso |
 |---|---|
-| Originales seleccionados (14 archivos, banco `/recursos`) | 21.80 MB |
-| Assets finales generados (25 archivos, `/web/assets`) | 2.33 MB |
-| **Reducción** | **≈ 89.3 %** |
+| Originales seleccionados — 1ª tanda (14 archivos) | 21.80 MB |
+| Originales seleccionados — 2ª tanda (8 archivos: socorrismo, DESA, formación privada, FSE, Cruz Roja, Opciónate, Desarrollo Social, A ti Mujer) | 6.93 MB |
+| **Originales seleccionados, total (22 archivos, banco `/recursos`)** | **28.72 MB** |
+| Assets finales generados (35 imágenes, `/web/assets`) | 2.97 MB |
+| **Reducción** | **≈ 89.7 %** |
 
 ## Pendiente para más adelante (no incluido en esta selección)
 
-No se han copiado recursos marcados como "Falta" o de adecuación dudosa en la auditoría previa (socorrismo, DESA, formación privada, logos de Cruz Roja/Opciónate/Desarrollo Social/A ti Mujer/FSE-Next Gen, PIEC individual, sellos de certificación individuales). Se incorporarán cuando exista material adecuado.
+Siguen sin recurso adecuado y se conservan como placeholder: VP "Presencial y online" (aula equipada/teleformación), logo PIEC individual, logo ISO 9001 con la entidad certificadora correcta (el sello disponible es "ISO 9001 · SGS", no "Kiwa"), testimonio de alumnado egresado y el dato del número total de sedes activas. Se incorporarán cuando exista material o dato adecuado — no se ha forzado ninguno.
