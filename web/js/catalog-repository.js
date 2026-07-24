@@ -5,6 +5,15 @@
  * conocimiento, FAQ, sinónimos). Nadie más (Home, buscador, asistente) debe
  * leer los JSON directamente: todos pasan por esta API.
  *
+ * web/data/cursos.json es un fichero público servido tal cual por HTTP
+ * (GitHub Pages, o cualquier fetch directo): NO debe contener nunca campos
+ * internos (bloque 'administrativo', trazabilidad 'origenLegacy', etc.) —
+ * ese contenido vive en /data-internal/ (fuera de git, ver
+ * /data-internal/README.md). Por eso esta capa ya no necesita ninguna
+ * lógica de "quitar campos internos de la respuesta": si algún día vuelve a
+ * aparecer un campo interno en el JSON público, es un error en los datos,
+ * no algo que este módulo deba enmascarar en tiempo de ejecución.
+ *
  * Hoy el origen de datos son ficheros JSON estáticos bajo /web/data/. El día
  * de mañana ese origen puede cambiar (API HTTP, SharePoint, base de datos)
  * sustituyendo únicamente las funciones internas de carga (_loadRaw) — la
@@ -33,6 +42,15 @@
 })(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
 
+  // Debe capturarse aquí, en la ejecución síncrona inicial del propio módulo:
+  // document.currentScript solo apunta a este <script> mientras se está
+  // evaluando; en cualquier llamada posterior a la API (getAll, search...),
+  // que ocurre desde el script del consumidor, currentScript ya sería el de
+  // ese consumidor (o null), no el de catalog-repository.js.
+  var _selfScriptSrc = (typeof document !== 'undefined' && document.currentScript)
+    ? document.currentScript.src
+    : null;
+
   var DATA_FILES = {
     cursos: 'cursos.json',
     sedes: 'sedes.json',
@@ -58,8 +76,8 @@
 
   function resolveDataBaseUrl() {
     if (_baseUrlOverride) return _baseUrlOverride;
-    if (typeof document !== 'undefined' && document.currentScript && document.currentScript.src) {
-      return new URL('../data/', document.currentScript.src).href;
+    if (_selfScriptSrc) {
+      return new URL('../data/', _selfScriptSrc).href;
     }
     // Fallback Node / entorno sin document.currentScript (p.ej. import dinámico).
     return './data/';
@@ -138,17 +156,6 @@
     return (data.cursos && data.cursos.estadosPublicos) || DEFAULT_PUBLIC_STATES;
   }
 
-  /** Quita el bloque 'administrativo' (información interna) de un curso. */
-  function _stripAdministrative(curso) {
-    var copy = {};
-    for (var k in curso) {
-      if (Object.prototype.hasOwnProperty.call(curso, k) && k !== 'administrativo' && k !== 'origenLegacy') {
-        copy[k] = curso[k];
-      }
-    }
-    return copy;
-  }
-
   function _normalize(str) {
     return (str || '')
       .toString()
@@ -159,16 +166,14 @@
   }
 
   /**
-   * getAll({ includeInternal }) → todos los cursos, cualquiera que sea su
-   * estado (incluye 'borrador'/'archivado'). Uso interno/futura
-   * administración. La UI pública nunca debería llamar a esto directamente:
-   * usa getPublicCourses().
+   * getAll() → todos los cursos del origen público, cualquiera que sea su
+   * estado (incluye 'borrador'/'archivado'). El origen (web/data/cursos.json)
+   * ya no contiene ningún campo interno — no hay nada que filtrar aquí. La
+   * UI pública normal debería usar getPublicCourses(), no esto.
    */
-  function getAll(options) {
-    options = options || {};
+  function getAll() {
     return load().then(function (data) {
-      var cursos = data.cursos.cursos || [];
-      return options.includeInternal ? cursos.slice() : cursos.map(_stripAdministrative);
+      return (data.cursos.cursos || []).slice();
     });
   }
 
@@ -176,21 +181,18 @@
     return load().then(function (data) {
       var estadosPublicos = _publicStates(data);
       return (data.cursos.cursos || [])
-        .filter(function (c) { return estadosPublicos.indexOf(c.estado) !== -1; })
-        .map(_stripAdministrative);
+        .filter(function (c) { return estadosPublicos.indexOf(c.estado) !== -1; });
     });
   }
 
-  function getById(id, options) {
-    options = options || {};
-    return getAll(options).then(function (cursos) {
+  function getById(id) {
+    return getAll().then(function (cursos) {
       return cursos.find(function (c) { return c.id === id; }) || null;
     });
   }
 
-  function getBySlug(slug, options) {
-    options = options || {};
-    return getAll(options).then(function (cursos) {
+  function getBySlug(slug) {
+    return getAll().then(function (cursos) {
       return cursos.find(function (c) { return c.slug === slug; }) || null;
     });
   }
@@ -253,8 +255,7 @@
         .filter(function (c) {
           if (!filtros.tipoPrecio) return true;
           return c.tipoPrecio === filtros.tipoPrecio;
-        })
-        .map(_stripAdministrative);
+        });
     });
   }
 

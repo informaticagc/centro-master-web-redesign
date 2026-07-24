@@ -1,7 +1,7 @@
 {
-  "version": "1.1",
+  "version": "1.2",
   "actualizado": "2026-07-24",
-  "notas": "Migración inicial desde los arrays hardcodeados de design/Home.dc.html y web/index.html. Ningún dato ausente en el origen ha sido inventado: se usa null, [] o un campo *Aproximada/*Texto cuando el original no tenía precisión suficiente. El objeto 'origenLegacy' conserva literalmente los campos del array original para trazabilidad de la migración. 'situacionDestinataria' se deja vacío ([]) en esta migración: la regla antigua 'gratuito ⇒ desempleado+ocupado' era una simplificación identificada como incorrecta en la auditoría, y NO se ha promovido a regla de negocio real — solo sobrevive dentro de 'origenLegacy.price' como dato histórico. Cada curso declara en 'administrativo.pendientesVerificacion' qué campos siguen necesitando confirmación humana antes de publicarse como definitivos.",
+  "notas": "Fichero público — solo campos destinados a Home, catálogo, buscador, fichas y asistente. Ningún dato ausente en el origen ha sido inventado: se usa null, [] o un campo *Aproximada/*Texto cuando el original no tenía precisión suficiente. 'situacionDestinataria' se deja vacío ([]) en esta migración: la regla antigua 'gratuito ⇒ desempleado+ocupado' era una simplificación identificada como incorrecta en la auditoría, y NO se ha promovido a regla de negocio real. Los bloques 'administrativo' y 'origenLegacy' que existían en versiones anteriores de este fichero se han movido a /data-internal/cursos-administrativo.json (no trackeado en git, no servido por Pages) — este fichero público ya no debe volver a contenerlos.",
   "estadosPermitidos": ["borrador", "proximamente", "matricula-abierta", "ultimas-plazas", "en-curso", "finalizado", "archivado"],
   "estadosPublicos": ["proximamente", "matricula-abierta", "ultimas-plazas", "en-curso"],
   "cursos": [
@@ -15,7 +15,8 @@
       "imagen": {
         "src": "assets/curso-socorrismo-1200.webp",
         "srcset": "assets/curso-socorrismo-800.webp 800w, assets/curso-socorrismo-1200.webp 1200w",
-        "alt": "Socorristas practicando una maniobra de rescate en el borde de una piscina"
+        "alt": "Socorristas practicando una maniobra de rescate en el borde de una piscina",
+        "objectPosition": null
       },
       "familiaProfesional": null,
       "situacionDestinataria": [],
@@ -28,6 +29,7 @@
       "requisitos": [],
       "nivel": "nivel-2",
       "certificacion": "Certificado de profesionalidad",
+      "tipoFormacion": "Certificado de profesionalidad Nivel 2",
       "duracionHoras": 370,
       "duracionTexto": null,
       "fechaInicio": null,
@@ -45,30 +47,7 @@
       "destacado": null,
       "orden": 1,
       "urlFicha": null,
-      "palabrasClave": ["socorrismo", "instalaciones", "acuaticas"],
-      "administrativo": {
-        "convocatoriaPrograma": null,
-        "entidadFinanciadora": null,
-        "numeroExpediente": null,
-        "plazasTotal": null,
-        "metadatos": { "creadoEn": null, "actualizadoEn": null, "autor": null },
-        "pendientesVerificacion": [
-          "situacionDestinataria", "municipio", "sedeId", "requisitos",
-          "fechaInicio", "fechaFin", "descripcionCorta", "descripcionCompleta",
-          "horario", "ayudasBecas", "documentacionNecesaria", "urlFicha"
-        ]
-      },
-      "origenLegacy": {
-        "slotId": "curso-socorrismo",
-        "type": "Certificado de profesionalidad Nivel 2",
-        "modalidad": "Presencial",
-        "isla": "Tenerife",
-        "duration": "370h",
-        "price": "Gratuito",
-        "status": "Matrícula abierta",
-        "statusColor": "oklch(52% 0.14 150)",
-        "startDate": "Septiembre 2026"
-      }
+      "palabrasClave": ["socorrismo", "instalaciones", "acuaticas"]
     },
     {
       "id": "curso-insercion",
@@ -80,7 +59,8 @@
       "imagen": {
         "src": "assets/curso-insercion-discapacidad-1200.webp",
         "srcset": "assets/curso-insercion-discapacidad-800.webp 800w, assets/curso-insercion-discapacidad-1200.webp 1200w",
-        "alt": "Formadora impartiendo una sesión sobre inserción laboral de personas con discapacidad, con alumnado en sillas de ruedas participando en el aula"
+        "alt": "Formadora impartiendo una sesión sobre inserción laboral de personas con discapacidad, con alumnado en sillas de ruedas participando en el aula",
+        "objectPosition": "center 32%"
       },
       "familiaProfesional": null,
       "situacionDestinataria": [],
@@ -93,6 +73,7 @@
       "requisitos": [],
       "nivel": "nivel-3",
       "certificacion": "Certificado de profesionalidad",
+      "tipoFormacion": "Certificado de profesionalidad Nivel 3",
       "duracionHoras": 470,
       "duracionTexto": null,
       "fechaInicio": null,
@@ -110,30 +91,7 @@
       "destacado": null,
       "orden": 2,
       "urlFicha": null,
-      "palabrasClave": ["insercion", "laboral", "personas", "discapacidad"],
-      "administrativo": {
-        "convocatoriaPrograma": null,
-        "entidadFinanciadora": null,
-        "numeroExpediente": null,
-        "plazasTotal": null,
-        "metadatos": { "creadoEn": null, "actualizadoEn": null, "autor": null },
-        "pendientesVerificacion": [
-          "situacionDestinataria", "municipio", "sedeId", "requisitos",
-          "fechaInicio", "fechaFin", "descripcionCorta", "descripcionCompleta",
-          "horario", "ayudasBecas", "documentacionNecesaria", "urlFicha"
-        ]
-      },
-      "origenLegacy": {
-        "slotId": "curso-insercion",
-        "type": "Certificado de profesionalidad Nivel 3",
-        "modalidad": "Presencial",
-        "isla": "Gran Canaria",
-        "duration": "470h",
-        "price": "Gratuito",
-        "status": "Últimas plazas",
-        "statusColor": "oklch(58% 0.17 40)",
-        "startDate": "Agosto 2026"
-      }
+      "palabrasClave": ["insercion", "laboral", "personas", "discapacidad"]
     },
     {
       "id": "curso-desa",
@@ -145,7 +103,8 @@
       "imagen": {
         "src": "assets/curso-desa-1200.webp",
         "srcset": "assets/curso-desa-800.webp 800w, assets/curso-desa-1200.webp 1200w",
-        "alt": "Alumnado practicando una reanimación con desfibrilador semiautomático sobre un maniquí"
+        "alt": "Alumnado practicando una reanimación con desfibrilador semiautomático sobre un maniquí",
+        "objectPosition": null
       },
       "familiaProfesional": null,
       "situacionDestinataria": [],
@@ -158,6 +117,7 @@
       "requisitos": [],
       "nivel": null,
       "certificacion": null,
+      "tipoFormacion": "Curso privado",
       "duracionHoras": null,
       "duracionTexto": null,
       "fechaInicio": null,
@@ -175,31 +135,7 @@
       "destacado": null,
       "orden": 3,
       "urlFicha": null,
-      "palabrasClave": ["desa", "desfibrilador", "semiautomatico"],
-      "administrativo": {
-        "convocatoriaPrograma": null,
-        "entidadFinanciadora": null,
-        "numeroExpediente": null,
-        "plazasTotal": null,
-        "metadatos": { "creadoEn": null, "actualizadoEn": null, "autor": null },
-        "pendientesVerificacion": [
-          "situacionDestinataria", "municipio", "sedeId", "requisitos",
-          "nivel", "certificacion", "duracionHoras", "fechaInicio", "fechaFin",
-          "descripcionCorta", "descripcionCompleta", "horario", "ayudasBecas",
-          "documentacionNecesaria", "urlFicha"
-        ]
-      },
-      "origenLegacy": {
-        "slotId": "curso-desa",
-        "type": "Curso privado",
-        "modalidad": "Presencial",
-        "isla": "Gran Canaria",
-        "duration": "Varias fechas",
-        "price": "Privado",
-        "status": "Matrícula abierta",
-        "statusColor": "oklch(52% 0.14 150)",
-        "startDate": "Varias fechas"
-      }
+      "palabrasClave": ["desa", "desfibrilador", "semiautomatico"]
     },
     {
       "id": "curso-ofimatica",
@@ -211,7 +147,8 @@
       "imagen": {
         "src": "assets/curso-ofimatica-1200.webp",
         "srcset": "assets/curso-ofimatica-800.webp 800w, assets/curso-ofimatica-1200.webp 1200w",
-        "alt": "Formadora explicando herramientas de ofimática y productividad a alumnado en aula de informática"
+        "alt": "Formadora explicando herramientas de ofimática y productividad a alumnado en aula de informática",
+        "objectPosition": "center 22%"
       },
       "familiaProfesional": null,
       "situacionDestinataria": [],
@@ -224,6 +161,7 @@
       "requisitos": [],
       "nivel": null,
       "certificacion": null,
+      "tipoFormacion": "Programa formativo",
       "duracionHoras": 100,
       "duracionTexto": null,
       "fechaInicio": null,
@@ -241,31 +179,7 @@
       "destacado": null,
       "orden": 4,
       "urlFicha": null,
-      "palabrasClave": ["ofimatica"],
-      "administrativo": {
-        "convocatoriaPrograma": null,
-        "entidadFinanciadora": null,
-        "numeroExpediente": null,
-        "plazasTotal": null,
-        "metadatos": { "creadoEn": null, "actualizadoEn": null, "autor": null },
-        "pendientesVerificacion": [
-          "situacionDestinataria", "municipio", "sedeId", "requisitos",
-          "nivel", "certificacion", "fechaInicio", "fechaFin",
-          "descripcionCorta", "descripcionCompleta", "horario", "ayudasBecas",
-          "documentacionNecesaria", "urlFicha"
-        ]
-      },
-      "origenLegacy": {
-        "slotId": "curso-ofimatica",
-        "type": "Programa formativo",
-        "modalidad": "Presencial",
-        "isla": "Gran Canaria",
-        "duration": "100h",
-        "price": "Gratuito",
-        "status": "Próximamente",
-        "statusColor": "oklch(45% 0.02 260)",
-        "startDate": "Otoño 2026"
-      }
+      "palabrasClave": ["ofimatica"]
     }
   ]
 }

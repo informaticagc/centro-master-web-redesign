@@ -14,28 +14,33 @@ const path = require('path');
 const ROOT = path.join(__dirname, '..');
 const DATA_DIR = path.join(ROOT, 'web', 'data');
 const WEB_DIR = path.join(ROOT, 'web');
+const INTERNAL_DIR = path.join(ROOT, 'data-internal');
+const INTERNAL_CURSOS_FILE = path.join(INTERNAL_DIR, 'cursos-administrativo.json');
 
 const ESTADOS_VALIDOS = [
   'borrador', 'proximamente', 'matricula-abierta', 'ultimas-plazas',
   'en-curso', 'finalizado', 'archivado',
 ];
 
-// Campos válidos del modelo de Curso, para poder comprobar que
-// 'pendientesVerificacion' no referencia un nombre de campo inexistente
-// (p.ej. por una errata). Incluye tanto los campos públicos de raíz como
-// los del bloque interno 'administrativo' (referenciables como
-// "administrativo.xxx").
+// Campos válidos del modelo público de Curso (web/data/cursos.json), para
+// poder comprobar que 'pendientesVerificacion' (que ahora vive en
+// data-internal/cursos-administrativo.json) no referencia un nombre de campo
+// inexistente (p.ej. por una errata). 'administrativo' y 'origenLegacy' YA
+// NO son campos válidos aquí — si aparecen en el JSON público es un error
+// de arquitectura, no un dato interno legítimo (ver más abajo).
 const CAMPOS_RAIZ_CURSO = [
   'id', 'codigo', 'slug', 'nombre', 'descripcionCorta', 'descripcionCompleta',
   'imagen', 'familiaProfesional', 'situacionDestinataria', 'isla', 'municipio',
   'sedeId', 'modalidad', 'tipoPrecio', 'precio', 'requisitos', 'nivel',
-  'certificacion', 'duracionHoras', 'duracionTexto', 'fechaInicio',
+  'certificacion', 'tipoFormacion', 'duracionHoras', 'duracionTexto', 'fechaInicio',
   'fechaInicioAproximada', 'fechaFin', 'horario', 'ayudasBecas',
   'documentacionNecesaria', 'plazasDisponibles', 'inscripcionAbierta',
   'urlInscripcion', 'modulosUnidadesFormativas', 'prioridadColectivos',
   'estado', 'destacado', 'orden', 'urlFicha', 'palabrasClave',
-  'administrativo', 'origenLegacy',
 ];
+// Campos que ya NO deben existir en el JSON público — moverse a
+// data-internal/ si reaparecen.
+const CAMPOS_PROHIBIDOS_EN_PUBLICO = ['administrativo', 'origenLegacy'];
 const CAMPOS_ADMINISTRATIVO_CURSO = [
   'convocatoriaPrograma', 'entidadFinanciadora', 'numeroExpediente',
   'plazasTotal', 'metadatos', 'pendientesVerificacion',
@@ -112,6 +117,57 @@ const sedesData = leerJson('sedes.json');
 const conocimientoData = leerJson('conocimiento.json');
 const faqData = leerJson('faq.json');
 const sinonimosData = leerJson('sinonimos.json');
+
+// ---------------------------------------------------------------------
+// data-internal/cursos-administrativo.json (opcional — no existe en CI)
+// ---------------------------------------------------------------------
+// Contiene 'administrativo' (incluye pendientesVerificacion) por curso,
+// fuera de git (ver .gitignore y /data-internal/README.md). Su ausencia
+// NUNCA debe hacer fallar la validación: solo se omiten los avisos que
+// dependen de él.
+let internalCursosData = null;
+let pendientesVerificacionPorCurso = null;
+if (fs.existsSync(INTERNAL_CURSOS_FILE)) {
+  const raw = fs.readFileSync(INTERNAL_CURSOS_FILE, 'utf8');
+  try {
+    internalCursosData = JSON.parse(raw);
+  } catch (e) {
+    err(`JSON inválido en data-internal/cursos-administrativo.json: ${e.message}`);
+  }
+  if (internalCursosData) {
+    pendientesVerificacionPorCurso = {};
+    const entradas = internalCursosData.cursos || [];
+    duplicados(entradas.map((e) => e.id)).forEach((id) => err(`data-internal/cursos-administrativo.json: id duplicado "${id}"`));
+    entradas.forEach((entrada, i) => {
+      const ref = `data-internal/cursos-administrativo.json[${i}] (id=${entrada.id || '??'})`;
+      if (!entrada.id) { err(`${ref}: falta "id"`); return; }
+      const admin = entrada.administrativo;
+      if (admin === undefined) {
+        warn(`${ref}: no tiene bloque "administrativo"`);
+      } else if (typeof admin !== 'object' || admin === null || Array.isArray(admin)) {
+        err(`${ref}: "administrativo" debería ser un objeto`);
+      } else {
+        const pv = admin.pendientesVerificacion;
+        if (pv === undefined) {
+          warn(`${ref}: administrativo.pendientesVerificacion no está definido`);
+        } else if (!Array.isArray(pv)) {
+          err(`${ref}: administrativo.pendientesVerificacion debería ser un array`);
+        } else {
+          pendientesVerificacionPorCurso[entrada.id] = pv;
+          pv.forEach((nombreCampo) => {
+            if (typeof nombreCampo !== 'string') {
+              err(`${ref}: administrativo.pendientesVerificacion contiene un valor no textual: ${JSON.stringify(nombreCampo)}`);
+            } else if (!esNombreDeCampoValido(nombreCampo)) {
+              err(`${ref}: administrativo.pendientesVerificacion referencia el campo desconocido "${nombreCampo}" (no existe en el modelo público de Curso)`);
+            }
+          });
+        }
+      }
+    });
+  }
+} else {
+  warn('data-internal/cursos-administrativo.json no encontrado localmente — se omite el cruce de "pendientesVerificacion" con los campos críticos vacíos (normal en CI).');
+}
 
 // ---------------------------------------------------------------------
 // sedes.json
@@ -193,43 +249,37 @@ if (cursosData) {
       }
     });
 
-    // Separación pública/administrativa: 'administrativo' debe existir y ser objeto
-    let pendientesVerificacion = [];
-    if (c.administrativo === undefined) {
-      warn(`${ref}: no tiene bloque "administrativo" (aunque sea todo null)`);
-    } else if (typeof c.administrativo !== 'object' || c.administrativo === null || Array.isArray(c.administrativo)) {
-      err(`${ref}: "administrativo" debería ser un objeto`);
-    } else {
-      // pendientesVerificacion: array de nombres de campo que aún necesitan
-      // confirmación humana. Es un campo de gestión interno a propósito —
-      // vive dentro de 'administrativo', que catalog-repository.js ya
-      // elimina automáticamente de toda respuesta pública (getAll, search,
-      // getById sin includeInternal, etc.), así que queda oculto al
-      // frontend público sin necesidad de lógica adicional.
-      const pv = c.administrativo.pendientesVerificacion;
-      if (pv === undefined) {
-        warn(`${ref}: administrativo.pendientesVerificacion no está definido`);
-      } else if (!Array.isArray(pv)) {
-        err(`${ref}: administrativo.pendientesVerificacion debería ser un array`);
-      } else {
-        pendientesVerificacion = pv;
-        pv.forEach((nombreCampo) => {
-          if (typeof nombreCampo !== 'string') {
-            err(`${ref}: administrativo.pendientesVerificacion contiene un valor no textual: ${JSON.stringify(nombreCampo)}`);
-          } else if (!esNombreDeCampoValido(nombreCampo)) {
-            err(`${ref}: administrativo.pendientesVerificacion referencia el campo desconocido "${nombreCampo}" (no existe en el modelo de Curso)`);
-          }
-        });
-      }
-    }
-
-    // Campos críticos vacíos que no están declarados como pendientes de verificación
-    CAMPOS_CRITICOS_SI_VACIOS.forEach((campo) => {
-      if (esVacio(c[campo]) && pendientesVerificacion.indexOf(campo) === -1) {
-        warn(`${ref}: "${campo}" está vacío pero no aparece en administrativo.pendientesVerificacion`);
+    // Separación pública/interna: el JSON público NUNCA debe volver a traer
+    // 'administrativo' ni 'origenLegacy' — ese contenido vive en
+    // data-internal/cursos-administrativo.json (fuera de git).
+    CAMPOS_PROHIBIDOS_EN_PUBLICO.forEach((campo) => {
+      if (c[campo] !== undefined) {
+        err(`${ref}: "${campo}" no debe existir en web/data/cursos.json (dato interno) — mover a data-internal/cursos-administrativo.json`);
       }
     });
+
+    // Campos críticos vacíos que no están declarados como pendientes de
+    // verificación: solo se puede comprobar si data-internal está presente
+    // localmente (pendientesVerificacionPorCurso, ver más abajo).
+    if (pendientesVerificacionPorCurso) {
+      const pendientes = pendientesVerificacionPorCurso[c.id] || [];
+      CAMPOS_CRITICOS_SI_VACIOS.forEach((campo) => {
+        if (esVacio(c[campo]) && pendientes.indexOf(campo) === -1) {
+          warn(`${ref}: "${campo}" está vacío pero no aparece en administrativo.pendientesVerificacion (data-internal)`);
+        }
+      });
+    }
   });
+
+  // Cruce data-internal → cursos.json: toda entrada interna debe referenciar
+  // un curso público real (si no, es basura o quedó huérfana tras un borrado).
+  if (internalCursosData) {
+    (internalCursosData.cursos || []).forEach((entrada) => {
+      if (entrada.id && ids.indexOf(entrada.id) === -1) {
+        warn(`data-internal/cursos-administrativo.json: id "${entrada.id}" no existe en web/data/cursos.json`);
+      }
+    });
+  }
 }
 
 // ---------------------------------------------------------------------
