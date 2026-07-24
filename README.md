@@ -1,14 +1,12 @@
 # Centro de Estudios Máster — Rediseño Home
 
-Prototipo de la nueva página principal — **V2.1 aprobada visualmente** (refinamiento de V2: menú
-hamburguesa en tablet/móvil, ajustes responsive, nueva integración de marca en el footer, y los
-recursos reales restantes integrados: aula/teleformación, logo PIEC, certificación ISO 9001 · SGS).
+Prototipo de la nueva página principal — **V2.2 aprobada visualmente**.
 
-V2.1 respecto a V2: header con menú hamburguesa accesible (drawer lateral, foco gestionado, cierre
-con Escape/clic fuera/botón), footer con una franja de marca diferenciada (en vez de logo en tarjeta
-flotante), y sustitución de los 5 placeholders de imagen/logo que quedaban en V2. Verificado visual y
-funcionalmente a 1440, 1024, 768 y 390 px; los breakpoints CSS principales del diseño siguen siendo
-1180 px y 860 px.
+V2.2 respecto a V2.1: navegación en dos niveles (barra corporativa superior + header principal),
+menú hamburguesa actualizado con accesos agrupados, nueva sección "Alquiler de instalaciones", footer
+simplificado a un único bloque oscuro uniforme (sin logo ni franja de marca — identidad solo por
+texto), y los recursos reales restantes integrados: Inserción laboral, Ofimática y Alquiler de
+instalaciones. Incluye un testimonio provisional claramente marcado como placeholder de contenido.
 
 ## Estructura
 
@@ -47,5 +45,7 @@ pasos manuales adicionales tras cada push.
 Todos los textos, cifras y datos de contacto proceden de la auditoría de centroformacionmaster.com.
 Quedan dos puntos señalados como pendientes de verificación antes de publicar (marcados en el propio
 diseño con corchetes):
-- La cita y el nombre del testimonio de una persona egresada (sección "Nuestra forma de formar").
+- El testimonio de la sección "Nuestra forma de formar" es **provisional** (marcado con badge
+  "PROVISIONAL" y firma "Testimonio provisional — sustituir antes de publicar") — sustituir por una
+  cita real de una persona egresada antes de publicar.
 - El número total de sedes activas (nota a pie de la sección "Sedes").

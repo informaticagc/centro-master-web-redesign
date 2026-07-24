@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Centro de Estudios Máster — Rediseño Home (V2.1)</title>
+<title>Centro de Estudios Máster — Rediseño Home (V2.2)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -175,6 +175,25 @@
   .collab-logo{width:152px;height:68px;display:flex;align-items:center;justify-content:center;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 18px;}
   .collab-logo img{width:100%;height:100%;object-fit:contain;}
 
+  .top-bar{display:flex;align-items:center;justify-content:flex-end;gap:20px;padding:9px 56px;background:var(--tint);border-bottom:1px solid var(--line);}
+  .top-bar a{font-size:12.5px;font-weight:500;color:var(--ink-soft);white-space:nowrap;}
+  .top-bar a.intranet{border-left:1px solid oklch(88% 0.01 85);padding-left:20px;}
+  .drawer-subhead{font-size:11px;font-weight:600;color:oklch(55% 0.02 260);text-transform:uppercase;letter-spacing:.05em;margin:20px 0 6px;padding:0 10px;}
+  .drawer-nav a.corp{font-size:14.5px;font-weight:500;color:var(--ink-soft);}
+
+  .instalaciones-panel{background:var(--surface);border:1px solid var(--line);border-radius:24px;overflow:hidden;}
+  .instalaciones-photo{position:relative;width:100%;aspect-ratio:2/1;}
+  .instalaciones-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+  .instalaciones-body{padding:40px 48px;}
+  .instalaciones-body h2{font-weight:700;font-size:28px;margin:0 0 14px;color:var(--ink-strong);}
+  .instalaciones-body p{font-size:15px;color:var(--ink-soft);line-height:1.6;margin:0 0 28px;max-width:520px;}
+  .instalaciones-actions{display:flex;gap:12px;flex-wrap:wrap;}
+  .instalaciones-actions a.outline{font-size:14px;font-weight:600;color:var(--ink-strong);border:1px solid oklch(85% 0.01 85);padding:12px 22px;border-radius:100px;}
+  .instalaciones-actions a.solid{font-size:14px;font-weight:600;color:var(--surface);background:var(--primary);padding:12px 22px;border-radius:100px;}
+
+  .testimonial{position:relative;}
+  .testimonial .badge{position:absolute;top:14px;right:14px;font-size:10.5px;font-weight:700;color:oklch(58% 0.17 40);background:oklch(95% 0.04 60);padding:4px 10px;border-radius:100px;letter-spacing:.02em;}
+
   .cta-final{padding:96px 56px;text-align:center;background:var(--primary);}
   .cta-final h2{font-weight:700;font-size:36px;margin:0 0 14px;color:var(--surface);}
   .cta-final p{font-size:16px;color:oklch(88% 0.02 255);margin:0 0 32px;}
@@ -184,16 +203,16 @@
 
   footer{padding:64px 56px 32px;background:var(--dark);color:oklch(85% 0.008 260);}
   .footer-grid{display:grid;grid-template-columns:1.3fr repeat(4,1fr);gap:32px;margin-bottom:48px;}
-  .footer-brand{margin:-64px 0 0 -56px;padding:48px 40px 40px 56px;background:var(--brand-bg);display:flex;flex-direction:column;justify-content:flex-start;}
-  .footer-brand img{width:190px;height:auto;object-fit:contain;margin-bottom:20px;}
-  .footer-brand p{font-size:13.5px;line-height:1.6;color:oklch(42% 0.02 260);max-width:250px;margin:0 0 16px;}
+  .footer-brand-title{font-family:'Sora',sans-serif;font-weight:700;font-size:19px;color:oklch(97% 0.004 85);margin-bottom:14px;}
+  .footer-brand p{font-size:13.5px;line-height:1.6;color:oklch(72% 0.01 260);max-width:250px;margin:0 0 16px;}
   .social-row{display:flex;gap:14px;}
-  .social-row a{font-size:13px;font-weight:500;color:var(--primary);}
+  .social-row a{font-size:13px;font-weight:500;color:oklch(85% 0.008 260);}
   .footer-col-title{font-size:12.5px;font-weight:600;color:oklch(97% 0.004 85);text-transform:uppercase;letter-spacing:.05em;margin-bottom:16px;}
   .footer-col a{display:block;font-size:13.5px;color:oklch(75% 0.01 260);margin-bottom:10px;}
   .footer-bottom{display:flex;justify-content:space-between;align-items:center;padding-top:28px;border-top:1px solid oklch(28% 0.02 260);font-size:12.5px;color:oklch(60% 0.01 260);flex-wrap:wrap;gap:12px;}
 
   @media (max-width: 1180px){
+    .top-bar{padding-left:28px;padding-right:28px;gap:14px;}
     header{padding-left:28px;padding-right:28px;}
     .sitenav{gap:16px;}
     .nav-secondary{display:none;}
@@ -208,12 +227,13 @@
     .sede-split{grid-template-columns:1fr;}
   }
   @media (max-width: 860px){
+    .top-bar{display:none;}
     .nav-primary{display:none;}
     .nav-toggle{display:inline-flex;}
     .tiles-grid{grid-template-columns:1fr;}
     .stats-inline{flex-direction:column;align-items:flex-start;gap:20px;}
     .footer-grid{grid-template-columns:1fr 1fr;}
-    .footer-brand{grid-column:1 / -1;margin:-64px -56px 24px -56px;padding:32px 28px;}
+    .footer-brand{grid-column:1 / -1;}
     .collab-section{padding:0 20px 64px;}
     .collab-panel{padding:32px 24px;}
     .collab-logos{justify-content:flex-start;}
@@ -221,7 +241,15 @@
 </style>
 </head>
 <body>
-<div class="wrap" data-screen-label="Home V2.1">
+<div class="wrap" data-screen-label="Home V2.2">
+
+  <div class="top-bar">
+    <a href="#">Selección</a>
+    <a href="#">Docentes</a>
+    <a href="#">Portal de transparencia</a>
+    <a href="#">Canal de denuncias</a>
+    <a href="#" class="intranet">Intranet Microsoft ↗</a>
+  </div>
 
   <header>
     <img src="assets/logo-cem.png" alt="Centro de Estudios Máster" style="width:150px;height:38px;flex-shrink:0;object-fit:contain;" loading="eager" decoding="async">
@@ -252,6 +280,14 @@
       <a href="#nosotros">Sobre nosotros</a>
       <a href="#contacto">Contacto</a>
       <a href="#" class="campus">Campus Virtual ↗</a>
+    </nav>
+    <div class="drawer-subhead">Accesos corporativos</div>
+    <nav class="drawer-nav">
+      <a href="#" class="corp">Selección</a>
+      <a href="#" class="corp">Docentes</a>
+      <a href="#" class="corp">Portal de transparencia</a>
+      <a href="#" class="corp">Canal de denuncias</a>
+      <a href="#" class="corp">Intranet Microsoft ↗</a>
     </nav>
   </div>
 
@@ -379,8 +415,9 @@
     </div>
 
     <div class="testimonial">
-      <p>"[TESTIMONIO PENDIENTE — cita real de una persona egresada sobre su experiencia y su empleo actual]"</p>
-      <div class="who">[NOMBRE PENDIENTE] · Alumno/a egresado/a</div>
+      <span class="badge">PROVISIONAL</span>
+      <p>"La formación me permitió adquirir experiencia práctica y sentirme mejor preparado para afrontar nuevas oportunidades laborales."</p>
+      <div class="who">Testimonio provisional — sustituir antes de publicar</div>
     </div>
   </section>
 
@@ -427,6 +464,23 @@
       </div>
     </div>
     <p class="sedes-footnote">* [DATO PENDIENTE] — verificar el número total de sedes activas antes de publicar.</p>
+  </section>
+
+  <section style="padding:0 56px 96px;">
+    <div class="instalaciones-panel">
+      <div class="instalaciones-photo">
+        <img src="assets/alquiler-instalaciones-1200.webp" srcset="assets/alquiler-instalaciones-800.webp 800w, assets/alquiler-instalaciones-1200.webp 1200w" sizes="(max-width: 1180px) 100vw, 1200px" alt="Aula equipada con mobiliario y proyector, disponible para alquiler de instalaciones" loading="lazy" decoding="async">
+      </div>
+      <div class="instalaciones-body">
+        <div class="eyebrow">Espacios y equipamiento</div>
+        <h2>Alquiler de instalaciones</h2>
+        <p>Ponemos a disposición de empresas y profesionales nuestras aulas de informática y espacios equipados para formación, reuniones y otras actividades.</p>
+        <div class="instalaciones-actions">
+          <a href="#" class="outline">Ver instalaciones</a>
+          <a href="#contacto" class="solid">Solicitar información</a>
+        </div>
+      </div>
+    </div>
   </section>
 
   <section class="collab-section">
@@ -478,7 +532,7 @@
   <footer id="contacto">
     <div class="footer-grid">
       <div class="footer-brand">
-        <img src="assets/logo-cem.png" alt="Centro de Estudios Máster" loading="lazy" decoding="async">
+        <div class="footer-brand-title">Centro de Estudios Máster</div>
         <p>Formación para el empleo en Canarias desde hace más de 25 años.</p>
         <div class="social-row">
           <a href="https://www.instagram.com/centrodeestudiosmaster/">Instagram</a>
@@ -514,14 +568,14 @@
 <script>
   var COURSES = [
     { name: 'Socorrismo en instalaciones acuáticas', type: 'Certificado de profesionalidad Nivel 2', modalidad: 'Presencial', isla: 'Tenerife', duration: '370h', price: 'Gratuito', status: 'Matrícula abierta', statusColor: 'oklch(52% 0.14 150)', startDate: 'Septiembre 2026', photo: '[FOTO: prácticas de socorrismo en piscina]', photoSrc: 'assets/curso-socorrismo-1200.webp', photoSrcset: 'assets/curso-socorrismo-800.webp 800w, assets/curso-socorrismo-1200.webp 1200w', photoAlt: 'Socorristas practicando una maniobra de rescate en el borde de una piscina' },
-    { name: 'Inserción laboral de personas con discapacidad', type: 'Certificado de profesionalidad Nivel 3', modalidad: 'Presencial', isla: 'Gran Canaria', duration: '470h', price: 'Gratuito', status: 'Últimas plazas', statusColor: 'oklch(58% 0.17 40)', startDate: 'Agosto 2026', photo: '[FOTO: sesión de orientación laboral]', photoSrc: null, photoSrcset: '', photoAlt: '' },
+    { name: 'Inserción laboral de personas con discapacidad', type: 'Certificado de profesionalidad Nivel 3', modalidad: 'Presencial', isla: 'Gran Canaria', duration: '470h', price: 'Gratuito', status: 'Últimas plazas', statusColor: 'oklch(58% 0.17 40)', startDate: 'Agosto 2026', photo: '[FOTO: sesión de orientación laboral]', photoSrc: 'assets/curso-insercion-discapacidad-1200.webp', photoSrcset: 'assets/curso-insercion-discapacidad-800.webp 800w, assets/curso-insercion-discapacidad-1200.webp 1200w', photoAlt: 'Formadora impartiendo una sesión sobre inserción laboral de personas con discapacidad, con alumnado en sillas de ruedas participando en el aula', photoPos: 'center 32%' },
     { name: 'DESA · Desfibrilador semiautomático', type: 'Curso privado', modalidad: 'Presencial', isla: 'Gran Canaria', duration: 'Varias fechas', price: 'Privado', status: 'Matrícula abierta', statusColor: 'oklch(52% 0.14 150)', startDate: 'Varias fechas', photo: '[FOTO: práctica con desfibrilador]', photoSrc: 'assets/curso-desa-1200.webp', photoSrcset: 'assets/curso-desa-800.webp 800w, assets/curso-desa-1200.webp 1200w', photoAlt: 'Alumnado practicando una reanimación con desfibrilador semiautomático sobre un maniquí' },
-    { name: 'Ofimática', type: 'Programa formativo', modalidad: 'Presencial', isla: 'Gran Canaria', duration: '100h', price: 'Gratuito', status: 'Próximamente', statusColor: 'oklch(45% 0.02 260)', startDate: 'Otoño 2026', photo: '[FOTO: alumnado en aula de informática]', photoSrc: null, photoSrcset: '', photoAlt: '' },
+    { name: 'Ofimática', type: 'Programa formativo', modalidad: 'Presencial', isla: 'Gran Canaria', duration: '100h', price: 'Gratuito', status: 'Próximamente', statusColor: 'oklch(45% 0.02 260)', startDate: 'Otoño 2026', photo: '[FOTO: alumnado en aula de informática]', photoSrc: 'assets/curso-ofimatica-1200.webp', photoSrcset: 'assets/curso-ofimatica-800.webp 800w, assets/curso-ofimatica-1200.webp 1200w', photoAlt: 'Formadora explicando herramientas de ofimática y productividad a alumnado en aula de informática', photoPos: 'center 22%' },
   ];
 
   function coursePhotoHTML(c, sizes) {
     if (c.photoSrc) {
-      return '<img src="' + c.photoSrc + '" srcset="' + c.photoSrcset + '" sizes="' + sizes + '" alt="' + c.photoAlt + '" style="width:100%;height:100%;object-fit:cover;object-position:center;" loading="lazy" decoding="async">';
+      return '<img src="' + c.photoSrc + '" srcset="' + c.photoSrcset + '" sizes="' + sizes + '" alt="' + c.photoAlt + '" style="width:100%;height:100%;object-fit:cover;object-position:' + (c.photoPos || 'center') + ';" loading="lazy" decoding="async">';
     }
     return '<div class="ph" style="width:100%;height:100%;"><span>' + c.photo + '</span></div>';
   }

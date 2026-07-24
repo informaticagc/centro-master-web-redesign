@@ -30,14 +30,16 @@
       .vp-row .vp-photo{ order:-1 !important; }
       .sede-split{ grid-template-columns:1fr !important; }
       .search-quick{ border-left:none !important; border-top:1px solid oklch(91% 0.01 85) !important; padding-left:0 !important; padding-top:16px !important; margin-top:4px !important; }
+      .top-bar{ padding-left:28px !important; padding-right:28px !important; gap:14px !important; }
     }
     @media (max-width: 860px){
+      .top-bar{ display:none !important; }
       .nav-primary{ display:none !important; }
       .nav-toggle{ display:inline-flex !important; }
       .tiles-grid{ grid-template-columns:1fr !important; }
       .stats-inline{ flex-direction:column !important; align-items:flex-start !important; gap:20px !important; }
       .footer-grid{ grid-template-columns:1fr 1fr !important; }
-      .footer-brand{ grid-column:1 / -1 !important; margin:-64px -56px 24px -56px !important; padding:32px 28px !important; }
+      .footer-brand{ grid-column:1 / -1 !important; }
       .collab-logos{ justify-content:flex-start !important; }
       .collab-section{ padding:0 20px 64px !important; }
       .collab-inner{ padding:32px 24px !important; }
@@ -46,6 +48,15 @@
 </helmet>
 
 <div style="width:100%;max-width:1920px;margin:0 auto;background:oklch(98% 0.012 85);color:oklch(20% 0.02 260);font-family:'Work Sans',sans-serif;overflow-x:hidden;" data-screen-label="Home V2">
+
+  <!-- TOP BAR (corporativo, no sticky) -->
+  <div class="top-bar" style="display:flex;align-items:center;justify-content:flex-end;gap:20px;padding:9px 56px;background:oklch(96% 0.012 85);border-bottom:1px solid oklch(91% 0.01 85);">
+    <a href="#" style="font-size:12.5px;font-weight:500;color:oklch(45% 0.02 260);white-space:nowrap;">Selección</a>
+    <a href="#" style="font-size:12.5px;font-weight:500;color:oklch(45% 0.02 260);white-space:nowrap;">Docentes</a>
+    <a href="#" style="font-size:12.5px;font-weight:500;color:oklch(45% 0.02 260);white-space:nowrap;">Portal de transparencia</a>
+    <a href="#" style="font-size:12.5px;font-weight:500;color:oklch(45% 0.02 260);white-space:nowrap;">Canal de denuncias</a>
+    <a href="#" style="font-size:12.5px;font-weight:500;color:oklch(45% 0.02 260);white-space:nowrap;border-left:1px solid oklch(88% 0.01 85);padding-left:20px;">Intranet Microsoft ↗</a>
+  </div>
 
   <!-- HEADER -->
   <header class="site-header" style="position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:16px 56px;background:oklch(99.5% 0.004 85 / 0.92);backdrop-filter:blur(10px);border-bottom:1px solid oklch(90% 0.01 85);">
@@ -83,6 +94,14 @@
           <a href="#nosotros" onClick="{{ closeMobileNav }}" style="font-size:16px;font-weight:600;color:oklch(20% 0.02 260);padding:14px 10px;border-radius:10px;min-height:44px;display:flex;align-items:center;" style-hover="background:oklch(96% 0.012 85);">Sobre nosotros</a>
           <a href="#contacto" onClick="{{ closeMobileNav }}" style="font-size:16px;font-weight:600;color:oklch(20% 0.02 260);padding:14px 10px;border-radius:10px;min-height:44px;display:flex;align-items:center;" style-hover="background:oklch(96% 0.012 85);">Contacto</a>
           <a href="#" onClick="{{ closeMobileNav }}" style="font-size:15px;font-weight:500;color:oklch(45% 0.02 260);padding:14px 10px;border-radius:10px;min-height:44px;display:flex;align-items:center;border-top:1px solid oklch(91% 0.01 85);margin-top:8px;">Campus Virtual ↗</a>
+        </nav>
+        <div style="font-size:11px;font-weight:600;color:oklch(55% 0.02 260);text-transform:uppercase;letter-spacing:0.05em;margin:20px 0 6px;padding:0 10px;">Accesos corporativos</div>
+        <nav style="display:flex;flex-direction:column;gap:2px;">
+          <a href="#" onClick="{{ closeMobileNav }}" style="font-size:14.5px;font-weight:500;color:oklch(45% 0.02 260);padding:12px 10px;border-radius:10px;min-height:44px;display:flex;align-items:center;" style-hover="background:oklch(96% 0.012 85);">Selección</a>
+          <a href="#" onClick="{{ closeMobileNav }}" style="font-size:14.5px;font-weight:500;color:oklch(45% 0.02 260);padding:12px 10px;border-radius:10px;min-height:44px;display:flex;align-items:center;" style-hover="background:oklch(96% 0.012 85);">Docentes</a>
+          <a href="#" onClick="{{ closeMobileNav }}" style="font-size:14.5px;font-weight:500;color:oklch(45% 0.02 260);padding:12px 10px;border-radius:10px;min-height:44px;display:flex;align-items:center;" style-hover="background:oklch(96% 0.012 85);">Portal de transparencia</a>
+          <a href="#" onClick="{{ closeMobileNav }}" style="font-size:14.5px;font-weight:500;color:oklch(45% 0.02 260);padding:12px 10px;border-radius:10px;min-height:44px;display:flex;align-items:center;" style-hover="background:oklch(96% 0.012 85);">Canal de denuncias</a>
+          <a href="#" onClick="{{ closeMobileNav }}" style="font-size:14.5px;font-weight:500;color:oklch(45% 0.02 260);padding:12px 10px;border-radius:10px;min-height:44px;display:flex;align-items:center;" style-hover="background:oklch(96% 0.012 85);">Intranet Microsoft ↗</a>
         </nav>
       </div>
     </div>
@@ -198,7 +217,7 @@
           <div style="display:grid;grid-template-columns:120px 1fr;gap:16px;background:oklch(99.5% 0.004 85);border:1px solid oklch(91% 0.01 85);border-radius:16px;overflow:hidden;transition:box-shadow 0.2s;" style-hover="box-shadow:0 10px 24px oklch(20% 0.02 260 / 0.08);">
             <div style="position:relative;">
               <sc-if value="{{ c.photoSrc }}">
-                <img src="{{ c.photoSrc }}" srcset="{{ c.photoSrcset }}" sizes="120px" alt="{{ c.photoAlt }}" style="width:100%;height:100%;object-fit:cover;object-position:center;" loading="lazy" decoding="async">
+                <img src="{{ c.photoSrc }}" srcset="{{ c.photoSrcset }}" sizes="120px" alt="{{ c.photoAlt }}" style="width:100%;height:100%;object-fit:cover;object-position:{{ c.photoPos }};" loading="lazy" decoding="async">
               </sc-if>
               <sc-if value="{{ c.photoMissing }}">
                 <image-slot id="{{ c.slotId }}" style="width:100%;height:100%;" shape="rect" placeholder="{{ c.photo }}"></image-slot>
@@ -285,9 +304,10 @@
         </div>
       </div>
     </sc-for>
-    <div style="max-width:640px;margin:0 auto;background:oklch(99.5% 0.004 85);border:1px solid oklch(91% 0.01 85);border-radius:20px;padding:36px 40px;text-align:center;">
-      <p style="font-family:'Sora',sans-serif;font-weight:500;font-size:18px;line-height:1.5;color:oklch(25% 0.02 260);margin:0 0 16px;font-style:italic;">"[TESTIMONIO PENDIENTE — cita real de una persona egresada sobre su experiencia y su empleo actual]"</p>
-      <div style="font-size:13.5px;color:oklch(50% 0.02 260);">[NOMBRE PENDIENTE] · Alumno/a egresado/a</div>
+    <div style="max-width:640px;margin:0 auto;background:oklch(99.5% 0.004 85);border:1px solid oklch(91% 0.01 85);border-radius:20px;padding:36px 40px;text-align:center;position:relative;">
+      <span style="position:absolute;top:14px;right:14px;font-size:10.5px;font-weight:700;color:oklch(58% 0.17 40);background:oklch(95% 0.04 60);padding:4px 10px;border-radius:100px;letter-spacing:0.02em;">PROVISIONAL</span>
+      <p style="font-family:'Sora',sans-serif;font-weight:500;font-size:18px;line-height:1.5;color:oklch(25% 0.02 260);margin:0 0 16px;font-style:italic;">"La formación me permitió adquirir experiencia práctica y sentirme mejor preparado para afrontar nuevas oportunidades laborales."</p>
+      <div style="font-size:13.5px;color:oklch(50% 0.02 260);">Testimonio provisional — sustituir antes de publicar</div>
     </div>
   </section>
 
@@ -325,6 +345,24 @@
       </div>
     </sc-for>
     <p style="font-size:12px;color:oklch(55% 0.02 260);font-style:italic;margin:0;">* [DATO PENDIENTE] — verificar el número total de sedes activas antes de publicar.</p>
+  </section>
+
+  <!-- ALQUILER DE INSTALACIONES -->
+  <section style="padding:0 56px 96px;">
+    <div class="instalaciones-panel" style="background:oklch(99.5% 0.004 85);border:1px solid oklch(91% 0.01 85);border-radius:24px;overflow:hidden;">
+      <div style="position:relative;width:100%;aspect-ratio:2/1;">
+        <img src="../web/assets/alquiler-instalaciones-1200.webp" srcset="../web/assets/alquiler-instalaciones-800.webp 800w, ../web/assets/alquiler-instalaciones-1200.webp 1200w" sizes="(max-width: 1180px) 100vw, 1200px" alt="Aula equipada con mobiliario y proyector, disponible para alquiler de instalaciones" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;" loading="lazy" decoding="async">
+      </div>
+      <div style="padding:40px 48px;">
+        <div style="font-size:13px;font-weight:600;color:{{ accentColor }};text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;">Espacios y equipamiento</div>
+        <h2 style="font-family:'Sora',sans-serif;font-weight:700;font-size:28px;margin:0 0 14px;color:oklch(16% 0.02 260);">Alquiler de instalaciones</h2>
+        <p style="font-size:15px;color:oklch(45% 0.02 260);line-height:1.6;margin:0 0 28px;max-width:520px;">Ponemos a disposición de empresas y profesionales nuestras aulas de informática y espacios equipados para formación, reuniones y otras actividades.</p>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+          <a href="#" style="font-size:14px;font-weight:600;color:oklch(16% 0.02 260);border:1px solid oklch(85% 0.01 85);padding:12px 22px;border-radius:100px;">Ver instalaciones</a>
+          <a href="#contacto" style="font-size:14px;font-weight:600;color:oklch(99% 0.004 85);background:oklch(30% 0.09 255);padding:12px 22px;border-radius:100px;">Solicitar información</a>
+        </div>
+      </div>
+    </div>
   </section>
 
   <!-- COLABORADORES -->
@@ -365,13 +403,13 @@
   <!-- FOOTER -->
   <footer id="contacto" style="padding:64px 56px 32px;background:oklch(15% 0.02 260);color:oklch(85% 0.008 260);">
     <div class="footer-grid" style="display:grid;grid-template-columns:1.3fr repeat(4,1fr);gap:32px;margin-bottom:48px;">
-      <div class="footer-brand" style="margin:-64px 0 0 -56px;padding:48px 40px 40px 56px;background:oklch(97% 0.01 85);display:flex;flex-direction:column;justify-content:flex-start;">
-        <img src="../web/assets/logo-cem.png" alt="Centro de Estudios Máster" style="width:190px;height:auto;object-fit:contain;margin-bottom:20px;" loading="lazy" decoding="async">
-        <p style="font-size:13.5px;line-height:1.6;color:oklch(42% 0.02 260);max-width:250px;margin:0 0 16px;">Formación para el empleo en Canarias desde hace más de 25 años.</p>
+      <div class="footer-brand">
+        <div style="font-family:'Sora',sans-serif;font-weight:700;font-size:19px;color:oklch(97% 0.004 85);margin-bottom:14px;">Centro de Estudios Máster</div>
+        <p style="font-size:13.5px;line-height:1.6;color:oklch(72% 0.01 260);max-width:250px;margin:0 0 16px;">Formación para el empleo en Canarias desde hace más de 25 años.</p>
         <div style="display:flex;gap:14px;">
-          <a href="https://www.instagram.com/centrodeestudiosmaster/" style="font-size:13px;font-weight:500;color:oklch(30% 0.09 255);">Instagram</a>
-          <a href="https://www.facebook.com/CentroDeEstudiosMaster/" style="font-size:13px;font-weight:500;color:oklch(30% 0.09 255);">Facebook</a>
-          <a href="https://www.tiktok.com/@centrodeestudiosmaster" style="font-size:13px;font-weight:500;color:oklch(30% 0.09 255);">Tiktok</a>
+          <a href="https://www.instagram.com/centrodeestudiosmaster/" style="font-size:13px;font-weight:500;color:oklch(85% 0.008 260);">Instagram</a>
+          <a href="https://www.facebook.com/CentroDeEstudiosMaster/" style="font-size:13px;font-weight:500;color:oklch(85% 0.008 260);">Facebook</a>
+          <a href="https://www.tiktok.com/@centrodeestudiosmaster" style="font-size:13px;font-weight:500;color:oklch(85% 0.008 260);">Tiktok</a>
         </div>
       </div>
       <sc-for list="{{ footerCols }}" as="col" hint-placeholder-count="4">
@@ -430,10 +468,10 @@ class Component extends DCLogic {
   };
 
   courses = [
-    { name: 'Socorrismo en instalaciones acuáticas', type: 'Certificado de profesionalidad Nivel 2', modalidad: 'Presencial', isla: 'Tenerife', duration: '370h', price: 'Gratuito', status: 'Matrícula abierta', statusColor: 'oklch(52% 0.14 150)', startDate: 'Septiembre 2026', slotId: 'curso-socorrismo', photo: '[FOTO: prácticas de socorrismo en piscina]', photoSrc: '../web/assets/curso-socorrismo-1200.webp', photoSrcset: '../web/assets/curso-socorrismo-800.webp 800w, ../web/assets/curso-socorrismo-1200.webp 1200w', photoAlt: 'Socorristas practicando una maniobra de rescate en el borde de una piscina', photoMissing: false },
-    { name: 'Inserción laboral de personas con discapacidad', type: 'Certificado de profesionalidad Nivel 3', modalidad: 'Presencial', isla: 'Gran Canaria', duration: '470h', price: 'Gratuito', status: 'Últimas plazas', statusColor: 'oklch(58% 0.17 40)', startDate: 'Agosto 2026', slotId: 'curso-insercion', photo: '[FOTO: sesión de orientación laboral]', photoSrc: null, photoSrcset: '', photoAlt: '', photoMissing: true },
-    { name: 'DESA · Desfibrilador semiautomático', type: 'Curso privado', modalidad: 'Presencial', isla: 'Gran Canaria', duration: 'Varias fechas', price: 'Privado', status: 'Matrícula abierta', statusColor: 'oklch(52% 0.14 150)', startDate: 'Varias fechas', slotId: 'curso-desa', photo: '[FOTO: práctica con desfibrilador]', photoSrc: '../web/assets/curso-desa-1200.webp', photoSrcset: '../web/assets/curso-desa-800.webp 800w, ../web/assets/curso-desa-1200.webp 1200w', photoAlt: 'Alumnado practicando una reanimación con desfibrilador semiautomático sobre un maniquí', photoMissing: false },
-    { name: 'Ofimática', type: 'Programa formativo', modalidad: 'Presencial', isla: 'Gran Canaria', duration: '100h', price: 'Gratuito', status: 'Próximamente', statusColor: 'oklch(45% 0.02 260)', startDate: 'Otoño 2026', slotId: 'curso-ofimatica', photo: '[FOTO: alumnado en aula de informática]', photoSrc: null, photoSrcset: '', photoAlt: '', photoMissing: true },
+    { name: 'Socorrismo en instalaciones acuáticas', type: 'Certificado de profesionalidad Nivel 2', modalidad: 'Presencial', isla: 'Tenerife', duration: '370h', price: 'Gratuito', status: 'Matrícula abierta', statusColor: 'oklch(52% 0.14 150)', startDate: 'Septiembre 2026', slotId: 'curso-socorrismo', photo: '[FOTO: prácticas de socorrismo en piscina]', photoSrc: '../web/assets/curso-socorrismo-1200.webp', photoSrcset: '../web/assets/curso-socorrismo-800.webp 800w, ../web/assets/curso-socorrismo-1200.webp 1200w', photoAlt: 'Socorristas practicando una maniobra de rescate en el borde de una piscina', photoPos: 'center', photoMissing: false },
+    { name: 'Inserción laboral de personas con discapacidad', type: 'Certificado de profesionalidad Nivel 3', modalidad: 'Presencial', isla: 'Gran Canaria', duration: '470h', price: 'Gratuito', status: 'Últimas plazas', statusColor: 'oklch(58% 0.17 40)', startDate: 'Agosto 2026', slotId: 'curso-insercion', photo: '[FOTO: sesión de orientación laboral]', photoSrc: '../web/assets/curso-insercion-discapacidad-1200.webp', photoSrcset: '../web/assets/curso-insercion-discapacidad-800.webp 800w, ../web/assets/curso-insercion-discapacidad-1200.webp 1200w', photoAlt: 'Formadora impartiendo una sesión sobre inserción laboral de personas con discapacidad, con alumnado en sillas de ruedas participando en el aula', photoPos: 'center 32%', photoMissing: false },
+    { name: 'DESA · Desfibrilador semiautomático', type: 'Curso privado', modalidad: 'Presencial', isla: 'Gran Canaria', duration: 'Varias fechas', price: 'Privado', status: 'Matrícula abierta', statusColor: 'oklch(52% 0.14 150)', startDate: 'Varias fechas', slotId: 'curso-desa', photo: '[FOTO: práctica con desfibrilador]', photoSrc: '../web/assets/curso-desa-1200.webp', photoSrcset: '../web/assets/curso-desa-800.webp 800w, ../web/assets/curso-desa-1200.webp 1200w', photoAlt: 'Alumnado practicando una reanimación con desfibrilador semiautomático sobre un maniquí', photoPos: 'center', photoMissing: false },
+    { name: 'Ofimática', type: 'Programa formativo', modalidad: 'Presencial', isla: 'Gran Canaria', duration: '100h', price: 'Gratuito', status: 'Próximamente', statusColor: 'oklch(45% 0.02 260)', startDate: 'Otoño 2026', slotId: 'curso-ofimatica', photo: '[FOTO: alumnado en aula de informática]', photoSrc: '../web/assets/curso-ofimatica-1200.webp', photoSrcset: '../web/assets/curso-ofimatica-800.webp 800w, ../web/assets/curso-ofimatica-1200.webp 1200w', photoAlt: 'Formadora explicando herramientas de ofimática y productividad a alumnado en aula de informática', photoPos: 'center 22%', photoMissing: false },
   ];
 
   profiles = [
