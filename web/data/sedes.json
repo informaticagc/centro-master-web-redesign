@@ -1,0 +1,46 @@
+{
+  "version": "1.0",
+  "actualizado": "2026-07-24",
+  "notaPendiente": "* [DATO PENDIENTE] — el número total de sedes activas está por verificar antes de publicar (marcado así en la propia web, sección Sedes). Este archivo contiene únicamente las 3 sedes que ya aparecen en el prototipo; no se ha inventado ninguna adicional.",
+  "sedes": [
+    {
+      "id": "sede-vecindario",
+      "region": "Gran Canaria",
+      "municipio": "Vecindario",
+      "direccion": "Avenida de Canarias nº 380, Vecindario",
+      "telefono": "928 75 51 05",
+      "horario": null,
+      "imagen": {
+        "src": "assets/sede-vecindario-1200.webp",
+        "srcset": "assets/sede-vecindario-800.webp 800w, assets/sede-vecindario-1200.webp 1200w, assets/sede-vecindario-1920.webp 1920w",
+        "alt": "Fachada de la sede de Centro de Estudios Máster en Vecindario"
+      }
+    },
+    {
+      "id": "sede-maspalomas",
+      "region": "Gran Canaria",
+      "municipio": "Maspalomas",
+      "direccion": "Avenida de Gáldar s/n, Maspalomas",
+      "telefono": "928 77 45 70",
+      "horario": null,
+      "imagen": {
+        "src": "assets/sede-maspalomas-1200.webp",
+        "srcset": "assets/sede-maspalomas-800.webp 800w, assets/sede-maspalomas-1200.webp 1200w",
+        "alt": "Fachada de la sede de Centro de Estudios Máster en Maspalomas"
+      }
+    },
+    {
+      "id": "sede-santacruz",
+      "region": "Tenerife",
+      "municipio": "Santa Cruz de Tenerife",
+      "direccion": "Pérez de Rozas nº 35, Sta. Cruz de Tenerife",
+      "telefono": "922 29 60 00",
+      "horario": null,
+      "imagen": {
+        "src": "assets/sede-tenerife-1200.webp",
+        "srcset": "assets/sede-tenerife-800.webp 800w, assets/sede-tenerife-1200.webp 1200w",
+        "alt": "Fachada de la sede de Centro de Estudios Máster en Santa Cruz de Tenerife"
+      }
+    }
+  ]
+}

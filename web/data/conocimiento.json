@@ -1,0 +1,130 @@
+{
+  "version": "1.0",
+  "actualizado": "2026-07-24",
+  "notas": "Cada tema usa únicamente texto ya presente y confirmado en design/Home.dc.html / web/index.html. Cuando no existe contenido real todavía, 'pendiente' es true, 'resumen' es null y 'notaPendiente' explica qué falta — no se ha redactado ni inventado ningún texto de relleno.",
+  "temas": [
+    {
+      "id": "quienes-somos",
+      "titulo": "Quiénes somos",
+      "pendiente": false,
+      "resumen": "Centro de Estudios Máster es un centro consolidado, pensado para el empleo real: más de dos décadas formando en Canarias, con programas diseñados junto a empresas y organismos públicos para que la formación se traduzca en oportunidades reales. +25 años de experiencia en formación para el empleo, +80 acciones formativas cada año, +1.000 alumnos formados cada año.",
+      "anclaHome": "#nosotros",
+      "palabrasClave": ["quienes somos", "sobre nosotros", "el centro", "historia", "trayectoria"]
+    },
+    {
+      "id": "sedes",
+      "titulo": "Sedes",
+      "pendiente": false,
+      "resumen": "Sedes en Gran Canaria (Vecindario y Maspalomas) y Tenerife (Santa Cruz de Tenerife). El detalle completo (dirección, teléfono) está en sedes.json, no duplicado aquí.",
+      "notaPendiente": "* [DATO PENDIENTE] en la propia web: el número total de sedes activas está por verificar.",
+      "anclaHome": null,
+      "palabrasClave": ["sede", "sedes", "centro de", "dónde está", "dirección"]
+    },
+    {
+      "id": "contacto",
+      "titulo": "Contacto",
+      "pendiente": false,
+      "resumen": "Teléfono general 928 75 51 05, correo secretariavc@centromaster.com. Cada sede tiene además su propio teléfono (ver sedes.json).",
+      "anclaHome": "#contacto",
+      "palabrasClave": ["contacto", "teléfono", "email", "correo", "llamar"]
+    },
+    {
+      "id": "formacion-desempleados",
+      "titulo": "Formación para desempleados/as",
+      "pendiente": true,
+      "resumen": null,
+      "notaPendiente": "Solo existe la etiqueta de acceso rápido 'Estoy desempleado/a' → 'Ver formación', sin texto descriptivo propio todavía.",
+      "anclaHome": "#encaja",
+      "palabrasClave": ["desempleado", "parado", "en paro", "sin trabajo"]
+    },
+    {
+      "id": "formacion-ocupados",
+      "titulo": "Formación para ocupados/as",
+      "pendiente": true,
+      "resumen": null,
+      "notaPendiente": "Solo existe la etiqueta de acceso rápido 'Estoy trabajando' → 'Ver formación bonificada', sin texto descriptivo propio todavía.",
+      "anclaHome": "#encaja",
+      "palabrasClave": ["ocupado", "trabajando", "empleado", "formación bonificada"]
+    },
+    {
+      "id": "formacion-privada",
+      "titulo": "Formación privada",
+      "pendiente": true,
+      "resumen": null,
+      "notaPendiente": "Solo existe la etiqueta de acceso rápido 'Formación privada' → 'Ver cursos'. El catálogo actual tiene 1 curso marcado tipoPrecio=privado (DESA), sin descripción general del programa privado.",
+      "anclaHome": "#encaja",
+      "palabrasClave": ["formación privada", "curso privado", "pago"]
+    },
+    {
+      "id": "teleformacion",
+      "titulo": "Teleformación",
+      "pendiente": true,
+      "resumen": "Elige la modalidad que mejor encaja con tu día a día (presencial u online).",
+      "notaPendiente": "Texto genérico del value prop 'Presencial y online'; el catálogo actual (4 cursos) no tiene ningún curso en modalidad teleformación todavía.",
+      "anclaHome": null,
+      "palabrasClave": ["teleformación", "online", "a distancia", "estudiar online"]
+    },
+    {
+      "id": "requisitos-generales",
+      "titulo": "Requisitos generales",
+      "pendiente": true,
+      "resumen": null,
+      "notaPendiente": "No hay ningún texto de requisitos generales en la web actual; los requisitos son por curso (campo 'requisitos' en cursos.json, hoy vacío en los 4 cursos migrados).",
+      "anclaHome": null,
+      "palabrasClave": ["requisitos", "condiciones", "puedo apuntarme"]
+    },
+    {
+      "id": "ayudas-becas",
+      "titulo": "Ayudas y becas",
+      "pendiente": true,
+      "resumen": null,
+      "notaPendiente": "No hay ningún texto confirmado sobre ayudas/becas. Solo se sabe, por los logos de colaboradores, que existe financiación de SEPE, Servicio Canario de Empleo y Fondo Social Europeo/Next Generation UE — sin detalle de condiciones.",
+      "anclaHome": null,
+      "palabrasClave": ["beca", "ayuda", "financiación", "gratis"]
+    },
+    {
+      "id": "certificados-profesionales",
+      "titulo": "Certificados de profesionalidad",
+      "pendiente": true,
+      "resumen": "2 de los 4 cursos del catálogo actual son Certificado de profesionalidad (Nivel 2 y Nivel 3 respectivamente).",
+      "notaPendiente": "No hay explicación general de qué es un certificado de profesionalidad ni su validez, solo el hecho anterior derivado del catálogo.",
+      "anclaHome": null,
+      "palabrasClave": ["certificado de profesionalidad", "certificación oficial", "nivel 2", "nivel 3"]
+    },
+    {
+      "id": "alquiler-instalaciones",
+      "titulo": "Alquiler de instalaciones",
+      "pendiente": false,
+      "resumen": "Ponemos a disposición de empresas y profesionales nuestras aulas de informática y espacios equipados para formación, reuniones y otras actividades.",
+      "anclaHome": null,
+      "palabrasClave": ["alquiler", "alquilar", "aula de informática", "ceder instalaciones", "espacio para eventos"]
+    },
+    {
+      "id": "campus-virtual",
+      "titulo": "Campus Virtual",
+      "pendiente": true,
+      "resumen": null,
+      "notaPendiente": "Solo existe el enlace de navegación 'Campus Virtual ↗' apuntando a '#' (sin URL real ni instrucciones de acceso confirmadas todavía).",
+      "anclaHome": null,
+      "palabrasClave": ["campus virtual", "acceso alumnos", "moodle", "contraseña", "entrar al campus"]
+    },
+    {
+      "id": "empleo",
+      "titulo": "Empleo",
+      "pendiente": true,
+      "resumen": null,
+      "notaPendiente": "El enlace de navegación 'Empleo' apunta a '#empleo', un ancla que no existe todavía en la página (no hay sección con id=\"empleo\"). Sin contenido confirmado.",
+      "anclaHome": null,
+      "palabrasClave": ["empleo", "bolsa de trabajo", "salidas profesionales"]
+    },
+    {
+      "id": "horarios",
+      "titulo": "Horarios",
+      "pendiente": true,
+      "resumen": null,
+      "notaPendiente": "No hay ningún horario de atención confirmado en la web (solo teléfonos por sede).",
+      "anclaHome": null,
+      "palabrasClave": ["horario", "horarios", "cuándo abren", "atención al público"]
+    }
+  ]
+}

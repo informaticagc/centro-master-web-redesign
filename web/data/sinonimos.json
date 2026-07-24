@@ -1,0 +1,47 @@
+{
+  "version": "1.0",
+  "actualizado": "2026-07-24",
+  "notas": "Diccionario de configuración del motor de búsqueda/asistente (equivalencias lingüísticas objetivas), no contenido editorial. Las claves están normalizadas: minúsculas y sin tildes. 'familiasProfesionales' se deja vacío hasta que exista una taxonomía real de áreas asignada a los cursos (hoy 'familiaProfesional' es null en los 4 cursos migrados).",
+  "islas": {
+    "gc": "Gran Canaria",
+    "gran canaria": "Gran Canaria",
+    "tf": "Tenerife",
+    "tenerife": "Tenerife",
+    "la palma": "La Palma",
+    "lp": "La Palma",
+    "fuerteventura": "Fuerteventura",
+    "fv": "Fuerteventura",
+    "lanzarote": "Lanzarote",
+    "lz": "Lanzarote",
+    "cualquiera": "todas",
+    "cualquier isla": "todas",
+    "todas": "todas"
+  },
+  "modalidad": {
+    "presencial": "presencial",
+    "online": "teleformacion",
+    "en linea": "teleformacion",
+    "a distancia": "teleformacion",
+    "teleformacion": "teleformacion",
+    "virtual": "teleformacion",
+    "cualquiera": "todas",
+    "indiferente": "todas"
+  },
+  "situacion": {
+    "desempleado": "desempleado",
+    "desempleada": "desempleado",
+    "parado": "desempleado",
+    "parada": "desempleado",
+    "en paro": "desempleado",
+    "sin trabajo": "desempleado",
+    "ocupado": "ocupado",
+    "ocupada": "ocupado",
+    "trabajando": "ocupado",
+    "con trabajo": "ocupado",
+    "empleado": "ocupado",
+    "privado": "privado",
+    "formacion privada": "privado",
+    "quiero pagar": "privado"
+  },
+  "familiasProfesionales": {}
+}
