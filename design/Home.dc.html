@@ -43,10 +43,10 @@
       .collab-logos{ justify-content:flex-start !important; }
       .collab-section{ padding:0 20px 64px !important; }
       .collab-inner{ padding:32px 24px !important; }
-      .wa-label{ display:none !important; }
-      .wa-fab{ width:56px !important; height:56px !important; padding:0 !important; justify-content:center !important; }
-      .wa-float{ right:max(16px, env(safe-area-inset-right)) !important; bottom:max(16px, env(safe-area-inset-bottom)) !important; }
-      .wa-panel{ right:max(16px, env(safe-area-inset-right)) !important; left:16px !important; width:auto !important; }
+      .help-label{ display:none !important; }
+      .help-fab{ width:56px !important; height:56px !important; padding:0 !important; justify-content:center !important; }
+      .help-hub{ right:max(16px, env(safe-area-inset-right)) !important; bottom:max(16px, env(safe-area-inset-bottom)) !important; }
+      .help-panel{ position:fixed !important; left:0 !important; right:0 !important; bottom:0 !important; width:100% !important; max-width:100% !important; border-radius:20px 20px 0 0 !important; max-height:82vh !important; padding-bottom:env(safe-area-inset-bottom) !important; }
     }
   </style>
 </helmet>
@@ -433,18 +433,121 @@
     </div>
   </footer>
 
-  <div class="wa-float" style="position:fixed;right:28px;bottom:28px;z-index:55;display:flex;flex-direction:column;align-items:flex-end;gap:12px;">
-    <sc-if value="{{ waOpen }}" hint-placeholder-val="{{ false }}">
-      <div class="wa-panel" role="dialog" aria-label="Contactar por WhatsApp" style="width:270px;background:oklch(99.5% 0.004 85);border:1px solid oklch(90% 0.01 85);border-radius:16px;box-shadow:0 16px 40px oklch(20% 0.02 260 / 0.18);padding:18px;">
-        <p style="font-size:13.5px;color:oklch(30% 0.02 260);line-height:1.5;margin:0 0 14px;">¿Necesitas ayuda? Escríbenos por WhatsApp y te respondemos lo antes posible.</p>
-        <a href="https://wa.me/34682821956?text=Hola%2C%20quiero%20informaci%C3%B3n%20sobre%20los%20cursos%20de%20Centro%20de%20Estudios%20M%C3%A1ster." target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:center;gap:8px;font-size:14px;font-weight:600;color:oklch(99% 0.004 85);background:oklch(45% 0.14 150);padding:12px 16px;border-radius:10px;min-height:44px;" style-focus="outline:2px solid oklch(30% 0.09 255);outline-offset:2px;">
-          Hablar por WhatsApp
-        </a>
+  <div class="help-hub" style="position:fixed;right:28px;bottom:28px;z-index:55;display:flex;flex-direction:column;align-items:flex-end;gap:12px;">
+    <sc-if value="{{ helpOpen }}" hint-placeholder-val="{{ false }}">
+      <div id="help-panel" ref="{{ helpPanelRef }}" class="help-panel" role="dialog" aria-modal="true" aria-label="Centro de contacto" tabIndex="-1" style="width:340px;max-width:calc(100vw - 32px);max-height:min(560px, calc(100vh - 120px));display:flex;flex-direction:column;background:oklch(99.5% 0.004 85);border:1px solid oklch(90% 0.01 85);border-radius:20px;box-shadow:0 20px 50px oklch(20% 0.02 260 / 0.22);overflow:hidden;outline:none;">
+
+        <sc-if value="{{ isMenuView }}">
+          <div style="padding:22px 22px 4px;flex-shrink:0;">
+            <h3 style="font-family:'Sora',sans-serif;font-weight:700;font-size:18px;margin:0 0 6px;color:oklch(16% 0.02 260);">¿Cómo podemos ayudarte?</h3>
+            <p style="font-size:13px;color:oklch(45% 0.02 260);margin:0;">Elige cómo prefieres contactar con Centro de Estudios Máster.</p>
+          </div>
+          <div style="padding:14px 22px 22px;display:flex;flex-direction:column;gap:10px;overflow-y:auto;">
+            <div style="border:1px solid oklch(91% 0.01 85);border-radius:14px;padding:16px;">
+              <div style="font-weight:600;font-size:14.5px;color:oklch(16% 0.02 260);margin-bottom:6px;">💬 Hablar con el asistente</div>
+              <p style="font-size:12.5px;color:oklch(45% 0.02 260);margin:0 0 12px;line-height:1.5;">Encuentra cursos, resuelve dudas o déjanos tus datos.</p>
+              <button onClick="{{ openAssistant }}" style="width:100%;min-height:44px;font-size:13.5px;font-weight:600;color:oklch(99% 0.004 85);background:oklch(30% 0.09 255);border:none;border-radius:10px;cursor:pointer;" style-focus="outline:2px solid oklch(30% 0.09 255);outline-offset:2px;">Abrir asistente</button>
+            </div>
+            <div style="border:1px solid oklch(91% 0.01 85);border-radius:14px;padding:16px;">
+              <div style="font-weight:600;font-size:14.5px;color:oklch(16% 0.02 260);margin-bottom:6px;">📱 WhatsApp</div>
+              <p style="font-size:12.5px;color:oklch(45% 0.02 260);margin:0 0 12px;line-height:1.5;">Escríbenos directamente y te respondemos lo antes posible.</p>
+              <a href="https://wa.me/34682821956?text=Hola%2C%20quiero%20informaci%C3%B3n%20sobre%20los%20cursos%20de%20Centro%20de%20Estudios%20M%C3%A1ster." target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:center;min-height:44px;font-size:13.5px;font-weight:600;color:oklch(99% 0.004 85);background:oklch(45% 0.14 150);border-radius:10px;" style-focus="outline:2px solid oklch(30% 0.09 255);outline-offset:2px;">Continuar por WhatsApp</a>
+            </div>
+            <div style="border:1px solid oklch(91% 0.01 85);border-radius:14px;padding:16px;">
+              <div style="font-weight:600;font-size:14.5px;color:oklch(16% 0.02 260);margin-bottom:6px;">✉️ Solicitar que me contacten</div>
+              <p style="font-size:12.5px;color:oklch(45% 0.02 260);margin:0 0 12px;line-height:1.5;">Déjanos tus datos y un asesor se pondrá en contacto contigo.</p>
+              <button onClick="{{ openForm }}" style="width:100%;min-height:44px;font-size:13.5px;font-weight:600;color:oklch(16% 0.02 260);background:oklch(96% 0.012 85);border:1px solid oklch(85% 0.01 85);border-radius:10px;cursor:pointer;" style-focus="outline:2px solid oklch(30% 0.09 255);outline-offset:2px;">Solicitar contacto</button>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isAssistantView }}">
+          <div style="display:flex;align-items:center;gap:10px;padding:16px 18px;border-bottom:1px solid oklch(93% 0.008 85);flex-shrink:0;">
+            <button onClick="{{ backToMenu }}" aria-label="Volver al menú de contacto" style="width:32px;height:32px;flex-shrink:0;display:flex;align-items:center;justify-content:center;border:none;background:oklch(96% 0.012 85);border-radius:8px;cursor:pointer;font-size:15px;color:oklch(20% 0.02 260);" style-focus="outline:2px solid oklch(30% 0.09 255);outline-offset:2px;">←</button>
+            <span style="font-weight:600;font-size:14.5px;color:oklch(16% 0.02 260);">Asistente virtual</span>
+          </div>
+          <div style="flex:1;overflow-y:auto;padding:16px 18px;display:flex;flex-direction:column;gap:10px;min-height:200px;">
+            <sc-for list="{{ assistantMessages }}" as="m" hint-placeholder-count="1">
+              <div style="max-width:85%;align-self:{{ m.align }};background:{{ m.bg }};color:{{ m.color }};font-size:13px;line-height:1.5;padding:10px 13px;border-radius:12px;">{{ m.text }}</div>
+            </sc-for>
+          </div>
+          <div style="padding:12px 18px 18px;border-top:1px solid oklch(93% 0.008 85);flex-shrink:0;">
+            <sc-if value="{{ isGuidedActive }}">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                <span style="font-size:11px;font-weight:600;color:oklch(55% 0.02 260);text-transform:uppercase;letter-spacing:0.04em;">{{ guidedStepLabel }}</span>
+                <button onClick="{{ cancelGuided }}" style="font-size:11px;font-weight:600;color:oklch(50% 0.02 260);background:none;border:none;cursor:pointer;padding:4px;">Cancelar</button>
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:8px;">
+                <sc-for list="{{ guidedOptions }}" as="o" hint-placeholder-count="3">
+                  <button onClick="{{ o.onSelect }}" style="font-size:12.5px;font-weight:500;color:oklch(30% 0.09 255);background:oklch(94% 0.02 255);border:1px solid oklch(88% 0.02 255);padding:8px 12px;border-radius:100px;cursor:pointer;min-height:36px;" style-focus="outline:2px solid oklch(30% 0.09 255);outline-offset:2px;">{{ o.label }}</button>
+                </sc-for>
+              </div>
+            </sc-if>
+            <div style="{{ quickRepliesRowStyle }}">
+              <div style="font-size:11px;font-weight:600;color:oklch(55% 0.02 260);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:8px;">Accesos rápidos</div>
+              <div style="display:flex;flex-wrap:wrap;gap:8px;">
+                <sc-for list="{{ quickReplies }}" as="r" hint-placeholder-count="4">
+                  <button onClick="{{ r.onSelect }}" style="font-size:12.5px;font-weight:500;color:oklch(30% 0.09 255);background:oklch(94% 0.02 255);border:1px solid oklch(88% 0.02 255);padding:8px 12px;border-radius:100px;cursor:pointer;min-height:36px;" style-focus="outline:2px solid oklch(30% 0.09 255);outline-offset:2px;">{{ r.label }}</button>
+                </sc-for>
+              </div>
+            </div>
+            <p style="font-size:10.5px;color:oklch(55% 0.02 260);font-style:italic;margin:10px 0 0;">Prototipo informativo, coste 0 € — próximamente con flujos guiados y consulta al catálogo real de cursos (sin API de IA).</p>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isFormView }}">
+          <div style="display:flex;align-items:center;gap:10px;padding:16px 18px;border-bottom:1px solid oklch(93% 0.008 85);flex-shrink:0;">
+            <button onClick="{{ backToMenu }}" aria-label="Volver al menú de contacto" style="width:32px;height:32px;flex-shrink:0;display:flex;align-items:center;justify-content:center;border:none;background:oklch(96% 0.012 85);border-radius:8px;cursor:pointer;font-size:15px;color:oklch(20% 0.02 260);" style-focus="outline:2px solid oklch(30% 0.09 255);outline-offset:2px;">←</button>
+            <span style="font-weight:600;font-size:14.5px;color:oklch(16% 0.02 260);">Solicitar que me contacten</span>
+          </div>
+          <div style="flex:1;overflow-y:auto;padding:18px;">
+            <sc-if value="{{ formSubmitted }}">
+              <p style="font-size:13.5px;color:oklch(30% 0.02 260);line-height:1.6;margin:0 0 8px;">✅ Solicitud enviada correctamente. Nuestro equipo se pondrá en contacto contigo lo antes posible.</p>
+              <p style="font-size:11px;color:oklch(55% 0.02 260);font-style:italic;margin:0;">Simulación — el envío real se conectará próximamente por correo electrónico a Secretaría.</p>
+            </sc-if>
+            <sc-if value="{{ formNotSubmitted }}">
+              <div style="display:flex;flex-direction:column;gap:12px;">
+                <label style="display:flex;flex-direction:column;gap:4px;font-size:12.5px;font-weight:600;color:oklch(30% 0.02 260);">Nombre
+                  <input value="{{ formName }}" onInput="{{ onFormNameChange }}" style="font-size:13.5px;padding:10px 12px;border-radius:8px;border:1px solid oklch(88% 0.01 85);font-family:'Work Sans',sans-serif;"/>
+                </label>
+                <label style="display:flex;flex-direction:column;gap:4px;font-size:12.5px;font-weight:600;color:oklch(30% 0.02 260);">Teléfono
+                  <input value="{{ formPhone }}" onInput="{{ onFormPhoneChange }}" style="font-size:13.5px;padding:10px 12px;border-radius:8px;border:1px solid oklch(88% 0.01 85);font-family:'Work Sans',sans-serif;"/>
+                </label>
+                <label style="display:flex;flex-direction:column;gap:4px;font-size:12.5px;font-weight:600;color:oklch(30% 0.02 260);">Email (opcional)
+                  <input value="{{ formEmail }}" onInput="{{ onFormEmailChange }}" style="font-size:13.5px;padding:10px 12px;border-radius:8px;border:1px solid oklch(88% 0.01 85);font-family:'Work Sans',sans-serif;"/>
+                </label>
+                <label style="display:flex;flex-direction:column;gap:4px;font-size:12.5px;font-weight:600;color:oklch(30% 0.02 260);">Motivo de consulta
+                  <select value="{{ formMotivo }}" onChange="{{ onFormMotivoChange }}" style="font-size:13.5px;padding:10px 12px;border-radius:8px;border:1px solid oklch(88% 0.01 85);font-family:'Work Sans',sans-serif;background:oklch(99% 0.004 85);">
+                    <option value="">Selecciona una opción</option>
+                    <option value="Información sobre un curso">Información sobre un curso</option>
+                    <option value="Proceso de inscripción">Proceso de inscripción</option>
+                    <option value="Alquiler de instalaciones">Alquiler de instalaciones</option>
+                    <option value="Otro">Otro</option>
+                  </select>
+                </label>
+                <label style="display:flex;flex-direction:column;gap:4px;font-size:12.5px;font-weight:600;color:oklch(30% 0.02 260);">Curso de interés (opcional)
+                  <select value="{{ formCurso }}" onChange="{{ onFormCursoChange }}" style="font-size:13.5px;padding:10px 12px;border-radius:8px;border:1px solid oklch(88% 0.01 85);font-family:'Work Sans',sans-serif;background:oklch(99% 0.004 85);">
+                    <option value="">No lo sé todavía</option>
+                    <sc-for list="{{ courseNames }}" as="cn" hint-placeholder-count="4">
+                      <option value="{{ cn }}">{{ cn }}</option>
+                    </sc-for>
+                  </select>
+                </label>
+                <label style="display:flex;align-items:flex-start;gap:8px;font-size:12px;color:oklch(45% 0.02 260);line-height:1.5;">
+                  <input type="checkbox" checked="{{ formConsent }}" onChange="{{ onFormConsentChange }}" style="margin-top:2px;width:16px;height:16px;flex-shrink:0;"/>
+                  <span>Acepto la política de privacidad y el tratamiento de mis datos para ser contactado/a.</span>
+                </label>
+                <button onClick="{{ submitForm }}" disabled="{{ formSubmitDisabled }}" style="min-height:44px;font-size:13.5px;font-weight:600;color:oklch(99% 0.004 85);background:{{ formSubmitBg }};border:none;border-radius:10px;cursor:pointer;" style-focus="outline:2px solid oklch(30% 0.09 255);outline-offset:2px;">Enviar solicitud</button>
+                <p style="font-size:10.5px;color:oklch(55% 0.02 260);font-style:italic;margin:0;">Prototipo — el envío real (por correo a Secretaría) aún no está conectado.</p>
+              </div>
+            </sc-if>
+          </div>
+        </sc-if>
       </div>
     </sc-if>
-    <button ref="{{ waBtnRef }}" class="wa-fab" type="button" aria-expanded="{{ waOpen }}" aria-controls="wa-panel" aria-label="{{ waToggleLabel }}" onClick="{{ toggleWa }}" style="display:flex;align-items:center;gap:10px;background:oklch(45% 0.14 150);color:oklch(99% 0.004 85);border:none;border-radius:100px;padding:0 18px 0 14px;height:56px;cursor:pointer;box-shadow:0 10px 24px oklch(20% 0.02 260 / 0.2);" style-hover="filter:brightness(1.06);" style-focus="outline:2px solid oklch(30% 0.09 255);outline-offset:2px;">
-      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.94 14.5L2 22l5.7-1.5A10 10 0 1 0 12 2Z" fill="oklch(99% 0.004 85)"/><path d="M12 3.6A8.4 8.4 0 0 0 4.3 16.2l.3.5-.9 3.2 3.3-.9.5.3A8.4 8.4 0 1 0 12 3.6Z" fill="oklch(45% 0.14 150)"/><path d="M9.2 7.4c-.2-.5-.4-.5-.7-.5h-.5c-.2 0-.5.1-.7.4-.2.3-.9.9-.9 2.1 0 1.2.9 2.4 1 2.6.1.1 1.8 2.8 4.3 3.8 2.1.9 2.5.7 3 .6.4-.1 1.3-.5 1.5-1 .2-.5.2-1 .1-1-.1-.1-.2-.2-.5-.3-.3-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1-.2.3-.6.8-.8 1-.1.1-.3.2-.5.1-.3-.1-1.1-.4-2.1-1.3-.8-.7-1.3-1.5-1.5-1.8-.1-.3 0-.4.1-.5l.4-.5c.1-.1.1-.3.2-.4.1-.2 0-.4 0-.5-.1-.1-.6-1.5-.8-2Z" fill="oklch(99% 0.004 85)"/></svg>
-      <span class="wa-label" style="font-size:14px;font-weight:600;white-space:nowrap;">¿Necesitas ayuda?</span>
+    <button ref="{{ helpBtnRef }}" class="help-fab" type="button" aria-expanded="{{ helpOpen }}" aria-controls="help-panel" aria-label="{{ helpToggleLabel }}" onClick="{{ toggleHelp }}" style="display:flex;align-items:center;gap:10px;background:oklch(30% 0.09 255);color:oklch(99% 0.004 85);border:none;border-radius:100px;padding:0 18px 0 14px;height:56px;cursor:pointer;box-shadow:0 10px 24px oklch(20% 0.02 260 / 0.2);" style-hover="filter:brightness(1.08);" style-focus="outline:2px solid oklch(66% 0.17 45);outline-offset:2px;">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3C6.48 3 2 6.8 2 11.5c0 2.4 1.16 4.56 3.03 6.11-.1.98-.5 2.4-1.36 3.6 1.6-.2 3.2-.85 4.4-1.7 1.2.38 2.52.6 3.93.6 5.52 0 10-3.8 10-8.6S17.52 3 12 3Z" fill="oklch(99% 0.004 85)"/></svg>
+      <span class="help-label" style="font-size:14px;font-weight:600;white-space:nowrap;">¿Necesitas ayuda?</span>
     </button>
   </div>
 
@@ -453,20 +556,27 @@
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;accentHue&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;amber&quot;,&quot;options&quot;:[&quot;amber&quot;,&quot;teal&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Marca&quot;},&quot;showTrustBar&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Secciones&quot;}}">
 class Component extends DCLogic {
-  state = { query: '', isla: 'todas', situacion: 'todas', modalidad: 'todas', mobileNavOpen: false, waOpen: false };
+  state = {
+    query: '', isla: 'todas', situacion: 'todas', modalidad: 'todas', mobileNavOpen: false,
+    helpOpen: false, helpView: 'menu',
+    assistantMessages: [{ from: 'bot', text: 'Hola, soy el asistente virtual de Centro de Estudios Máster. ¿En qué puedo ayudarte?' }],
+    guidedStep: null, guidedSituacion: null, guidedIsla: null,
+    formName: '', formPhone: '', formEmail: '', formMotivo: '', formCurso: '', formConsent: false, formSubmitted: false,
+  };
   toggleBtnRef = React.createRef();
   closeBtnRef = React.createRef();
-  waBtnRef = React.createRef();
+  helpBtnRef = React.createRef();
+  helpPanelRef = React.createRef();
 
   componentDidMount() {
     this._onKeyDown = e => {
       if (e.key === 'Escape' && this.state.mobileNavOpen) this.closeMobileNav();
-      if (e.key === 'Escape' && this.state.waOpen) this.setState({ waOpen: false });
+      if (e.key === 'Escape' && this.state.helpOpen) this.closeHelp();
     };
     document.addEventListener('keydown', this._onKeyDown);
     this._onClickOutside = e => {
-      if (this.state.waOpen && this.waBtnRef.current && !this.waBtnRef.current.closest('.wa-float').contains(e.target)) {
-        this.setState({ waOpen: false });
+      if (this.state.helpOpen && this.helpBtnRef.current && !this.helpBtnRef.current.closest('.help-hub').contains(e.target)) {
+        this.closeHelp();
       }
     };
     document.addEventListener('click', this._onClickOutside, true);
@@ -478,7 +588,100 @@ class Component extends DCLogic {
     document.body.style.overflow = '';
   }
 
-  toggleWa = () => this.setState(s => ({ waOpen: !s.waOpen }));
+  toggleHelp = () => {
+    if (this.state.helpOpen) this.closeHelp(); else this.openHelp();
+  };
+
+  openHelp = () => {
+    const isMobile = window.innerWidth <= 860;
+    this._helpLockedScroll = isMobile;
+    if (isMobile) document.body.style.overflow = 'hidden';
+    this.setState({ helpOpen: true, helpView: 'menu' }, () => {
+      if (this.helpPanelRef.current) this.helpPanelRef.current.focus();
+    });
+  };
+
+  closeHelp = () => {
+    if (this._helpLockedScroll) document.body.style.overflow = '';
+    this._helpLockedScroll = false;
+    this.setState({ helpOpen: false });
+    setTimeout(() => { if (this.helpBtnRef.current) this.helpBtnRef.current.focus(); }, 0);
+  };
+
+  switchHelpView = view => this.setState({ helpView: view }, () => {
+    if (this.helpPanelRef.current) this.helpPanelRef.current.focus();
+  });
+
+  openAssistant = () => this.switchHelpView('assistant');
+  openForm = () => this.switchHelpView('form');
+  backToMenu = () => this.switchHelpView('menu');
+
+  sendQuickReply = label => {
+    if (label === 'Quiero que me contacten') { this.openForm(); return; }
+    if (label === 'Buscar un curso') {
+      this.setState(s => ({
+        guidedStep: 'situacion',
+        assistantMessages: [
+          ...s.assistantMessages,
+          { from: 'user', text: label },
+          { from: 'bot', text: '¿Cuál es tu situación laboral?' },
+        ],
+      }));
+      return;
+    }
+    this.setState(s => ({
+      assistantMessages: [
+        ...s.assistantMessages,
+        { from: 'user', text: label },
+        { from: 'bot', text: 'Perfecto — hemos registrado tu interés en "' + label + '". Un miembro del equipo continuará esta conversación. (Prototipo informativo, sin coste — próximamente con flujos guiados y catálogo real de cursos.)' },
+      ],
+    }));
+  };
+
+  sendGuidedAnswer = (step, label, value) => {
+    if (step === 'situacion') {
+      this.setState(s => ({
+        guidedStep: 'isla', guidedSituacion: value,
+        assistantMessages: [...s.assistantMessages, { from: 'user', text: label }, { from: 'bot', text: '¿En qué isla te interesa formarte?' }],
+      }));
+    } else if (step === 'isla') {
+      this.setState(s => ({
+        guidedStep: 'modalidad', guidedIsla: value,
+        assistantMessages: [...s.assistantMessages, { from: 'user', text: label }, { from: 'bot', text: '¿Prefieres modalidad presencial o teleformación?' }],
+      }));
+    } else if (step === 'modalidad') {
+      const matches = this.courses.filter(c => {
+        const matchIsla = this.state.guidedIsla === 'todas' || c.isla === this.state.guidedIsla;
+        const matchModalidad = value === 'todas' || c.modalidad === value;
+        const matchSituacion = this.state.guidedSituacion === 'Privado' ? c.price === 'Privado' : c.price === 'Gratuito';
+        return matchIsla && matchModalidad && matchSituacion;
+      });
+      const resultText = matches.length
+        ? 'Estos cursos de nuestro catálogo encajan con tu búsqueda: ' + matches.map(c => c.name).join(', ') + '.'
+        : 'De momento no hay cursos de nuestro catálogo que encajen exactamente con esos filtros. Prueba con otra isla o modalidad, o solicita que te contactemos.';
+      this.setState(s => ({
+        guidedStep: null, guidedSituacion: null, guidedIsla: null,
+        assistantMessages: [...s.assistantMessages, { from: 'user', text: label }, { from: 'bot', text: resultText }],
+      }));
+    }
+  };
+
+  cancelGuided = () => this.setState(s => ({
+    guidedStep: null, guidedSituacion: null, guidedIsla: null,
+    assistantMessages: [...s.assistantMessages, { from: 'bot', text: 'Búsqueda guiada cancelada. ¿En qué más puedo ayudarte?' }],
+  }));
+
+  submitForm = () => {
+    if (!this.state.formConsent || !this.state.formName.trim() || !this.state.formPhone.trim()) return;
+    this.setState({ formSubmitted: true });
+  };
+
+  guidedOptionSets = {
+    situacion: [{ label: 'Desempleado/a', value: 'Gratuito' }, { label: 'Ocupado/a', value: 'Gratuito' }, { label: 'Formación privada', value: 'Privado' }],
+    isla: [{ label: 'Gran Canaria', value: 'Gran Canaria' }, { label: 'Tenerife', value: 'Tenerife' }, { label: 'La Palma', value: 'La Palma' }, { label: 'Fuerteventura', value: 'Fuerteventura' }, { label: 'Lanzarote', value: 'Lanzarote' }, { label: 'Cualquiera', value: 'todas' }],
+    modalidad: [{ label: 'Presencial', value: 'Presencial' }, { label: 'Teleformación', value: 'Teleformación' }, { label: 'Cualquiera', value: 'todas' }],
+  };
+  guidedStepLabels = { situacion: 'Situación laboral', isla: 'Isla', modalidad: 'Modalidad o área de interés' };
 
   toggleMobileNav = () => {
     if (this.state.mobileNavOpen) this.closeMobileNav();
@@ -610,10 +813,52 @@ class Component extends DCLogic {
       closeMobileNav: this.closeMobileNav,
       toggleBtnRef: this.toggleBtnRef,
       closeBtnRef: this.closeBtnRef,
-      waOpen: this.state.waOpen,
-      waToggleLabel: this.state.waOpen ? 'Cerrar contacto por WhatsApp' : 'Contactar por WhatsApp',
-      toggleWa: this.toggleWa,
-      waBtnRef: this.waBtnRef,
+      helpOpen: this.state.helpOpen,
+      helpToggleLabel: this.state.helpOpen ? 'Cerrar centro de contacto' : '¿Necesitas ayuda? Abrir centro de contacto',
+      toggleHelp: this.toggleHelp,
+      helpBtnRef: this.helpBtnRef,
+      helpPanelRef: this.helpPanelRef,
+      isMenuView: this.state.helpView === 'menu',
+      isAssistantView: this.state.helpView === 'assistant',
+      isFormView: this.state.helpView === 'form',
+      openAssistant: this.openAssistant,
+      openForm: this.openForm,
+      backToMenu: this.backToMenu,
+      assistantMessages: this.state.assistantMessages.map(m => ({
+        text: m.text,
+        align: m.from === 'user' ? 'flex-end' : 'flex-start',
+        bg: m.from === 'user' ? 'oklch(30% 0.09 255)' : 'oklch(95% 0.01 85)',
+        color: m.from === 'user' ? 'oklch(99% 0.004 85)' : 'oklch(20% 0.02 260)',
+      })),
+      quickReplies: [
+        'Buscar un curso', 'Soy desempleado/a', 'Estoy trabajando', 'Formación privada',
+        'Formación online', 'Alquiler de instalaciones', 'Quiero que me contacten', 'Otra consulta',
+      ].map(label => ({ label, onSelect: () => this.sendQuickReply(label) })),
+      isGuidedActive: !!this.state.guidedStep,
+      guidedStepLabel: this.state.guidedStep ? this.guidedStepLabels[this.state.guidedStep] : '',
+      guidedOptions: this.state.guidedStep
+        ? (this.guidedOptionSets[this.state.guidedStep] || []).map(o => ({ label: o.label, onSelect: () => this.sendGuidedAnswer(this.state.guidedStep, o.label, o.value) }))
+        : [],
+      cancelGuided: this.cancelGuided,
+      quickRepliesRowStyle: this.state.guidedStep ? 'display:none' : 'display:block',
+      formName: this.state.formName,
+      formPhone: this.state.formPhone,
+      formEmail: this.state.formEmail,
+      formMotivo: this.state.formMotivo,
+      formCurso: this.state.formCurso,
+      formConsent: this.state.formConsent,
+      formSubmitted: this.state.formSubmitted,
+      formNotSubmitted: !this.state.formSubmitted,
+      formSubmitDisabled: !(this.state.formConsent && this.state.formName.trim() && this.state.formPhone.trim()),
+      formSubmitBg: (this.state.formConsent && this.state.formName.trim() && this.state.formPhone.trim()) ? 'oklch(30% 0.09 255)' : 'oklch(75% 0.01 260)',
+      courseNames: this.courses.map(c => c.name),
+      onFormNameChange: e => this.setState({ formName: e.target.value }),
+      onFormPhoneChange: e => this.setState({ formPhone: e.target.value }),
+      onFormEmailChange: e => this.setState({ formEmail: e.target.value }),
+      onFormMotivoChange: e => this.setState({ formMotivo: e.target.value }),
+      onFormCursoChange: e => this.setState({ formCurso: e.target.value }),
+      onFormConsentChange: e => this.setState({ formConsent: e.target.checked }),
+      submitForm: this.submitForm,
     };
   }
 }
