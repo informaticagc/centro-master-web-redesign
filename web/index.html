@@ -175,6 +175,18 @@
   .collab-logo{width:152px;height:68px;display:flex;align-items:center;justify-content:center;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 18px;}
   .collab-logo img{width:100%;height:100%;object-fit:contain;}
 
+  .wa-float{position:fixed;right:28px;bottom:28px;z-index:55;display:flex;flex-direction:column;align-items:flex-end;gap:12px;}
+  .wa-panel{width:270px;background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:0 16px 40px oklch(20% 0.02 260 / .18);padding:18px;}
+  .wa-panel[hidden]{display:none;}
+  .wa-panel p{font-size:13.5px;color:oklch(30% 0.02 260);line-height:1.5;margin:0 0 14px;}
+  .wa-panel a{display:flex;align-items:center;justify-content:center;gap:8px;font-size:14px;font-weight:600;color:var(--surface);background:oklch(45% 0.14 150);padding:12px 16px;border-radius:10px;min-height:44px;}
+  .wa-panel a:hover{color:var(--surface);}
+  .wa-panel a:focus-visible{outline:2px solid var(--primary);outline-offset:2px;}
+  .wa-fab{display:flex;align-items:center;gap:10px;background:oklch(45% 0.14 150);color:var(--surface);border:none;border-radius:100px;padding:0 18px 0 14px;height:56px;cursor:pointer;box-shadow:0 10px 24px oklch(20% 0.02 260 / .2);}
+  .wa-fab:hover{filter:brightness(1.06);}
+  .wa-fab:focus-visible{outline:2px solid var(--primary);outline-offset:2px;}
+  .wa-fab span{font-size:14px;font-weight:600;white-space:nowrap;}
+
   .top-bar{display:flex;align-items:center;justify-content:flex-end;gap:20px;padding:9px 56px;background:var(--tint);border-bottom:1px solid var(--line);}
   .top-bar a{font-size:12.5px;font-weight:500;color:var(--ink-soft);white-space:nowrap;}
   .top-bar a.intranet{border-left:1px solid oklch(88% 0.01 85);padding-left:20px;}
@@ -237,6 +249,10 @@
     .collab-section{padding:0 20px 64px;}
     .collab-panel{padding:32px 24px;}
     .collab-logos{justify-content:flex-start;}
+    .wa-label{display:none;}
+    .wa-fab{width:56px;height:56px;padding:0;justify-content:center;}
+    .wa-float{right:max(16px, env(safe-area-inset-right));bottom:max(16px, env(safe-area-inset-bottom));}
+    .wa-panel{right:max(16px, env(safe-area-inset-right));left:16px;width:auto;}
   }
 </style>
 </head>
@@ -563,6 +579,17 @@
     </div>
   </footer>
 
+  <div class="wa-float">
+    <div id="waPanel" class="wa-panel" role="dialog" aria-label="Contactar por WhatsApp" hidden>
+      <p>¿Necesitas ayuda? Escríbenos por WhatsApp y te respondemos lo antes posible.</p>
+      <a href="https://wa.me/34682821956?text=Hola%2C%20quiero%20informaci%C3%B3n%20sobre%20los%20cursos%20de%20Centro%20de%20Estudios%20M%C3%A1ster." target="_blank" rel="noopener">Hablar por WhatsApp</a>
+    </div>
+    <button id="waFab" class="wa-fab" type="button" aria-expanded="false" aria-controls="waPanel" aria-label="Contactar por WhatsApp">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.94 14.5L2 22l5.7-1.5A10 10 0 1 0 12 2Z" fill="#fff"/><path d="M12 3.6A8.4 8.4 0 0 0 4.3 16.2l.3.5-.9 3.2 3.3-.9.5.3A8.4 8.4 0 1 0 12 3.6Z" fill="oklch(45% 0.14 150)"/><path d="M9.2 7.4c-.2-.5-.4-.5-.7-.5h-.5c-.2 0-.5.1-.7.4-.2.3-.9.9-.9 2.1 0 1.2.9 2.4 1 2.6.1.1 1.8 2.8 4.3 3.8 2.1.9 2.5.7 3 .6.4-.1 1.3-.5 1.5-1 .2-.5.2-1 .1-1-.1-.1-.2-.2-.5-.3-.3-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1-.2.3-.6.8-.8 1-.1.1-.3.2-.5.1-.3-.1-1.1-.4-2.1-1.3-.8-.7-1.3-1.5-1.5-1.8-.1-.3 0-.4.1-.5l.4-.5c.1-.1.1-.3.2-.4.1-.2 0-.4 0-.5-.1-.1-.6-1.5-.8-2Z" fill="#fff"/></svg>
+      <span class="wa-label">¿Necesitas ayuda?</span>
+    </button>
+  </div>
+
 </div>
 
 <script>
@@ -670,6 +697,29 @@
   Array.prototype.forEach.call(drawer.querySelectorAll('a'), function (a) {
     a.addEventListener('click', closeDrawer);
   });
+
+  // WhatsApp floating button
+  var waFab = document.getElementById('waFab');
+  var waPanel = document.getElementById('waPanel');
+  function openWa() {
+    waPanel.hidden = false;
+    waFab.setAttribute('aria-expanded', 'true');
+    waFab.setAttribute('aria-label', 'Cerrar contacto por WhatsApp');
+  }
+  function closeWa() {
+    waPanel.hidden = true;
+    waFab.setAttribute('aria-expanded', 'false');
+    waFab.setAttribute('aria-label', 'Contactar por WhatsApp');
+  }
+  waFab.addEventListener('click', function () {
+    if (waPanel.hidden) openWa(); else closeWa();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && !waPanel.hidden) closeWa();
+  });
+  document.addEventListener('click', function (e) {
+    if (!waPanel.hidden && !e.target.closest('.wa-float')) closeWa();
+  }, true);
 </script>
 </body>
 </html>

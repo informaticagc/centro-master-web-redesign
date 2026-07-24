@@ -5,8 +5,9 @@ Prototipo de la nueva página principal — **V2.2 aprobada visualmente**.
 V2.2 respecto a V2.1: navegación en dos niveles (barra corporativa superior + header principal),
 menú hamburguesa actualizado con accesos agrupados, nueva sección "Alquiler de instalaciones", footer
 simplificado a un único bloque oscuro uniforme (sin logo ni franja de marca — identidad solo por
-texto), y los recursos reales restantes integrados: Inserción laboral, Ofimática y Alquiler de
-instalaciones. Incluye un testimonio provisional claramente marcado como placeholder de contenido.
+texto), los recursos reales restantes integrados (Inserción laboral, Ofimática, Alquiler de
+instalaciones), un testimonio provisional claramente marcado, y un botón flotante de WhatsApp
+(enlace real a wa.me/34682821956 con mensaje precargado) visible en todas las páginas.
 
 ## Estructura
 
