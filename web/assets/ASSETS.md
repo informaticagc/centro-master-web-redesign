@@ -36,7 +36,7 @@ Generados con [sharp](https://sharp.pixelplumbing.com/) — fotografías a WebP 
 |---|---|---|---|---|---|
 | `logo-iso9001-sgs.png` | `recursos/certificaciones/ISO 9001 · Kiwa.png` | Logo certificación ISO 9001 | 600×586 | PNG (alpha) | 97.3 KB |
 
-**Importante:** pese a que el archivo original se llama "ISO 9001 · Kiwa.png", el sello impreso en la propia imagen identifica a **SGS** ("SYSTEM CERTIFICATION · SGS"), no a Kiwa. El archivo final se ha nombrado `logo-iso9001-sgs.png` para reflejar la entidad certificadora real. **Esta corrección todavía no se ha aplicado al texto del placeholder en `design/Home.dc.html` / `web/index.html`** (sigue diciendo `[LOGO: ISO 9001 · Kiwa]`) — queda pendiente de la próxima integración de diseño, donde debe sustituirse "Kiwa" por "SGS".
+**Importante:** pese a que el archivo original se llama "ISO 9001 · Kiwa.png", el sello impreso en la propia imagen identifica a **SGS** ("SYSTEM CERTIFICATION · SGS"), no a Kiwa. El archivo final se ha nombrado `logo-iso9001-sgs.png` para reflejar la entidad certificadora real. La corrección de texto ("Kiwa" → "SGS") ya se aplicó al cerrar la V2.1 — ver sección "Cierre V2.1" más abajo.
 
 ## Hero
 
@@ -71,7 +71,11 @@ Generados con [sharp](https://sharp.pixelplumbing.com/) — fotografías a WebP 
 | `aula-teleformacion-1200.webp` | ídem | VP "Presencial y online" — desktop | 1200×800 | WebP q82 | 81.3 KB |
 | `aula-teleformacion-1920.webp` | ídem | VP "Presencial y online" — desktop grande | 1920×1280 | WebP q82 | 163.3 KB |
 
-Original de 3000×2000 px, el más grande procesado hasta ahora — justifica las tres variantes responsive sin ampliar. Aún no integrado en `design/Home.dc.html`.
+Original de 3000×2000 px, el más grande procesado hasta esta tanda — justifica las tres variantes responsive sin ampliar.
+
+## Cierre V2.1
+
+`aula-teleformacion-*.webp`, `logo-piec.png` y `logo-iso9001-sgs.png` (incluida la corrección de texto "Kiwa" → "SGS") quedaron integrados en `design/Home.dc.html` y `web/index.html` en el cierre de la V2.1.
 
 ## Sedes
 
@@ -106,8 +110,21 @@ Original de 3000×2000 px, el más grande procesado hasta ahora — justifica la
 | `curso-socorrismo-1200.webp` | ídem | Curso "Socorrismo en instalaciones acuáticas" — desktop | 1200×800 | WebP q82 | 136.9 KB |
 | `curso-desa-800.webp` | `recursos/fotografias/alumnado/DESAdesfibrilador.png` | Curso "DESA · Desfibrilador semiautomático" — mobile/tablet | 800×600 | WebP q82 | 52.7 KB |
 | `curso-desa-1200.webp` | ídem | Curso "DESA · Desfibrilador semiautomático" — desktop | 1200×900 | WebP q82 | 91.8 KB |
+| `curso-insercion-discapacidad-800.webp` | `recursos/fotografias/alumnado/sesion de orientacion laboral.png` | Curso "Inserción laboral de personas con discapacidad" — mobile/tablet | 800×533 | WebP q82 | 66.9 KB |
+| `curso-insercion-discapacidad-1200.webp` | ídem | Curso "Inserción laboral de personas con discapacidad" — desktop | 1200×800 | WebP q82 | 122.6 KB |
+| `curso-ofimatica-800.webp` | `recursos/fotografias/alumnado/alumnado en aula de informatica.png` | Curso "Ofimática" — mobile/tablet | 800×533 | WebP q82 | 57.3 KB |
+| `curso-ofimatica-1200.webp` | ídem | Curso "Ofimática" — desktop | 1200×800 | WebP q82 | 104.9 KB |
 
-*(Sin variante 1920 en ninguna: los originales, 1536 px y 1448 px, son más estrechos. Ambas fotos sirven tanto para la tarjeta destacada (16:10) como para la miniatura secundaria (120px), según qué curso quede primero al filtrar.)*
+*(Sin variante 1920 en ninguna: todos los originales, entre 1448 y 1536 px, son más estrechos. Cada foto sirve tanto para la tarjeta destacada (16:10) como para la miniatura secundaria (120px), según qué curso quede primero al filtrar. `curso-insercion-discapacidad` muestra literalmente una pantalla con el título "Inserción laboral de personas con discapacidad" y alumnado en sillas de ruedas; `curso-ofimatica` muestra una pantalla "Herramientas de productividad" con iconos de Word/Excel/PowerPoint — ambas son coincidencias directas de contenido, no genéricas.)*
+
+## Alquiler de instalaciones (nueva sección — pendiente de integrar)
+
+| Archivo final | Origen | Uso previsto | Dimensiones | Formato | Peso |
+|---|---|---|---|---|---|
+| `alquiler-instalaciones-800.webp` | `recursos/fotografias/instalaciones/aula de informatica.png` | Nueva sección "Alquiler de instalaciones" — mobile/tablet | 800×400 | WebP q82 | 45.9 KB |
+| `alquiler-instalaciones-1200.webp` | ídem | Nueva sección "Alquiler de instalaciones" — desktop | 1200×600 | WebP q82 | 87.8 KB |
+
+*(Sin variante 1920: el original, 1774 px de ancho, es más estrecho.)* Pese al nombre del archivo original ("aula de informatica.png"), el contenido real es una sala de formación/reuniones vacía, luminosa, con mesas y sillas reconfigurables, pantalla de proyección y vistas exteriores — encaja mejor como espacio disponible para alquiler que como aula de informática con equipos. No se reutiliza ninguna foto ya usada en otra sección de la home. Aún no integrada en `design/Home.dc.html` ni `web/index.html` (la sección "Alquiler de instalaciones" todavía no existe en el diseño; esto se prepara para cuando Claude Design importe la V2.2).
 
 ## Tiles de perfil ("Encuentra la formación que encaja")
 
@@ -129,14 +146,15 @@ Se conserva el encuadre completo del original en un único tamaño; el recorte v
 | Originales seleccionados — 1ª tanda (14 archivos) | 21.80 MB |
 | Originales seleccionados — 2ª tanda (8 archivos: socorrismo, DESA, formación privada, FSE, Cruz Roja, Opciónate, Desarrollo Social, A ti Mujer) | 6.93 MB |
 | Originales seleccionados — 3ª tanda (3 archivos: aula/teleformación, PIEC, ISO 9001/SGS) | 0.85 MB |
-| **Originales seleccionados, total (25 archivos, banco `/recursos`)** | **29.57 MB** |
-| Assets finales generados (40 imágenes, `/web/assets`) | 3.42 MB |
-| **Reducción** | **≈ 88.4 %** |
+| Originales seleccionados — 4ª tanda (3 archivos: inserción discapacidad, ofimática, alquiler instalaciones) | 6.68 MB |
+| **Originales seleccionados, total (28 archivos, banco `/recursos`)** | **36.25 MB** |
+| Assets finales generados (46 imágenes, `/web/assets`) | 3.89 MB |
+| **Reducción** | **≈ 89.3 %** |
 
 ## Procesado pero aún no integrado en el diseño
 
-Los 3 assets de esta tanda (`aula-teleformacion-*.webp`, `logo-piec.png`, `logo-iso9001-sgs.png`) están optimizados y disponibles en `/web/assets`, pero **todavía no se han enlazado** en `design/Home.dc.html` ni en `web/index.html` — esos archivos siguen mostrando sus placeholders originales (`[FOTO: aula equipada y conexión de teleformación]`, `[LOGO: PIEC]`, `[LOGO: ISO 9001 · Kiwa]`). La integración de diseño, incluyendo la corrección de texto "Kiwa" → "SGS", queda pendiente para un paso posterior.
+Los 3 assets de la 4ª tanda (`curso-insercion-discapacidad-*.webp`, `curso-ofimatica-*.webp`, `alquiler-instalaciones-*.webp`) están optimizados y disponibles en `/web/assets`, pero **todavía no se han enlazado** en `design/Home.dc.html` ni en `web/index.html`. Los dos primeros sustituirán los placeholders de curso ya existentes; el tercero es para la nueva sección "Alquiler de instalaciones" de la V2.2, que Claude Design aún no ha importado al repositorio.
 
 ## Pendiente para más adelante (sin recurso todavía)
 
-Siguen sin recurso adecuado y se conservan como placeholder: cursos "Inserción laboral" y "Ofimática" (aunque ya existen candidatos en `/recursos` sin seleccionar todavía — `sesion de orientacion laboral.png`, `alumnado en aula de informatica.png`), testimonio de alumnado egresado y el dato del número total de sedes activas. Se incorporarán cuando se confirme el material o dato adecuado — no se ha forzado ninguno.
+Siguen sin recurso: testimonio de alumnado egresado y el dato del número total de sedes activas. Se incorporarán cuando se confirme el material o dato adecuado — no se ha forzado ninguno.
