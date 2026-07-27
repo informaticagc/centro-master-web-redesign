@@ -16,7 +16,11 @@ const path = require('path');
 const cfg = require('../config');
 
 function git(args, opts) {
-  return execFileSync('git', args, Object.assign({ cwd: cfg.ROOT, encoding: 'utf8' }, opts || {})).trim();
+  // Recorta solo el final (salto de línea de git), nunca el principio: la
+  // salida de "git status --porcelain" usa espacios iniciales con
+  // significado de columna (" M archivo") y un trim() completo se comía el
+  // primer carácter del primer archivo listado.
+  return execFileSync('git', args, Object.assign({ cwd: cfg.ROOT, encoding: 'utf8' }, opts || {})).replace(/\s+$/, '');
 }
 
 function repoValido() {

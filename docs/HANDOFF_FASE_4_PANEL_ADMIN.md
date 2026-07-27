@@ -364,14 +364,19 @@ real.
   arrays de valores primitivos, igual que el estilo original del fichero;
   verificado que reproduce el archivo byte a byte (salvo CRLF/LF, ajeno a
   este código) y que editar un curso solo cambia la línea de ese campo.
-- **Incidencia visual cosmética (no corregida, no bloqueante)**: en la
-  pantalla de confirmación de publicación, el primer `<li>` de la lista
-  "Archivos fuera de alcance" pierde visualmente su primer carácter (p.ej.
-  "admin/..." se ve como "dmin/..."), solo el primer elemento de la lista,
-  reproducido en dos capturas independientes. El dato subyacente es
-  correcto (verificado directamente en `git-service.js`); no se encontró
-  causa CSS cierta ni fue reproducible en un navegador aislado. Pendiente
-  de investigación futura, sin prioridad.
+- **Bug real de cálculo de archivos permitidos (corregido)**: lo que
+  parecía un recorte visual del primer carácter en la lista "Archivos fuera
+  de alcance" (p.ej. "admin/..." mostrado como "dmin/...") **no era CSS**:
+  `admin/services/git-service.js:19` hacía `.trim()` sobre toda la salida
+  de `git status --porcelain`, que usa espacios iniciales con significado
+  de columna (`" M archivo"`) — ese `.trim()` global se comía el espacio
+  inicial (y por tanto una letra) del **primer archivo listado**, cualquiera
+  que fuera. Efecto grave: si el primer archivo modificado según Git era
+  legítimo (p. ej. `web/cursos/ofimatica/index.html`), la ruta corrompida
+  ya no coincidía con la allowlist y **bloqueaba una publicación válida**.
+  Reproducido de forma determinista llamando a `prepararPlan()`
+  directamente (sin navegador). Corregido recortando solo el final de la
+  salida (`replace(/\s+$/, '')`), nunca el principio.
 - **Hallazgo adicional sin corregir (`destacado`)**: durante la auditoría
   sistemática modelo↔formulario de la Fase 4C se detectó que
   `curso-model.js:75` restaura el valor anterior de `destacado` cuando la
