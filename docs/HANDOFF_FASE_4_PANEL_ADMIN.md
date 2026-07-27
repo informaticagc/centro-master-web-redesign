@@ -340,3 +340,45 @@ npm audit
 No incluir nunca en commits ni en salidas compartidas el contenido de
 `admin/.env`, ningún `ADMIN_PASSWORD_HASH` real, ni ningún `SESSION_SECRET`
 real.
+
+## M. Diagnóstico de la Fase 4C (prueba controlada de publicación)
+
+- **Bug de pérdida de datos (corregido)**: `admin/views/form.ejs` no tenía
+  campos para `duracionHoras` ni `duracionTexto`, aunque
+  `curso-model.js: desdeFormulario()` los sobrescribía incondicionalmente en
+  cada guardado — cualquier guardado de cualquier curso borraba su duración.
+  Corregido añadiendo ambos campos al bloque 7 del formulario.
+- **Allowlist verificada en la práctica**: durante las pruebas, la
+  publicación se bloqueó correctamente en cuanto había archivos modificados
+  fuera de `web/` (primero `admin/views/form.ejs`; después también
+  `admin/services/cursos-store.js` y `admin/services/json-formato.js`),
+  mostrando "archivo(s) fuera del alcance permitido" y dejando el botón de
+  publicar deshabilitado. Ninguna simulación llegó a ejecutar `git add`,
+  commit ni push.
+- **Reserialización no semántica de arrays (corregida)**:
+  `cursos-store.js` usaba `JSON.stringify(datos, null, 2)`, que expande
+  todos los arrays no vacíos a multilínea sin memoria del formato original
+  — cualquier guardado reformateaba (sin cambiar valores) los arrays de los
+  4 cursos, no solo el editado. Corregido con un serializador propio
+  (`admin/services/json-formato.js`) que mantiene en una sola línea los
+  arrays de valores primitivos, igual que el estilo original del fichero;
+  verificado que reproduce el archivo byte a byte (salvo CRLF/LF, ajeno a
+  este código) y que editar un curso solo cambia la línea de ese campo.
+- **Incidencia visual cosmética (no corregida, no bloqueante)**: en la
+  pantalla de confirmación de publicación, el primer `<li>` de la lista
+  "Archivos fuera de alcance" pierde visualmente su primer carácter (p.ej.
+  "admin/..." se ve como "dmin/..."), solo el primer elemento de la lista,
+  reproducido en dos capturas independientes. El dato subyacente es
+  correcto (verificado directamente en `git-service.js`); no se encontró
+  causa CSS cierta ni fue reproducible en un navegador aislado. Pendiente
+  de investigación futura, sin prioridad.
+- **Hallazgo adicional sin corregir (`destacado`)**: durante la auditoría
+  sistemática modelo↔formulario de la Fase 4C se detectó que
+  `curso-model.js:75` restaura el valor anterior de `destacado` cuando la
+  casilla llega desmarcada, en vez de guardar `false` — a diferencia de
+  `inscripcionAbierta`, que sí lo hace bien justo debajo. Efecto práctico:
+  una vez marcado "Destacado" en un curso, no se puede desmarcar desde el
+  formulario. No es una pérdida de datos (el campo no se borra) pero sí un
+  comportamiento incorrecto. No corregido en la Fase 4C por estar fuera del
+  alcance acordado (solo campos ausentes del formulario); pendiente de
+  decisión.

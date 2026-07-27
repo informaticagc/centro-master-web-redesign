@@ -160,6 +160,12 @@
       <input type="text" name="tipoFormacion" value="<%= curso.tipoFormacion || '' %>">
       <span class="field-hint">No es un sustituto de Certificación/Nivel: rellénalo solo si el texto visual debe decir algo distinto a la combinación de ambos.</span>
     </label>
+    <label class="field-label">Duración (horas)
+      <input type="number" name="duracionHoras" value="<%= curso.duracionHoras != null ? curso.duracionHoras : '' %>" min="0">
+    </label>
+    <label class="field-label">Duración (texto libre, si no hay una cifra exacta en horas)
+      <input type="text" name="duracionTexto" value="<%= curso.duracionTexto || '' %>" placeholder="ej. Varias sesiones">
+    </label>
   </fieldset>
 
   <fieldset class="card">

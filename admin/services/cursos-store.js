@@ -12,6 +12,7 @@ const fs = require('fs');
 const path = require('path');
 const cfg = require('../config');
 const { runValidator } = require('./validator');
+const { serializar } = require('./json-formato');
 
 function leerCursosData() {
   const raw = fs.readFileSync(cfg.CURSOS_JSON, 'utf8');
@@ -45,7 +46,7 @@ function guardarCursosData(cursosData) {
     return { ok: false, errores: ['Estructura interna inválida: falta el array "cursos".'], avisos: [] };
   }
 
-  const nuevoContenido = JSON.stringify(cursosData, null, 2) + '\n';
+  const nuevoContenido = serializar(cursosData) + '\n';
 
   // --- 2. Validación sobre una copia staged, sin tocar el archivo real ---
   fs.mkdirSync(cfg.TMP_DIR, { recursive: true });
