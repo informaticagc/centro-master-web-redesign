@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title><%= titulo %> — Panel CEM</title>
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<% if (typeof dryRun !== 'undefined' && dryRun) { %>
+  <div class="dryrun-banner">MODO SIMULACIÓN: no se publicará ningún cambio</div>
+<% } %>
+<header class="admin-header">
+  <div class="admin-header-brand">Panel interno · Centro de Estudios Máster</div>
+  <nav class="admin-header-nav">
+    <a href="/">Dashboard</a>
+    <a href="/cursos">Cursos</a>
+    <a href="/cursos/nuevo">Crear curso</a>
+    <a href="/papelera">Papelera</a>
+    <a href="/historial">Historial</a>
+    <a href="/publicar">Estado de publicación</a>
+    <% if (typeof usuarioActual !== 'undefined' && usuarioActual) { %>
+      <span class="nav-user"><%= usuarioActual %></span>
+      <form method="post" action="/logout" class="inline-form">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <button type="submit" class="link-btn">Cerrar sesión</button>
+      </form>
+    <% } %>
+  </nav>
+</header>
+<main class="admin-main">

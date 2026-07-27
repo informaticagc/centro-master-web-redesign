@@ -1,0 +1,224 @@
+<%- include('partials/head', { titulo: titulo }) %>
+<%
+  var _revisar = (typeof camposARevisar !== 'undefined' ? camposARevisar : []) || [];
+  function claseRevisar(campo) { return _revisar.indexOf(campo) !== -1 ? ' campo-revisar' : ''; }
+%>
+
+<% if (errores && errores.length) { %>
+  <div class="flash flash-error">
+    <strong>No se pudo guardar:</strong>
+    <ul><% errores.forEach(function(e) { %><li><%= e %></li><% }) %></ul>
+  </div>
+<% } %>
+<% if (avisos && avisos.length) { %>
+  <div class="flash flash-warning">
+    <strong>Avisos del validador (no bloquean el guardado):</strong>
+    <ul><% avisos.forEach(function(a) { %><li><%= a %></li><% }) %></ul>
+  </div>
+<% } %>
+<% if (!esNuevo && yaPublicado) { %>
+  <div class="flash flash-warning">Este curso ya tiene una ficha publicada. Cambiar el slug romperá enlaces antiguos.</div>
+<% } %>
+
+<form method="post" action="/cursos/guardar/<%= esNuevo ? 'nuevo' : curso.id %>" data-track-changes id="curso-form">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+  <div class="unsaved-indicator" id="unsaved-indicator" hidden>● Cambios sin guardar</div>
+
+  <fieldset class="card">
+    <legend>1. Datos básicos</legend>
+    <label class="field-label<%= claseRevisar('nombre') %>">Nombre del curso
+      <input type="text" name="nombre" id="campo-nombre" value="<%= curso.nombre %>" required>
+    </label>
+    <label class="field-label<%= claseRevisar('slug') %>">Slug (URL)
+      <input type="text" name="slug" id="campo-slug" value="<%= curso.slug %>" data-slug-manual="<%= curso.slug ? 'true' : 'false' %>" required>
+      <span class="field-hint">Se genera solo desde el nombre. Puedes editarlo antes de la primera publicación.</span>
+    </label>
+    <label class="field-label">Código interno (opcional)
+      <input type="text" name="codigo" value="<%= curso.codigo || '' %>">
+    </label>
+    <label class="field-label">Descripción corta
+      <textarea name="descripcionCorta" id="campo-descripcionCorta" rows="2"><%= curso.descripcionCorta || '' %></textarea>
+    </label>
+    <label class="field-label">Descripción completa
+      <textarea name="descripcionCompleta" rows="5"><%= curso.descripcionCompleta || '' %></textarea>
+    </label>
+    <%- include('partials/repeatable', { name: 'palabrasClave', label: 'Palabras clave (buscador)', items: curso.palabrasClave, placeholder: 'ej. socorrismo' }) %>
+  </fieldset>
+
+  <fieldset class="card">
+    <legend>2. Estado y publicación</legend>
+    <label class="field-label<%= claseRevisar('estado') %>">Estado
+      <select name="estado" id="campo-estado">
+        <% cfg.ESTADOS.forEach(function(e) { %>
+          <option value="<%= e %>" <%= curso.estado === e ? 'selected' : '' %>><%= e %></option>
+        <% }) %>
+      </select>
+    </label>
+    <label class="field-check"><input type="checkbox" name="destacado" <%= curso.destacado ? 'checked' : '' %>> Destacado en Home</label>
+    <label class="field-label">Orden (menor = antes)
+      <input type="number" name="orden" value="<%= curso.orden != null ? curso.orden : '' %>">
+    </label>
+    <p class="field-hint">Un curso <code>finalizado</code> o <code>archivado</code> nunca conserva inscripción activa, aunque la casilla de la sección 10 esté marcada.</p>
+  </fieldset>
+
+  <fieldset class="card">
+    <legend>3. Ubicación y modalidad</legend>
+    <label class="field-label">Isla
+      <input type="text" name="isla" value="<%= curso.isla %>" list="lista-islas" required>
+      <datalist id="lista-islas">
+        <option value="Gran Canaria"><option value="Tenerife"><option value="La Palma">
+        <option value="Fuerteventura"><option value="Lanzarote">
+      </datalist>
+    </label>
+    <label class="field-label">Municipio
+      <input type="text" name="municipio" id="campo-municipio" value="<%= curso.municipio || '' %>">
+    </label>
+    <label class="field-label<%= claseRevisar('sedeId') %>">Sede
+      <select name="sedeId">
+        <option value="">— Sin sede asignada —</option>
+        <% sedes.forEach(function(s) { %>
+          <option value="<%= s.id %>" <%= curso.sedeId === s.id ? 'selected' : '' %>><%= s.municipio %> (<%= s.region %>)</option>
+        <% }) %>
+      </select>
+    </label>
+    <label class="field-label">Modalidad
+      <select name="modalidad" required>
+        <option value="">— Selecciona —</option>
+        <% cfg.MODALIDADES.forEach(function(m) { %>
+          <option value="<%= m %>" <%= curso.modalidad === m ? 'selected' : '' %>><%= m %></option>
+        <% }) %>
+      </select>
+    </label>
+    <label class="field-label<%= claseRevisar('familiaProfesional') %>" id="campo-familiaProfesional">Familia profesional (opcional; texto libre)
+      <input type="text" name="familiaProfesional" value="<%= curso.familiaProfesional || '' %>" placeholder="ej. Socorrismo y emergencias">
+      <span class="field-hint">Se deja vacío hasta tener una taxonomía real confirmada. El filtro del catálogo solo aparece cuando algún curso tiene este dato.</span>
+    </label>
+  </fieldset>
+
+  <fieldset class="card">
+    <legend>4. Fechas y horario</legend>
+    <label class="field-label<%= claseRevisar('fechaInicio') %>">Fecha de inicio (exacta)
+      <input type="date" name="fechaInicio" value="<%= curso.fechaInicio || '' %>">
+    </label>
+    <label class="field-label">Fecha de inicio aproximada (texto libre, si no hay fecha exacta)
+      <input type="text" name="fechaInicioAproximada" value="<%= curso.fechaInicioAproximada || '' %>" placeholder="ej. Septiembre 2026">
+    </label>
+    <label class="field-label">Fecha de fin
+      <input type="date" name="fechaFin" value="<%= curso.fechaFin || '' %>">
+    </label>
+    <label class="field-label<%= claseRevisar('horario') %>">Horario
+      <textarea name="horario" rows="2"><%= curso.horario || '' %></textarea>
+    </label>
+  </fieldset>
+
+  <fieldset class="card">
+    <legend>5. Destinatarios y requisitos</legend>
+    <div class="field-label">Situación laboral destinataria
+      <% cfg.SITUACIONES_DESTINATARIA.forEach(function(s) { %>
+        <label class="field-check inline">
+          <input type="checkbox" name="situacionDestinataria[]" value="<%= s %>" <%= (curso.situacionDestinataria||[]).includes(s) ? 'checked' : '' %>> <%= s %>
+        </label>
+      <% }) %>
+      <span class="field-hint">Vacío = sin dato confirmado todavía (no se infiere del precio).</span>
+    </div>
+    <%- include('partials/repeatable', { name: 'requisitos', label: 'Requisitos de acceso', items: curso.requisitos, placeholder: 'ej. Estar en posesión del graduado en ESO' }) %>
+    <%- include('partials/repeatable', { name: 'prioridadColectivos', label: 'Colectivos prioritarios', items: curso.prioridadColectivos, placeholder: '' }) %>
+  </fieldset>
+
+  <fieldset class="card">
+    <legend>6. Precio y ayudas</legend>
+    <label class="field-label">Tipo de precio
+      <select name="tipoPrecio" required>
+        <option value="">— Selecciona —</option>
+        <% cfg.TIPOS_PRECIO.forEach(function(t) { %>
+          <option value="<%= t %>" <%= curso.tipoPrecio === t ? 'selected' : '' %>><%= t %></option>
+        <% }) %>
+      </select>
+    </label>
+    <label class="field-label<%= claseRevisar('precio') %>">Precio (si es de pago; texto libre, ej. "350 €")
+      <input type="text" name="precio" value="<%= curso.precio || '' %>">
+    </label>
+    <label class="field-label<%= claseRevisar('ayudasBecas') %>">Ayudas y becas
+      <textarea name="ayudasBecas" rows="2"><%= curso.ayudasBecas || '' %></textarea>
+    </label>
+  </fieldset>
+
+  <fieldset class="card">
+    <legend>7. Certificación y nivel</legend>
+    <label class="field-label">Certificación
+      <input type="text" name="certificacion" id="campo-certificacion" value="<%= curso.certificacion || '' %>" placeholder="ej. Certificado de profesionalidad">
+    </label>
+    <label class="field-label">Nivel
+      <select name="nivel">
+        <option value="">— Sin nivel —</option>
+        <% cfg.NIVELES.forEach(function(n) { %>
+          <option value="<%= n %>" <%= curso.nivel === n ? 'selected' : '' %>><%= n %></option>
+        <% }) %>
+      </select>
+    </label>
+    <label class="field-label">Tipo de formación (texto visual, ej. "Certificado de profesionalidad Nivel 2")
+      <input type="text" name="tipoFormacion" value="<%= curso.tipoFormacion || '' %>">
+      <span class="field-hint">No es un sustituto de Certificación/Nivel: rellénalo solo si el texto visual debe decir algo distinto a la combinación de ambos.</span>
+    </label>
+  </fieldset>
+
+  <fieldset class="card">
+    <legend>8. Contenido y módulos</legend>
+    <%- include('partials/repeatable', { name: 'modulosUnidadesFormativas', label: 'Módulos / unidades formativas', items: curso.modulosUnidadesFormativas, placeholder: '' }) %>
+    <%- include('partials/repeatable', { name: 'documentacionNecesaria', label: 'Documentación necesaria', items: curso.documentacionNecesaria, placeholder: '' }) %>
+    <label class="field-label<%= claseRevisar('plazasDisponibles') %>">Plazas disponibles
+      <input type="number" name="plazasDisponibles" value="<%= curso.plazasDisponibles != null ? curso.plazasDisponibles : '' %>" min="0">
+    </label>
+  </fieldset>
+
+  <fieldset class="card">
+    <legend>9. Imagen</legend>
+    <label class="field-label">Imagen existente
+      <select id="campo-imagen-select" name="imagenSrc">
+        <option value="">— Ninguna —</option>
+        <% assets.forEach(function(a) { %>
+          <option value="assets/<%= a %>" <%= curso.imagen && curso.imagen.src === ('assets/' + a) ? 'selected' : '' %>><%= a %></option>
+        <% }) %>
+      </select>
+    </label>
+    <div id="preview-imagen-wrap" class="image-preview-wrap">
+      <img id="preview-imagen" src="<%= curso.imagen && curso.imagen.src ? '/preview-site/' + curso.imagen.src : '' %>" alt="" <%= curso.imagen && curso.imagen.src ? '' : 'hidden' %>>
+    </div>
+    <label class="field-label">O sube una imagen nueva (webp/png/jpg, máx. 5&nbsp;MB)
+      <input type="file" id="campo-imagen-subida" accept=".webp,.png,.jpg,.jpeg">
+    </label>
+    <div id="subida-estado" class="field-hint"></div>
+    <input type="hidden" name="imagenSrcset" id="campo-imagen-srcset" value="<%= curso.imagen && curso.imagen.srcset || '' %>">
+    <label class="field-label">Texto alternativo (accesibilidad)
+      <input type="text" name="imagenAlt" id="campo-imagenAlt" value="<%= curso.imagen && curso.imagen.alt || '' %>">
+    </label>
+    <label class="field-label">Encuadre (objectPosition)
+      <input type="text" name="imagenObjectPosition" value="<%= curso.imagen && curso.imagen.objectPosition || '' %>" placeholder="center, center 32%…" list="lista-encuadres">
+      <datalist id="lista-encuadres">
+        <option value="center"><option value="center 15%"><option value="center 22%"><option value="center 32%">
+      </datalist>
+    </label>
+  </fieldset>
+
+  <fieldset class="card">
+    <legend>10. Inscripción y contacto</legend>
+    <label class="field-check"><input type="checkbox" name="inscripcionAbierta" <%= curso.inscripcionAbierta ? 'checked' : '' %>> Inscripción abierta</label>
+    <label class="field-label<%= claseRevisar('urlInscripcion') %>">URL de inscripción (si existe un formulario externo)
+      <input type="url" name="urlInscripcion" id="campo-urlInscripcion" value="<%= curso.urlInscripcion || '' %>">
+    </label>
+  </fieldset>
+
+  <fieldset class="card">
+    <legend>11. SEO</legend>
+    <label class="field-label">URL de ficha personalizada (opcional; si se deja vacío se usa <code>cursos/{slug}/</code>)
+      <input type="text" name="urlFicha" value="<%= curso.urlFicha || '' %>" placeholder="cursos/mi-curso-especial/">
+    </label>
+  </fieldset>
+
+  <div class="form-actions">
+    <button type="submit" class="btn btn-primary">Guardar</button>
+    <a href="/cursos" class="btn btn-secondary" data-cancel>Cancelar</a>
+  </div>
+</form>
+
+<%- include('partials/foot') %>

@@ -1,0 +1,69 @@
+<%- include('partials/head', { titulo: titulo }) %>
+
+<div class="card">
+  <legend>Publicar en web de pruebas</legend>
+  <p>Rama de destino: <strong><%= cfg.GIT_BRANCH %></strong> (nunca <code>main</code>).</p>
+  <p>URL de pruebas: <a href="<%= cfg.PUBLISH_BASE_URL %>" target="_blank" rel="noopener"><%= cfg.PUBLISH_BASE_URL %></a></p>
+  <p class="flash flash-warning" style="display:inline-block;">Esta acción nunca toca <code>main</code>: solo <code>origin/<%= cfg.GIT_BRANCH %></code>.</p>
+</div>
+
+<% if (plan.problemas.length) { %>
+  <div class="flash flash-error">
+    <strong>Bloqueado — hay que resolver esto antes de publicar:</strong>
+    <ul><% plan.problemas.forEach(function(p) { %><li><%= p %></li><% }) %></ul>
+  </div>
+<% } %>
+
+<% if (plan.avisos && plan.avisos.length) { %>
+  <div class="flash flash-warning">
+    <strong>Avisos técnicos (no bloquean):</strong>
+    <ul><% plan.avisos.slice(0,10).forEach(function(a) { %><li><%= a %></li><% }) %></ul>
+  </div>
+<% } %>
+
+<div class="card">
+  <legend>Resumen editorial</legend>
+  <% if (!plan.editorial.length) { %><p class="muted">Sin avisos editoriales.</p><% } %>
+  <% plan.editorial.forEach(function(r) { %>
+    <div style="margin-bottom:10px;">
+      <strong><a href="/cursos/<%= r.id %>/editar"><%= r.nombre %></a></strong>
+      <ul class="plain-list">
+        <% r.avisos.forEach(function(a) { %><li><a href="/cursos/<%= r.id %>/editar#campo-<%= a.campo %>"><%= a.mensaje %></a></li><% }) %>
+      </ul>
+    </div>
+  <% }) %>
+</div>
+
+<div class="card">
+  <legend>Archivos que cambiarán (<%= plan.permitidos.length %>)</legend>
+  <ul class="plain-list"><% plan.permitidos.forEach(function(f) { %><li><code><%= f %></code></li><% }) %></ul>
+  <% if (plan.desconocidos.length) { %>
+    <div class="flash flash-error">
+      <strong>Archivos fuera de alcance (bloquean la publicación):</strong>
+      <ul><% plan.desconocidos.forEach(function(f) { %><li><code><%= f %></code></li><% }) %></ul>
+    </div>
+  <% } %>
+</div>
+
+<div class="card">
+  <legend>Mensaje de commit previsto</legend>
+  <p><code><%= plan.mensaje %></code></p>
+</div>
+
+<% if (plan.dryRun) { %>
+  <div class="dryrun-banner" style="position:static;margin-bottom:16px;">MODO SIMULACIÓN: no se publicará ningún cambio</div>
+<% } %>
+
+<% if (bloqueado) { %>
+  <div class="flash flash-warning">Hay una publicación en curso ahora mismo. Espera a que termine.</div>
+<% } %>
+
+<form method="post" action="/publicar/confirmar">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+  <button type="submit" class="btn btn-primary" <%= (!plan.ok || bloqueado) ? 'disabled' : '' %>>
+    <%= plan.dryRun ? 'Simular publicación' : 'Publicar en web de pruebas' %>
+  </button>
+  <a class="btn btn-secondary" href="<%= cfg.PUBLISH_BASE_URL %>" target="_blank" rel="noopener">Abrir web de pruebas</a>
+</form>
+
+<%- include('partials/foot') %>

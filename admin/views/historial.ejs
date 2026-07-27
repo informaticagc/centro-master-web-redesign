@@ -1,0 +1,33 @@
+<%- include('partials/head', { titulo: titulo }) %>
+
+<form method="get" action="/historial" class="list-filters" style="margin-bottom:16px;">
+  <input type="search" name="q" value="<%= q %>" placeholder="Buscar por nombre o slug…">
+  <select name="operacion" onchange="this.form.submit()">
+    <option value="">Todas las operaciones</option>
+    <% ['crear','editar','duplicar','papelera','restaurar','vista-previa','intentar-publicar','publicar-correctamente','publicar-simulado','fallo-publicacion','login','logout','login-fallido'].forEach(function(op) { %>
+      <option value="<%= op %>" <%= operacion === op ? 'selected' : '' %>><%= op %></option>
+    <% }) %>
+  </select>
+  <button type="submit" class="btn btn-secondary">Filtrar</button>
+</form>
+
+<table class="admin-table">
+  <thead><tr><th>Fecha</th><th>Usuario</th><th>Operación</th><th>Curso</th><th>Estado</th><th>Resultado</th></tr></thead>
+  <tbody>
+    <% entradas.forEach(function(e) { %>
+      <tr>
+        <td class="muted"><%= new Date(e.fecha).toLocaleString('es-ES') %></td>
+        <td><%= e.usuario || '—' %></td>
+        <td><%= e.operacion %></td>
+        <td><%= e.nombre || '—' %><% if (e.slug) { %><div class="muted"><%= e.slug %></div><% } %></td>
+        <td><%= e.estadoAnterior || '—' %> → <%= e.estadoPosterior || '—' %></td>
+        <td><span class="badge <%= e.resultado === 'exito' ? 'badge-matricula-abierta' : (e.resultado === 'error' ? 'badge-archivado' : '') %>"><%= e.resultado || '—' %></span>
+          <% if (e.mensajeError) { %><div class="muted"><%= e.mensajeError %></div><% } %>
+        </td>
+      </tr>
+    <% }) %>
+    <% if (!entradas.length) { %><tr><td colspan="6" class="muted" style="text-align:center;padding:32px;">Sin operaciones registradas todavía.</td></tr><% } %>
+  </tbody>
+</table>
+
+<%- include('partials/foot') %>

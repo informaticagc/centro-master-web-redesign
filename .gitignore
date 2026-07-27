@@ -1,3 +1,15 @@
 /recursos/
 /data-internal/
 /.claude/
+
+# Panel administrativo interno (Fase 4A/4B) — no se publica, no forma parte de GitHub Pages.
+/admin/node_modules/
+/admin/.env
+/admin/data/backups/*
+/admin/data/tmp/*
+/admin/data/trash/*
+/admin/data/historial/*
+!/admin/data/backups/.gitkeep
+!/admin/data/tmp/.gitkeep
+!/admin/data/trash/.gitkeep
+!/admin/data/historial/.gitkeep

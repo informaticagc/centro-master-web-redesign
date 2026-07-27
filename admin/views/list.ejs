@@ -1,0 +1,75 @@
+<%- include('partials/head', { titulo: titulo }) %>
+
+<% if (flash) { %>
+  <div class="flash flash-<%= flash.tipo %>">
+    <%= flash.mensaje %>
+    <% if (flash.avisos && flash.avisos.length) { %>
+      <ul><% flash.avisos.forEach(function(a) { %><li><%= a %></li><% }) %></ul>
+    <% } %>
+  </div>
+<% } %>
+
+<div class="list-toolbar">
+  <form method="get" action="/cursos" class="list-filters">
+    <input type="search" name="q" value="<%= q %>" placeholder="Buscar por nombre o slug…">
+    <select name="estado" onchange="this.form.submit()">
+      <option value="todos" <%= estadoFiltro === 'todos' ? 'selected' : '' %>>Todos los estados</option>
+      <% estados.forEach(function(e) { %>
+        <option value="<%= e %>" <%= estadoFiltro === e ? 'selected' : '' %>><%= e %></option>
+      <% }) %>
+    </select>
+    <button type="submit" class="btn btn-secondary">Filtrar</button>
+  </form>
+  <a class="btn btn-primary" href="/cursos/nuevo">+ Nuevo curso</a>
+</div>
+
+<table class="admin-table">
+  <thead>
+    <tr>
+      <th>Nombre</th><th>Estado</th><th>Isla</th><th>Modalidad</th><th>Fechas</th><th>Visibilidad</th><th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% cursos.forEach(function(c) { %>
+    <tr>
+      <td><strong><%= c.nombre || '(sin nombre)' %></strong><div class="muted"><%= c.slug %></div></td>
+      <td><span class="badge badge-<%= c.estado %>"><%= c.estado %></span></td>
+      <td><%= c.isla || '—' %></td>
+      <td><%= c.modalidad || '—' %></td>
+      <td><%= c.fechaInicio || c.fechaInicioAproximada || '—' %></td>
+      <td><%= c._publicada ? 'Pública' : 'No pública' %></td>
+      <td class="actions">
+        <a href="/cursos/<%= c.id %>/editar">Editar</a>
+        <form method="post" action="/cursos/<%= c.id %>/duplicar" class="inline-form">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <button type="submit" class="link-btn">Duplicar</button>
+        </form>
+        <form method="post" action="/cursos/<%= c.id %>/vista-previa" class="inline-form">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <button type="submit" class="link-btn">Previsualizar</button>
+        </form>
+        <% if (c._puedeNuevaConvocatoria) { %>
+        <form method="post" action="/cursos/<%= c.id %>/nueva-convocatoria" class="inline-form">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <button type="submit" class="link-btn">Nueva convocatoria</button>
+        </form>
+        <% } %>
+        <form method="post" action="/cursos/<%= c.id %>/archivar" class="inline-form" data-confirm="¿Archivar «<%= c.nombre %>»? Dejará de ser inscribible y de aparecer en el catálogo.">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <button type="submit" class="link-btn" <%= c.estado === 'archivado' ? 'disabled' : '' %>>Archivar</button>
+        </form>
+        <form method="post" action="/cursos/<%= c.id %>/papelera" class="inline-form" data-confirm-motivo="¿Mover «<%= c.nombre %>» a la papelera?">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <input type="hidden" name="motivo" value="">
+          <button type="submit" class="link-btn link-btn-danger" <%= c._eliminable ? '' : 'disabled title="Solo borradores nunca publicados"' %>>Mover a papelera</button>
+        </form>
+      </td>
+    </tr>
+    <% }) %>
+    <% if (!cursos.length) { %>
+      <tr><td colspan="7" class="muted" style="text-align:center;padding:32px;">Sin resultados.</td></tr>
+    <% } %>
+  </tbody>
+</table>
+
+<%- include('partials/foot') %>

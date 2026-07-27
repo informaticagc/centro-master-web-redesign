@@ -1,0 +1,12 @@
+<div class="repeatable" id="campo-<%= name %>" data-repeatable data-name="<%= name %>">
+  <label class="field-label"><%= label %></label>
+  <div class="repeatable-rows">
+    <% (items && items.length ? items : ['']).forEach(function(v) { %>
+      <div class="repeatable-row">
+        <input type="text" name="<%= name %>[]" value="<%= v %>" placeholder="<%= placeholder || '' %>">
+        <button type="button" class="link-btn link-btn-danger" data-remove-row>×</button>
+      </div>
+    <% }) %>
+  </div>
+  <button type="button" class="btn btn-secondary btn-small" data-add-row>+ Añadir</button>
+</div>

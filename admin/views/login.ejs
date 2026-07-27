@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Iniciar sesión — Panel CEM</title>
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body class="login-body">
+<main class="login-card">
+  <h1>Panel interno · Centro de Estudios Máster</h1>
+  <p class="muted">Acceso restringido a personal autorizado.</p>
+  <% if (error) { %><div class="flash flash-error"><%= error %></div><% } %>
+  <form method="post" action="/login">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <label class="field-label">Usuario
+      <input type="text" name="username" autocomplete="username" required autofocus>
+    </label>
+    <label class="field-label">Contraseña
+      <input type="password" name="password" autocomplete="current-password" required>
+    </label>
+    <button type="submit" class="btn btn-primary" style="width:100%;margin-top:14px;">Entrar</button>
+  </form>
+</main>
+</body>
+</html>

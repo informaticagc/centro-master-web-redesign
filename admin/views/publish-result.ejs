@@ -1,0 +1,40 @@
+<%- include('partials/head', { titulo: titulo }) %>
+
+<% if (!ok) { %>
+  <div class="flash flash-error">
+    <strong>No se pudo publicar.</strong>
+    <p><%= motivo %></p>
+    <% if (commitCreado) { %>
+      <p><strong>Aviso importante:</strong> se creó un commit local<%= pushFallido ? ', pero el push a origin/' + cfg.GIT_BRANCH + ' falló' : '' %>. No se ha deshecho automáticamente. Revisa el estado del repositorio antes de intentar publicar de nuevo.</p>
+    <% } %>
+  </div>
+<% } else if (resultado.simulado) { %>
+  <div class="dryrun-banner" style="position:static;margin-bottom:16px;">MODO SIMULACIÓN: no se ha publicado nada realmente</div>
+  <div class="card">
+    <legend>Esto es lo que se habría publicado</legend>
+    <p>Mensaje de commit: <code><%= resultado.mensaje %></code></p>
+    <p>Archivos:</p>
+    <ul class="plain-list"><% resultado.archivos.forEach(function(f) { %><li><code><%= f %></code></li><% }) %></ul>
+  </div>
+<% } else { %>
+  <div class="flash flash-exito">
+    <strong>Publicado correctamente en origin/<%= cfg.GIT_BRANCH %>.</strong>
+  </div>
+  <div class="card">
+    <legend>Estado del despliegue</legend>
+    <p>Commit: <code><%= resultado.commit.hash.slice(0,10) %></code> — <%= resultado.commit.asunto %></p>
+    <p>Rama: <strong><%= cfg.GIT_BRANCH %></strong> · Hora: <%= new Date().toLocaleString('es-ES') %></p>
+    <p>GitHub Pages puede tardar unos minutos en reflejar el cambio.</p>
+    <p><a class="btn btn-primary" href="<%= cfg.PUBLISH_BASE_URL %>" target="_blank" rel="noopener">Abrir web de pruebas</a></p>
+    <p>Fichas afectadas:</p>
+    <ul class="plain-list">
+      <% resultado.archivos.filter(function(f){return f.indexOf('web/cursos/')===0 && f.endsWith('index.html');}).forEach(function(f) { %>
+        <li><a href="<%= cfg.PUBLISH_BASE_URL %><%= f.replace(/^web\//,'').replace(/index\.html$/,'') %>" target="_blank" rel="noopener"><%= f %></a></li>
+      <% }) %>
+    </ul>
+  </div>
+<% } %>
+
+<a class="btn btn-secondary" href="/cursos">← Volver al listado</a>
+
+<%- include('partials/foot') %>

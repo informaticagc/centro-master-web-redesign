@@ -1,0 +1,100 @@
+:root{
+  --primary:#1a7cd8;
+  --primary-dark:#155ea8;
+  --ink:#1f2937;
+  --ink-soft:#5b6472;
+  --line:#e2e6ea;
+  --bg:#f5f7f9;
+  --surface:#ffffff;
+  --danger:#c0392b;
+  --success:#1a7d4f;
+  --warning:#9a6b00;
+}
+*{box-sizing:border-box;}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--ink);}
+a{color:var(--primary);}
+
+.admin-header{display:flex;align-items:center;justify-content:space-between;padding:14px 28px;background:var(--surface);border-bottom:1px solid var(--line);}
+.admin-header-brand{font-weight:700;color:var(--primary-dark);}
+.admin-header-nav a{margin-left:16px;font-weight:600;text-decoration:none;}
+.admin-main{max-width:900px;margin:0 auto;padding:24px 20px 80px;}
+.admin-footer{text-align:center;font-size:12px;color:var(--ink-soft);padding:24px;}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:20px 24px;margin-bottom:20px;}
+.card legend{font-weight:700;font-size:15px;color:var(--primary-dark);padding:0 6px;}
+
+.field-label{display:block;font-size:13px;font-weight:600;color:var(--ink-soft);margin:14px 0 6px;}
+.field-label input[type=text], .field-label input[type=date], .field-label input[type=number],
+.field-label input[type=url], .field-label select, .field-label textarea{
+  display:block;width:100%;font-size:14px;font-family:inherit;padding:9px 11px;border-radius:8px;
+  border:1px solid var(--line);color:var(--ink);background:#fff;margin-top:4px;
+}
+.field-label textarea{resize:vertical;}
+.field-hint{display:block;font-size:12px;color:var(--ink-soft);font-weight:400;margin-top:4px;}
+.field-check{display:inline-flex;align-items:center;gap:6px;font-size:14px;margin:10px 12px 10px 0;}
+.field-check.inline{margin-right:16px;}
+
+.repeatable-rows{display:flex;flex-direction:column;gap:6px;margin-top:4px;}
+.repeatable-row{display:flex;gap:6px;}
+.repeatable-row input{flex:1;padding:8px 10px;border-radius:8px;border:1px solid var(--line);}
+.btn-small{padding:6px 10px !important;font-size:12px !important;margin-top:8px;}
+
+.btn{display:inline-block;padding:10px 18px;border-radius:8px;font-weight:600;font-size:14px;text-decoration:none;border:1px solid transparent;cursor:pointer;}
+.btn-primary{background:var(--primary);color:#fff;}
+.btn-primary:hover{background:var(--primary-dark);}
+.btn-secondary{background:#fff;color:var(--ink);border-color:var(--line);}
+.link-btn{background:none;border:none;color:var(--primary);cursor:pointer;font:inherit;padding:0;text-decoration:underline;}
+.link-btn-danger{color:var(--danger);}
+.link-btn:disabled{color:#b0b6bd;cursor:not-allowed;text-decoration:none;}
+.inline-form{display:inline;margin-left:10px;}
+
+.list-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;gap:12px;flex-wrap:wrap;}
+.list-filters{display:flex;gap:8px;}
+.list-filters input, .list-filters select{padding:8px 10px;border-radius:8px;border:1px solid var(--line);}
+
+.admin-table{width:100%;border-collapse:collapse;background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden;}
+.admin-table th, .admin-table td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line);font-size:13.5px;}
+.admin-table th{background:#eef3f8;color:var(--ink-soft);font-size:12px;text-transform:uppercase;letter-spacing:.03em;}
+.muted{color:var(--ink-soft);font-size:12px;}
+
+.badge{display:inline-block;padding:3px 9px;border-radius:100px;font-size:11.5px;font-weight:600;background:#eef3f8;color:var(--ink-soft);}
+.badge-matricula-abierta{background:#e3f6ec;color:var(--success);}
+.badge-ultimas-plazas{background:#fdf1de;color:#a5590c;}
+.badge-proximamente{background:#eef3f8;color:var(--ink-soft);}
+.badge-en-curso{background:#e7edfb;color:#2c4fa8;}
+.badge-finalizado{background:#eee;color:#666;}
+.badge-archivado{background:#f3e3e3;color:var(--danger);}
+.badge-borrador{background:#f5f0e0;color:var(--warning);}
+
+.flash{padding:12px 16px;border-radius:8px;margin-bottom:16px;font-size:14px;}
+.flash-exito{background:#e3f6ec;color:var(--success);}
+.flash-error{background:#fbe9e7;color:var(--danger);}
+.flash-warning{background:#fdf1de;color:var(--warning);}
+.flash ul{margin:6px 0 0;padding-left:18px;}
+
+.unsaved-indicator{position:fixed;top:64px;right:20px;background:#fdf1de;color:var(--warning);padding:6px 14px;border-radius:100px;font-size:12.5px;font-weight:600;box-shadow:0 4px 12px rgba(0,0,0,.08);}
+.form-actions{position:sticky;bottom:0;background:var(--bg);padding:16px 0;display:flex;gap:10px;border-top:1px solid var(--line);}
+
+.image-preview-wrap{margin:10px 0;}
+.image-preview-wrap img{max-width:280px;max-height:160px;object-fit:cover;border-radius:8px;border:1px solid var(--line);}
+
+/* --- Fase 4B --- */
+.dryrun-banner{position:sticky;top:0;z-index:9998;background:#fdf1de;color:var(--warning);text-align:center;font-weight:700;font-size:13px;padding:8px 16px;border-bottom:2px solid var(--warning);}
+.nav-user{color:var(--ink-soft);font-size:13px;margin-left:16px;}
+
+.login-body{display:flex;align-items:center;justify-content:center;min-height:100vh;background:var(--bg);}
+.login-card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:32px 36px;width:100%;max-width:360px;}
+.login-card h1{font-size:17px;color:var(--primary-dark);margin:0 0 4px;}
+
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;margin-bottom:24px;}
+.stat-card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;text-align:center;}
+.stat-value{font-size:26px;font-weight:800;color:var(--primary-dark);}
+.stat-label{font-size:12px;color:var(--ink-soft);margin-top:4px;}
+.dash-columns{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;align-items:start;}
+.quick-actions{display:flex;gap:10px;flex-wrap:wrap;}
+.plain-list{list-style:none;margin:0;padding:0;font-size:13.5px;}
+.plain-list li{padding:6px 0;border-bottom:1px solid var(--line);}
+.plain-list li:last-child{border-bottom:none;}
+
+.campo-revisar{background:#fdf1de;padding:8px;border-radius:8px;border:1px solid #f0c987;}
+

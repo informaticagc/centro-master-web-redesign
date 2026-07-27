@@ -1,0 +1,18 @@
+{
+  "name": "cem-admin",
+  "version": "0.2.0",
+  "private": true,
+  "description": "Panel interno de gestión de cursos (Fase 4B) — no se publica, no forma parte de GitHub Pages.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test/smoke.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "express-session": "^1.18.0",
+    "ejs": "^6.0.1",
+    "multer": "^2.0.0",
+    "dotenv": "^16.4.5"
+  }
+}

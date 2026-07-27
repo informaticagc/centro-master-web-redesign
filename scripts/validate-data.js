@@ -12,7 +12,10 @@ const fs = require('fs');
 const path = require('path');
 
 const ROOT = path.join(__dirname, '..');
-const DATA_DIR = path.join(ROOT, 'web', 'data');
+// VALIDATE_DATA_DIR: override opcional (usado por admin/ para validar una
+// copia "staged" de cursos.json antes de escribir la real). Sin la env var,
+// comportamiento idéntico al de siempre — no afecta a CI ni al uso normal.
+const DATA_DIR = process.env.VALIDATE_DATA_DIR ? path.resolve(process.env.VALIDATE_DATA_DIR) : path.join(ROOT, 'web', 'data');
 const WEB_DIR = path.join(ROOT, 'web');
 const INTERNAL_DIR = path.join(ROOT, 'data-internal');
 const INTERNAL_CURSOS_FILE = path.join(INTERNAL_DIR, 'cursos-administrativo.json');

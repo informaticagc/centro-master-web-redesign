@@ -1,0 +1,27 @@
+<%- include('partials/head', { titulo: titulo }) %>
+
+<% if (flash) { %><div class="flash flash-<%= flash.tipo %>"><%= flash.mensaje %></div><% } %>
+
+<p class="field-hint">Solo se pueden mover aquí borradores nunca publicados. Los cursos de la papelera no están en <code>cursos.json</code>, no generan ficha y no aparecen en la web pública. No se publican en Git.</p>
+
+<table class="admin-table">
+  <thead><tr><th>Nombre</th><th>Eliminado el</th><th>Motivo</th><th>Acciones</th></tr></thead>
+  <tbody>
+    <% items.forEach(function(item) { %>
+      <tr>
+        <td><strong><%= item.curso.nombre %></strong><div class="muted"><%= item.curso.slug %></div></td>
+        <td><%= new Date(item.eliminadoEn).toLocaleString('es-ES') %></td>
+        <td><%= item.motivo || '—' %></td>
+        <td class="actions">
+          <form method="post" action="/papelera/<%= item.curso.id %>/restaurar" class="inline-form" data-confirm="¿Restaurar «<%= item.curso.nombre %>» al listado de cursos como borrador?">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <button type="submit" class="link-btn">Restaurar</button>
+          </form>
+        </td>
+      </tr>
+    <% }) %>
+    <% if (!items.length) { %><tr><td colspan="4" class="muted" style="text-align:center;padding:32px;">La papelera está vacía.</td></tr><% } %>
+  </tbody>
+</table>
+
+<%- include('partials/foot') %>
