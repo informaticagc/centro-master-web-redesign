@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="../web/js/catalog-repository.js"></script>
+  <script src="../web/js/catalog-search.js"></script>
+  <style>
+    body{margin:0;background:oklch(98% 0.012 85);font-family:'Work Sans',sans-serif;}
+    a{color:oklch(30% 0.09 255);text-decoration:none;}
+    a:hover{color:oklch(56% 0.15 45);}
+    *{box-sizing:border-box;}
+    @media (prefers-reduced-motion: reduce){ *{animation-duration:0.001ms !important; transition-duration:0.001ms !important; transition:none !important;} }
+    @media (max-width: 1180px){
+      .site-header{ padding-left:28px !important; padding-right:28px !important; }
+      .site-nav{ gap:16px !important; }
+      .nav-secondary{ display:none !important; }
+      .top-bar{ padding-left:28px !important; padding-right:28px !important; gap:14px !important; }
+      .catalog-wrap{ padding-left:32px !important; padding-right:32px !important; }
+      .catalog-grid{ grid-template-columns:repeat(2,1fr) !important; }
+    }
+    @media (max-width: 860px){
+      .top-bar{ display:none !important; }
+      .nav-primary{ display:none !important; }
+      .nav-toggle{ display:inline-flex !important; }
+      .footer-grid{ grid-template-columns:1fr 1fr !important; }
+      .footer-brand{ grid-column:1 / -1 !important; }
+      .help-label{ display:none !important; }
+      .help-fab{ width:56px !important; height:56px !important; padding:0 !important; justify-content:center !important; }
+      .help-hub{ right:max(16px, env(safe-area-inset-right)) !important; bottom:max(16px, env(safe-area-inset-bottom)) !important; }
+      .help-panel{ position:fixed !important; left:0 !important; right:0 !important; bottom:0 !important; width:100% !important; max-width:100% !important; border-radius:20px 20px 0 0 !important; max-height:min(82vh, calc(100vh - 16px)) !important; padding-bottom:env(safe-area-inset-bottom) !important; }
+      .help-panel{ max-height:min(82dvh, calc(100dvh - 16px)) !important; }
+      .catalog-toolbar{ flex-wrap:wrap !important; }
+      .catalog-search{ order:1; flex:1 1 100% !important; }
+      .catalog-sort{ order:2; flex:1 1 auto !important; }
+      .catalog-filters-btn{ order:3; flex:1 1 auto !important; justify-content:center !important; }
+      .filters-panel{ position:fixed !important; left:0 !important; right:0 !important; bottom:0 !important; top:auto !important; width:100% !important; max-width:100% !important; border-radius:20px 20px 0 0 !important; max-height:min(82vh, calc(100vh - 16px)) !important; padding-bottom:env(safe-area-inset-bottom) !important; }
+      .filters-panel{ max-height:min(82dvh, calc(100dvh - 16px)) !important; }
+    }
+    @media (max-width: 700px){
+      .catalog-grid{ grid-template-columns:1fr !important; }
+    }
+  </style>
+</helmet>
+
+<div style="width:100%;max-width:1920px;margin:0 auto;background:oklch(98% 0.012 85);color:oklch(20% 0.02 260);font-family:'Work Sans',sans-serif;overflow-x:hidden;" data-screen-label="Catálogo de cursos">
+
+  <div class="top-bar" style="display:flex;align-items:center;justify-content:flex-end;gap:20px;padding:9px 56px;background:oklch(96% 0.012 85);border-bottom:1px solid oklch(91% 0.01 85);">
+    <a href="#" style="font-size:12.5px;font-weight:500;color:oklch(45% 0.02 260);white-space:nowrap;">Selección</a>
+    <a href="#" style="font-size:12.5px;font-weight:500;color:oklch(45% 0.02 260);white-space:nowrap;">Docentes</a>
+    <a href="#" style="font-size:12.5px;font-weight:500;color:oklch(45% 0.02 260);white-space:nowrap;">Portal de transparencia</a>
+    <a href="#" style="font-size:12.5px;font-weight:500;color:oklch(45% 0.02 260);white-space:nowrap;">Canal de denuncias</a>
+    <a href="#" style="font-size:12.5px;font-weight:500;color:oklch(45% 0.02 260);white-space:nowrap;border-left:1px solid oklch(88% 0.01 85);padding-left:20px;">Intranet Microsoft ↗</a>
+  </div>
+
+  <header class="site-header" style="position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:16px 56px;background:oklch(99.5% 0.004 85 / 0.92);backdrop-filter:blur(10px);border-bottom:1px solid oklch(90% 0.01 85);">
+    <img src="../web/assets/logo-cem.png" alt="Centro de Estudios Máster" style="width:150px;height:38px;flex-shrink:0;object-fit:contain;" loading="eager" decoding="async">
+    <nav class="site-nav" style="display:flex;align-items:center;gap:28px;flex-shrink:1;min-width:0;">
+      <span class="nav-primary" style="display:flex;align-items:center;gap:28px;">
+        <a href="./Home.dc.html#cursos" style="white-space:nowrap;font-size:15px;font-weight:500;color:oklch(20% 0.02 260);">Formación ⌄</a>
+        <a href="./Home.dc.html#empleo" style="white-space:nowrap;font-size:15px;font-weight:500;color:oklch(20% 0.02 260);">Empleo</a>
+        <a href="./Home.dc.html#nosotros" style="white-space:nowrap;font-size:15px;font-weight:500;color:oklch(20% 0.02 260);">Sobre nosotros</a>
+        <a href="./Home.dc.html#contacto" style="white-space:nowrap;font-size:15px;font-weight:500;color:oklch(20% 0.02 260);">Contacto</a>
+      </span>
+      <a href="#" class="nav-secondary" style="white-space:nowrap;font-size:14px;font-weight:500;color:oklch(45% 0.02 260);border-right:1px solid oklch(90% 0.01 85);padding-right:24px;">Campus Virtual ↗</a>
+      <a href="#" style="white-space:nowrap;flex-shrink:0;font-size:15px;font-weight:600;color:oklch(99% 0.004 85);background:{{ accentColor }};padding:14px 22px;border-radius:100px;" style-hover="transform:translateY(-1px);box-shadow:0 6px 16px oklch(20% 0.02 260 / 0.18);" style-focus="outline:2px solid oklch(30% 0.09 255);outline-offset:2px;">Encontrar un curso</a>
+      <button ref="{{ toggleBtnRef }}" class="nav-toggle" type="button" aria-expanded="{{ mobileNavOpen }}" aria-controls="mobile-nav-drawer" aria-label="{{ mobileNavToggleLabel }}" onClick="{{ toggleMobileNav }}" style="display:none;flex-shrink:0;align-items:center;justify-content:center;width:44px;height:44px;border-radius:10px;border:1px solid oklch(90% 0.01 85);background:oklch(99.5% 0.004 85);cursor:pointer;padding:0;" style-focus="outline:2px solid oklch(30% 0.09 255);outline-offset:2px;">
+        <span style="display:flex;flex-direction:column;gap:4px;width:20px;">
+          <span style="display:block;height:2px;width:100%;background:oklch(20% 0.02 260);border-radius:2px;"></span>
+          <span style="display:block;height:2px;width:100%;background:oklch(20% 0.02 260);border-radius:2px;"></span>
+          <span style="display:block;height:2px;width:100%;background:oklch(20% 0.02 260);border-radius:2px;"></span>
+        </span>
+      </button>
+    </nav>
+  </header>
+
+  <sc-if value="{{ mobileNavOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;z-index:60;">
+      <div onClick="{{ closeMobileNav }}" style="position:absolute;inset:0;background:oklch(12% 0.03 260 / 0.55);"></div>
+      <div id="mobile-nav-drawer" role="dialog" aria-modal="true" aria-label="Menú de navegación" style="position:absolute;top:0;right:0;height:100%;width:min(320px,86vw);background:oklch(99.5% 0.004 85);box-shadow:-12px 0 32px oklch(20% 0.02 260 / 0.18);display:flex;flex-direction:column;padding:20px;overflow-y:auto;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
+          <img src="../web/assets/logo-cem.png" alt="Centro de Estudios Máster" style="width:130px;height:34px;object-fit:contain;">
+          <button ref="{{ closeBtnRef }}" type="button" aria-label="Cerrar menú" onClick="{{ closeMobileNav }}" style="width:44px;height:44px;flex-shrink:0;display:flex;align-items:center;justify-content:center;border-radius:10px;border:1px solid oklch(90% 0.01 85);background:oklch(98% 0.008 85);font-size:22px;line-height:1;cursor:pointer;color:oklch(20% 0.02 260);" style-focus="outline:2px solid oklch(30% 0.09 255);outline-offset:2px;">×</button>
+        </div>
+        <nav style="display:flex;flex-direction:column;gap:2px;">
+          <a href="./Home.dc.html#cursos" onClick="{{ closeMobileNav }}" style="font-size:16px;font-weight:600;color:oklch(20% 0.02 260);padding:14px 10px;border-radius:10px;min-height:44px;display:flex;align-items:center;" style-hover="background:oklch(96% 0.012 85);">Formación</a>
+          <a href="./Home.dc.html#empleo" onClick="{{ closeMobileNav }}" style="font-size:16px;font-weight:600;color:oklch(20% 0.02 260);padding:14px 10px;border-radius:10px;min-height:44px;display:flex;align-items:center;" style-hover="background:oklch(96% 0.012 85);">Empleo</a>
+          <a href="./Home.dc.html#nosotros" onClick="{{ closeMobileNav }}" style="font-size:16px;font-weight:600;color:oklch(20% 0.02 260);padding:14px 10px;border-radius:10px;min-height:44px;display:flex;align-items:center;" style-hover="background:oklch(96% 0.012 85);">Sobre nosotros</a>
+          <a href="./Home.dc.html#contacto" onClick="{{ closeMobileNav }}" style="font-size:16px;font-weight:600;color:oklch(20% 0.02 260);padding:14px 10px;border-radius:10px;min-height:44px;display:flex;align-items:center;" style-hover="background:oklch(96% 0.012 85);">Contacto</a>
+          <a href="#" onClick="{{ closeMobileNav }}" style="font-size:15px;font-weight:500;color:oklch(45% 0.02 260);padding:14px 10px;border-radius:10px;min-height:44px;display:flex;align-items:center;border-top:1px solid oklch(91% 0.01 85);margin-top:8px;">Campus Virtual ↗</a>
+        </nav>
+        <div style="font-size:11px;font-weight:600;color:oklch(55% 0.02 260);text-transform:uppercase;letter-spacing:0.05em;margin:20px 0 6px;padding:0 10px;">Accesos corporativos</div>
+        <nav style="display:flex;flex-direction:column;gap:2px;">
+          <a href="#" onClick="{{ closeMobileNav }}" style="font-size:14.5px;font-weight:500;color:oklch(45% 0.02 260);padding:12px 10px;border-radius:10px;min-height:44px;display:flex;align-items:center;" style-hover="background:oklch(96% 0.012 85);">Selección</a>
+          <a href="#" onClick="{{ closeMobileNav }}" style="font-size:14.5px;font-weight:500;color:oklch(45% 0.02 260);padding:12px 10px;border-radius:10px;min-height:44px;display:flex;align-items:center;" style-hover="background:oklch(96% 0.012 85);">Docentes</a>
+          <a href="#" onClick="{{ closeMobileNav }}" style="font-size:14.5px;font-weight:500;color:oklch(45% 0.02 260);padding:12px 10px;border-radius:10px;min-height:44px;display:flex;align-items:center;" style-hover="background:oklch(96% 0.012 85);">Portal de transparencia</a>
+          <a href="#" onClick="{{ closeMobileNav }}" style="font-size:14.5px;font-weight:500;color:oklch(45% 0.02 260);padding:12px 10px;border-radius:10px;min-height:44px;display:flex;align-items:center;" style-hover="background:oklch(96% 0.012 85);">Canal de denuncias</a>
+          <a href="#" onClick="{{ closeMobileNav }}" style="font-size:14.5px;font-weight:500;color:oklch(45% 0.02 260);padding:12px 10px;border-radius:10px;min-height:44px;display:flex;align-items:center;" style-hover="background:oklch(96% 0.012 85);">Intranet Microsoft ↗</a>
+        </nav>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- BREADCRUMB -->
+  <div style="padding:14px 56px;font-size:13px;color:oklch(50% 0.02 260);border-bottom:1px solid oklch(93% 0.008 85);">
+    <a href="./Home.dc.html" style="color:oklch(50% 0.02 260);">Inicio</a> <span style="margin:0 6px;">/</span> <span style="color:oklch(20% 0.02 260);font-weight:600;">Formación</span>
+  </div>
+
+  <!-- INTRO -->
+  <div class="catalog-wrap" style="padding:48px 56px 0;">
+    <div style="font-size:13px;font-weight:600;color:{{ accentColor }};text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Oferta formativa</div>
+    <h1 style="font-family:'Sora',sans-serif;font-weight:700;font-size:38px;margin:0 0 12px;color:oklch(16% 0.02 260);">Catálogo de cursos</h1>
+    <p style="font-size:15.5px;color:oklch(45% 0.02 260);margin:0 0 32px;max-width:640px;line-height:1.6;">Explora toda nuestra oferta formativa en Gran Canaria y Tenerife: cursos gratuitos, formación privada, certificados de profesionalidad y teleformación.</p>
+  </div>
+
+  <!-- TOOLBAR -->
+  <div class="catalog-wrap" style="padding:0 56px;">
+    <div class="catalog-toolbar" style="display:flex;align-items:center;gap:12px;margin-bottom:16px;position:relative;">
+      <div class="catalog-search" style="flex:1;position:relative;">
+        <input value="{{ query }}" onInput="{{ onQueryChange }}" placeholder="Buscar por nombre o tipo de curso…" style="width:100%;font-size:15px;font-family:'Work Sans',sans-serif;padding:13px 16px;border-radius:12px;border:1px solid oklch(90% 0.01 85);background:oklch(99.5% 0.004 85);color:oklch(20% 0.02 260);" style-focus="outline:2px solid {{ accentColor }};outline-offset:1px;"/>
+      </div>
+      <select value="{{ sort }}" onChange="{{ onSortChange }}" class="catalog-sort" style="font-size:13.5px;font-family:'Work Sans',sans-serif;padding:12px 14px;border-radius:10px;border:1px solid oklch(90% 0.01 85);background:oklch(99.5% 0.004 85);color:oklch(30% 0.02 260);min-height:44px;">
+        <option value="relevancia">Ordenar: relevancia</option>
+        <option value="nombre">Nombre (A-Z)</option>
+        <option value="estado">Estado: matrícula abierta primero</option>
+      </select>
+      <button ref="{{ filtersBtnRef }}" class="catalog-filters-btn" aria-expanded="{{ filtersOpen }}" aria-controls="filters-panel" onClick="{{ toggleFilters }}" style="display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:600;color:oklch(20% 0.02 260);background:oklch(99.5% 0.004 85);border:1px solid oklch(90% 0.01 85);padding:12px 18px;border-radius:10px;cursor:pointer;min-height:44px;white-space:nowrap;" style-focus="outline:2px solid oklch(30% 0.09 255);outline-offset:2px;">
+        Filtros <span style="{{ filtersBadgeStyle }}">{{ activeFilterCount }}</span>
+      </button>
+
+      <sc-if value="{{ filtersOpen }}" hint-placeholder-val="{{ false }}">
+        <div style="position:fixed;inset:0;z-index:60;" onClick="{{ closeFiltersOverlay }}"></div>
+        <div id="filters-panel" ref="{{ filtersPanelRef }}" class="filters-panel" role="dialog" aria-modal="true" aria-label="Filtros de búsqueda" tabIndex="-1" style="position:absolute;top:calc(100% + 8px);right:0;z-index:61;width:340px;max-height:min(560px, calc(100vh - 160px));overflow-y:auto;background:oklch(99.5% 0.004 85);border:1px solid oklch(90% 0.01 85);border-radius:16px;box-shadow:0 20px 50px oklch(20% 0.02 260 / 0.22);padding:20px;outline:none;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+            <span style="font-weight:700;font-size:15px;font-family:'Sora',sans-serif;color:oklch(16% 0.02 260);">Filtros</span>
+            <button onClick="{{ closeFilters }}" aria-label="Cerrar filtros" style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;border:none;background:oklch(96% 0.012 85);border-radius:8px;cursor:pointer;font-size:15px;" style-focus="outline:2px solid oklch(30% 0.09 255);outline-offset:2px;">×</button>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:14px;">
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:600;color:oklch(45% 0.02 260);text-transform:uppercase;letter-spacing:0.04em;">Situación laboral
+              <select value="{{ situacion }}" onChange="{{ onSituacionChange }}" style="font-size:14px;font-weight:400;text-transform:none;letter-spacing:normal;padding:10px 12px;border-radius:8px;border:1px solid oklch(88% 0.01 85);font-family:'Work Sans',sans-serif;">
+                <option value="todas">Cualquiera</option>
+                <option value="desempleado">Desempleado/a</option>
+                <option value="ocupado">Ocupado/a</option>
+                <option value="privado">Formación privada</option>
+              </select>
+            </label>
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:600;color:oklch(45% 0.02 260);text-transform:uppercase;letter-spacing:0.04em;">Isla
+              <select value="{{ isla }}" onChange="{{ onIslaChange }}" style="font-size:14px;font-weight:400;text-transform:none;letter-spacing:normal;padding:10px 12px;border-radius:8px;border:1px solid oklch(88% 0.01 85);font-family:'Work Sans',sans-serif;">
+                <option value="todas">Todas</option>
+                <sc-for list="{{ islaOptions }}" as="o" hint-placeholder-count="2">
+                  <option value="{{ o }}">{{ o }}</option>
+                </sc-for>
+              </select>
+            </label>
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:600;color:oklch(45% 0.02 260);text-transform:uppercase;letter-spacing:0.04em;">Modalidad
+              <select value="{{ modalidad }}" onChange="{{ onModalidadChange }}" style="font-size:14px;font-weight:400;text-transform:none;letter-spacing:normal;padding:10px 12px;border-radius:8px;border:1px solid oklch(88% 0.01 85);font-family:'Work Sans',sans-serif;">
+                <option value="todas">Cualquiera</option>
+                <sc-for list="{{ modalidadOptions }}" as="o" hint-placeholder-count="1">
+                  <option value="{{ o.value }}">{{ o.label }}</option>
+                </sc-for>
+              </select>
+            </label>
+            <sc-if value="{{ hasFamiliaFilter }}">
+              <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:600;color:oklch(45% 0.02 260);text-transform:uppercase;letter-spacing:0.04em;">Familia profesional
+                <select value="{{ familia }}" onChange="{{ onFamiliaChange }}" style="font-size:14px;font-weight:400;text-transform:none;letter-spacing:normal;padding:10px 12px;border-radius:8px;border:1px solid oklch(88% 0.01 85);font-family:'Work Sans',sans-serif;">
+                  <option value="todas">Todas</option>
+                  <sc-for list="{{ familiaOptions }}" as="o" hint-placeholder-count="1">
+                    <option value="{{ o }}">{{ o }}</option>
+                  </sc-for>
+                </select>
+              </label>
+            </sc-if>
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:600;color:oklch(45% 0.02 260);text-transform:uppercase;letter-spacing:0.04em;">Gratuito / Privado
+              <select value="{{ precio }}" onChange="{{ onPrecioChange }}" style="font-size:14px;font-weight:400;text-transform:none;letter-spacing:normal;padding:10px 12px;border-radius:8px;border:1px solid oklch(88% 0.01 85);font-family:'Work Sans',sans-serif;">
+                <option value="todas">Cualquiera</option>
+                <sc-for list="{{ precioOptions }}" as="o" hint-placeholder-count="2">
+                  <option value="{{ o.value }}">{{ o.label }}</option>
+                </sc-for>
+              </select>
+            </label>
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:600;color:oklch(45% 0.02 260);text-transform:uppercase;letter-spacing:0.04em;">Estado
+              <select value="{{ estado }}" onChange="{{ onEstadoChange }}" style="font-size:14px;font-weight:400;text-transform:none;letter-spacing:normal;padding:10px 12px;border-radius:8px;border:1px solid oklch(88% 0.01 85);font-family:'Work Sans',sans-serif;">
+                <option value="todas">Cualquiera</option>
+                <sc-for list="{{ estadoOptions }}" as="o" hint-placeholder-count="3">
+                  <option value="{{ o.value }}">{{ o.label }}</option>
+                </sc-for>
+              </select>
+            </label>
+          </div>
+          <div style="display:flex;gap:10px;margin-top:20px;">
+            <button onClick="{{ clearFilters }}" style="flex:1;min-height:44px;font-size:13.5px;font-weight:600;color:oklch(20% 0.02 260);background:oklch(96% 0.012 85);border:1px solid oklch(88% 0.01 85);border-radius:10px;cursor:pointer;">Limpiar filtros</button>
+            <button onClick="{{ closeFilters }}" style="flex:1;min-height:44px;font-size:13.5px;font-weight:600;color:oklch(99% 0.004 85);background:oklch(30% 0.09 255);border:none;border-radius:10px;cursor:pointer;">Aplicar</button>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+
+    <sc-if value="{{ hasActiveFilters }}">
+      <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:20px;">
+        <sc-for list="{{ activeChips }}" as="chip" hint-placeholder-count="2">
+          <button onClick="{{ chip.onRemove }}" style="display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:500;color:oklch(30% 0.09 255);background:oklch(94% 0.02 255);border:1px solid oklch(88% 0.02 255);padding:7px 12px;border-radius:100px;cursor:pointer;">{{ chip.label }} <span aria-hidden="true">×</span></button>
+        </sc-for>
+        <button onClick="{{ clearFilters }}" style="font-size:12.5px;font-weight:600;color:oklch(50% 0.02 260);background:none;border:none;cursor:pointer;padding:6px;">Limpiar todo</button>
+      </div>
+    </sc-if>
+
+    <p style="font-size:13.5px;color:oklch(45% 0.02 260);margin:0 0 24px;">{{ resultsLabel }}</p>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="catalog-wrap" style="padding:0 56px 96px;">
+    <sc-if value="{{ hasResults }}" hint-placeholder-val="{{ true }}">
+      <div class="catalog-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px;">
+        <sc-for list="{{ results }}" as="c" hint-placeholder-count="4">
+          <div style="background:oklch(99.5% 0.004 85);border:1px solid oklch(91% 0.01 85);border-radius:20px;overflow:hidden;display:flex;flex-direction:column;transition:box-shadow 0.2s,transform 0.2s;" style-hover="box-shadow:0 18px 40px oklch(20% 0.02 260 / 0.1);transform:translateY(-2px);">
+            <div style="position:relative;aspect-ratio:16/10;">
+              <sc-if value="{{ c.photoSrc }}">
+                <img src="{{ c.photoSrc }}" srcset="{{ c.photoSrcset }}" sizes="(max-width: 700px) 92vw, (max-width: 1180px) 45vw, 30vw" alt="{{ c.photoAlt }}" style="width:100%;height:100%;object-fit:cover;object-position:{{ c.photoPos }};" loading="lazy" decoding="async">
+              </sc-if>
+              <span style="position:absolute;top:14px;left:14px;font-size:11px;font-weight:700;color:oklch(99% 0.004 85);background:{{ c.statusColor }};padding:5px 11px;border-radius:100px;z-index:2;">{{ c.status }}</span>
+            </div>
+            <div style="padding:22px;display:flex;flex-direction:column;flex:1;">
+              <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
+                <span style="font-size:11px;font-weight:600;color:oklch(40% 0.09 200);background:oklch(94% 0.03 200);padding:4px 10px;border-radius:100px;">{{ c.modalidad }}</span>
+                <span style="font-size:11px;font-weight:600;color:oklch(45% 0.02 260);background:oklch(93% 0.008 85);padding:4px 10px;border-radius:100px;">{{ c.isla }}</span>
+              </div>
+              <h3 style="font-family:'Sora',sans-serif;font-weight:600;font-size:17px;margin:0 0 6px;color:oklch(16% 0.02 260);line-height:1.25;">{{ c.name }}</h3>
+              <sc-if value="{{ c.type }}">
+                <p style="font-size:13px;color:oklch(45% 0.02 260);margin:0 0 4px;">{{ c.type }}</p>
+              </sc-if>
+              <sc-if value="{{ c.startDate }}">
+                <p style="font-size:13px;color:oklch(45% 0.02 260);margin:0 0 16px;">Inicio: {{ c.startDate }}</p>
+              </sc-if>
+              <div style="display:flex;align-items:center;justify-content:space-between;border-top:1px solid oklch(93% 0.008 85);padding-top:14px;margin-top:auto;">
+                <div style="font-size:12.5px;color:oklch(45% 0.02 260);">{{ c.duration }}<span style="font-weight:600;color:oklch(16% 0.02 260);">{{ c.price }}</span></div>
+                <a href="{{ c.href }}" style="font-size:13.5px;font-weight:600;">Ver curso →</a>
+              </div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ noResults }}">
+      <div style="text-align:center;padding:80px 24px;background:oklch(96% 0.012 85);border-radius:24px;">
+        <div style="font-size:38px;margin-bottom:16px;">🔍</div>
+        <h3 style="font-family:'Sora',sans-serif;font-weight:600;font-size:20px;margin:0 0 8px;color:oklch(16% 0.02 260);">Sin resultados para estos filtros</h3>
+        <p style="font-size:14px;color:oklch(45% 0.02 260);margin:0 0 24px;max-width:420px;margin-left:auto;margin-right:auto;">Prueba a ajustar la búsqueda o quita alguno de los filtros aplicados.</p>
+        <button onClick="{{ clearFilters }}" style="font-size:14px;font-weight:600;color:oklch(99% 0.004 85);background:oklch(30% 0.09 255);border:none;padding:12px 24px;border-radius:100px;cursor:pointer;">Limpiar filtros</button>
+      </div>
+    </sc-if>
+  </div>
+
+  <!-- FOOTER -->
+  <footer id="contacto" style="padding:64px 56px 32px;background:oklch(15% 0.02 260);color:oklch(85% 0.008 260);">
+    <div class="footer-grid" style="display:grid;grid-template-columns:1.3fr repeat(4,1fr);gap:32px;margin-bottom:48px;">
+      <div class="footer-brand">
+        <div style="font-family:'Sora',sans-serif;font-weight:700;font-size:19px;color:oklch(97% 0.004 85);margin-bottom:14px;">Centro de Estudios Máster</div>
+        <p style="font-size:13.5px;line-height:1.6;color:oklch(72% 0.01 260);max-width:250px;margin:0 0 16px;">Formación para el empleo en Canarias desde hace más de 25 años.</p>
+        <div style="display:flex;gap:14px;">
+          <a href="https://www.instagram.com/centrodeestudiosmaster/" style="font-size:13px;font-weight:500;color:oklch(85% 0.008 260);">Instagram</a>
+          <a href="https://www.facebook.com/CentroDeEstudiosMaster/" style="font-size:13px;font-weight:500;color:oklch(85% 0.008 260);">Facebook</a>
+          <a href="https://www.tiktok.com/@centrodeestudiosmaster" style="font-size:13px;font-weight:500;color:oklch(85% 0.008 260);">Tiktok</a>
+        </div>
+      </div>
+      <sc-for list="{{ footerCols }}" as="col" hint-placeholder-count="4">
+        <div>
+          <div style="font-size:12.5px;font-weight:600;color:oklch(97% 0.004 85);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:16px;">{{ col.title }}</div>
+          <sc-for list="{{ col.links }}" as="l" hint-placeholder-count="4">
+            <div style="margin-bottom:10px;">
+              <a href="#" style="font-size:13.5px;color:oklch(75% 0.01 260);">{{ l }}</a>
+            </div>
+          </sc-for>
+        </div>
+      </sc-for>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding-top:28px;border-top:1px solid oklch(28% 0.02 260);font-size:12.5px;color:oklch(60% 0.01 260);flex-wrap:wrap;gap:12px;">
+      <span>© 2026 Centro de Estudios Máster. Todos los derechos reservados.</span>
+      <span>928 75 51 05 · secretariavc@centromaster.com</span>
+    </div>
+  </footer>
+
+  <!-- HELP HUB -->
+  <div class="help-hub" style="position:fixed;right:28px;bottom:28px;z-index:55;display:flex;flex-direction:column;align-items:flex-end;gap:12px;">
+    <sc-if value="{{ helpOpen }}" hint-placeholder-val="{{ false }}">
+      <div id="help-panel" ref="{{ helpPanelRef }}" class="help-panel" role="dialog" aria-modal="true" aria-label="Centro de contacto" tabIndex="-1" style="width:340px;max-width:calc(100vw - 32px);max-height:min(400px, calc(100vh - 120px));max-height:min(400px, calc(100dvh - 120px));display:flex;flex-direction:column;background:oklch(99.5% 0.004 85);border:1px solid oklch(90% 0.01 85);border-radius:20px;box-shadow:0 20px 50px oklch(20% 0.02 260 / 0.22);overflow:hidden;outline:none;">
+        <div style="padding:22px 22px 4px;flex-shrink:0;">
+          <h3 style="font-family:'Sora',sans-serif;font-weight:700;font-size:18px;margin:0 0 6px;color:oklch(16% 0.02 260);">¿Cómo podemos ayudarte?</h3>
+          <p style="font-size:13px;color:oklch(45% 0.02 260);margin:0;">Elige cómo prefieres contactar con Centro de Estudios Máster.</p>
+        </div>
+        <div style="padding:14px 22px 22px;display:flex;flex-direction:column;gap:10px;overflow-y:auto;flex:1;min-height:0;">
+          <div style="border:1px solid oklch(91% 0.01 85);border-radius:14px;padding:16px;">
+            <div style="font-weight:600;font-size:14.5px;color:oklch(16% 0.02 260);margin-bottom:6px;">💬 Hablar con el asistente</div>
+            <p style="font-size:12.5px;color:oklch(45% 0.02 260);margin:0 0 12px;line-height:1.5;">Encuentra cursos, resuelve dudas o déjanos tus datos.</p>
+            <a href="./Home.dc.html" style="display:flex;align-items:center;justify-content:center;width:100%;min-height:44px;font-size:13.5px;font-weight:600;color:oklch(99% 0.004 85);background:oklch(30% 0.09 255);border-radius:10px;">Abrir asistente</a>
+          </div>
+          <div style="border:1px solid oklch(91% 0.01 85);border-radius:14px;padding:16px;">
+            <div style="font-weight:600;font-size:14.5px;color:oklch(16% 0.02 260);margin-bottom:6px;">📱 WhatsApp</div>
+            <p style="font-size:12.5px;color:oklch(45% 0.02 260);margin:0 0 12px;line-height:1.5;">Escríbenos directamente y te respondemos lo antes posible.</p>
+            <a href="https://wa.me/34682821956?text=Hola%2C%20quiero%20informaci%C3%B3n%20sobre%20los%20cursos%20de%20Centro%20de%20Estudios%20M%C3%A1ster." target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:center;min-height:44px;font-size:13.5px;font-weight:600;color:oklch(99% 0.004 85);background:oklch(45% 0.14 150);border-radius:10px;">Continuar por WhatsApp</a>
+          </div>
+          <div style="border:1px solid oklch(91% 0.01 85);border-radius:14px;padding:16px;">
+            <div style="font-weight:600;font-size:14.5px;color:oklch(16% 0.02 260);margin-bottom:6px;">✉️ Solicitar que me contacten</div>
+            <p style="font-size:12.5px;color:oklch(45% 0.02 260);margin:0 0 12px;line-height:1.5;">Déjanos tus datos y un asesor se pondrá en contacto contigo.</p>
+            <a href="./Home.dc.html#contacto" style="display:flex;align-items:center;justify-content:center;width:100%;min-height:44px;font-size:13.5px;font-weight:600;color:oklch(16% 0.02 260);background:oklch(96% 0.012 85);border:1px solid oklch(85% 0.01 85);border-radius:10px;">Solicitar contacto</a>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+    <button ref="{{ helpBtnRef }}" class="help-fab" type="button" aria-expanded="{{ helpOpen }}" aria-controls="help-panel" aria-label="{{ helpToggleLabel }}" onClick="{{ toggleHelp }}" style="display:flex;align-items:center;gap:10px;background:oklch(30% 0.09 255);color:oklch(99% 0.004 85);border:none;border-radius:100px;padding:0 18px 0 14px;height:56px;cursor:pointer;box-shadow:0 10px 24px oklch(20% 0.02 260 / 0.2);" style-hover="filter:brightness(1.08);" style-focus="outline:2px solid oklch(66% 0.17 45);outline-offset:2px;">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3C6.48 3 2 6.8 2 11.5c0 2.4 1.16 4.56 3.03 6.11-.1.98-.5 2.4-1.36 3.6 1.6-.2 3.2-.85 4.4-1.7 1.2.38 2.52.6 3.93.6 5.52 0 10-3.8 10-8.6S17.52 3 12 3Z" fill="oklch(99% 0.004 85)"/></svg>
+      <span class="help-label" style="font-size:14px;font-weight:600;white-space:nowrap;">¿Necesitas ayuda?</span>
+    </button>
+  </div>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = {
+    query: '', sort: 'relevancia', situacion: 'todas', isla: 'todas', modalidad: 'todas', familia: 'todas', precio: 'todas', estado: 'todas',
+    mobileNavOpen: false, filtersOpen: false, helpOpen: false,
+    // Fase 3: cargados desde CatalogRepository/CatalogSearch — nunca hardcodeados.
+    cursos: [], searchResults: null,
+    islaOptions: [], modalidadOptions: [], precioOptions: [], estadoOptions: [], familiaOptions: [],
+  };
+  _estadoMeta = {
+    'proximamente': { label: 'Próximamente', color: 'oklch(45% 0.02 260)' },
+    'matricula-abierta': { label: 'Matrícula abierta', color: 'oklch(52% 0.14 150)' },
+    'ultimas-plazas': { label: 'Últimas plazas', color: 'oklch(58% 0.17 40)' },
+    'en-curso': { label: 'En curso', color: 'oklch(50% 0.12 250)' },
+  };
+  _modalidadLabels = { presencial: 'Presencial', teleformacion: 'Teleformación' };
+  _tipoPrecioLabels = { gratuito: 'Gratuito', privado: 'Privado' };
+  _estadoOrden = { 'matricula-abierta': 0, 'ultimas-plazas': 1, 'en-curso': 2, 'proximamente': 3 };
+  _searchSeq = 0;
+  toggleBtnRef = React.createRef();
+  closeBtnRef = React.createRef();
+  filtersBtnRef = React.createRef();
+  filtersPanelRef = React.createRef();
+  helpBtnRef = React.createRef();
+  helpPanelRef = React.createRef();
+
+  componentDidMount() {
+    this._onKeyDown = e => {
+      if (e.key === 'Escape' && this.state.mobileNavOpen) this.closeMobileNav();
+      if (e.key === 'Escape' && this.state.filtersOpen) this.closeFilters();
+      if (e.key === 'Escape' && this.state.helpOpen) this.closeHelp();
+    };
+    document.addEventListener('keydown', this._onKeyDown);
+    this._onClickOutside = e => {
+      if (this.state.helpOpen && this.helpBtnRef.current && !this.helpBtnRef.current.closest('.help-hub').contains(e.target)) this.closeHelp();
+    };
+    document.addEventListener('click', this._onClickOutside, true);
+
+    const self = this;
+    CatalogRepository.getPublicCourses().then(function (cursos) {
+      self.setState({
+        cursos: cursos,
+        islaOptions: self._distinct(cursos, 'isla'),
+        modalidadOptions: self._distinct(cursos, 'modalidad').map(function (v) { return { value: v, label: self._modalidadLabels[v] || v }; }),
+        precioOptions: self._distinct(cursos, 'tipoPrecio').map(function (v) { return { value: v, label: self._tipoPrecioLabels[v] || v }; }),
+        estadoOptions: self._distinct(cursos, 'estado').map(function (v) { return { value: v, label: (self._estadoMeta[v] || { label: v }).label }; }),
+        familiaOptions: self._distinct(cursos, 'familiaProfesional'),
+      });
+      self._runSearch();
+    }).catch(function (err) {
+      console.error('No se pudo cargar el catálogo de cursos:', err);
+    });
+  }
+  componentWillUnmount() {
+    document.removeEventListener('keydown', this._onKeyDown);
+    document.removeEventListener('click', this._onClickOutside, true);
+    document.body.style.overflow = '';
+  }
+
+  toggleMobileNav = () => { if (this.state.mobileNavOpen) this.closeMobileNav(); else this.openMobileNav(); };
+  openMobileNav = () => { this.setState({ mobileNavOpen: true }); document.body.style.overflow = 'hidden'; setTimeout(() => { if (this.closeBtnRef.current) this.closeBtnRef.current.focus(); }, 0); };
+  closeMobileNav = () => { this.setState({ mobileNavOpen: false }); document.body.style.overflow = ''; setTimeout(() => { if (this.toggleBtnRef.current) this.toggleBtnRef.current.focus(); }, 0); };
+
+  toggleFilters = () => { if (this.state.filtersOpen) this.closeFilters(); else this.openFilters(); };
+  openFilters = () => {
+    const isMobile = window.innerWidth <= 860;
+    this._filtersLockedScroll = isMobile;
+    if (isMobile) document.body.style.overflow = 'hidden';
+    this.setState({ filtersOpen: true }, () => { if (this.filtersPanelRef.current) this.filtersPanelRef.current.focus(); });
+  };
+  closeFilters = () => {
+    if (this._filtersLockedScroll) document.body.style.overflow = '';
+    this._filtersLockedScroll = false;
+    this.setState({ filtersOpen: false });
+    setTimeout(() => { if (this.filtersBtnRef.current) this.filtersBtnRef.current.focus(); }, 0);
+  };
+  closeFiltersOverlay = () => this.closeFilters();
+
+  toggleHelp = () => { if (this.state.helpOpen) this.closeHelp(); else this.openHelp(); };
+  openHelp = () => { this.setState({ helpOpen: true }, () => { if (this.helpPanelRef.current) this.helpPanelRef.current.focus(); }); };
+  closeHelp = () => { this.setState({ helpOpen: false }); setTimeout(() => { if (this.helpBtnRef.current) this.helpBtnRef.current.focus(); }, 0); };
+
+  clearFilters = () => this.setState({ query: '', situacion: 'todas', isla: 'todas', modalidad: 'todas', familia: 'todas', precio: 'todas', estado: 'todas' }, this._runSearch);
+
+  _distinct = (cursos, campo) => {
+    const seen = {}; const out = [];
+    cursos.forEach(function (c) { const v = c[campo]; if (v && !seen[v]) { seen[v] = true; out.push(v); } });
+    return out;
+  };
+
+  // Adapta un curso del modelo público a la forma que espera esta plantilla
+  // visual. No inventa datos: los campos ausentes quedan vacíos y la
+  // plantilla los omite (sc-if en type/startDate).
+  _toDisplayCourse = (c) => {
+    const meta = this._estadoMeta[c.estado] || { label: c.estado, color: 'oklch(55% 0.02 260)' };
+    const duracion = c.duracionHoras ? (c.duracionHoras + 'h') : (c.duracionTexto || '');
+    const precio = this._tipoPrecioLabels[c.tipoPrecio] || '';
+    const img = c.imagen || {};
+    return {
+      name: c.nombre,
+      type: c.tipoFormacion || '',
+      modalidad: this._modalidadLabels[c.modalidad] || c.modalidad,
+      isla: c.isla,
+      status: meta.label,
+      statusColor: meta.color,
+      startDate: c.fechaInicio || c.fechaInicioAproximada || '',
+      duration: duracion ? (duracion + ' · ') : '',
+      price: precio,
+      photoSrc: img.src ? '../web/' + img.src : null,
+      photoSrcset: img.srcset ? img.srcset.split(',').map(function (part) {
+        const t = part.trim(); const i = t.indexOf(' ');
+        return '../web/' + (i === -1 ? t : t.slice(0, i)) + (i === -1 ? '' : t.slice(i));
+      }).join(', ') : null,
+      photoAlt: img.alt || '',
+      photoPos: img.objectPosition || 'center',
+      href: c.urlFicha ? ('../web/' + c.urlFicha) : ('../web/cursos/' + c.slug + '/'),
+    };
+  };
+
+  // El repositorio no expone un filtro de "un único estado exacto" (solo el
+  // conjunto de estados públicos permitidos), así que ese último
+  // refinamiento se aplica en cliente, sobre el resultado ya obtenido de
+  // CatalogSearch — igual que en web/cursos/index.html.
+  _runSearch = () => {
+    const s = this.state;
+    const filtros = { texto: s.query };
+    if (s.isla !== 'todas') filtros.isla = s.isla;
+    if (s.modalidad !== 'todas') filtros.modalidad = s.modalidad;
+    if (s.familia !== 'todas') filtros.familiaProfesional = s.familia;
+    if (s.precio !== 'todas') filtros.tipoPrecio = s.precio;
+    if (s.situacion === 'privado') filtros.tipoPrecio = 'privado';
+    else if (s.situacion !== 'todas') filtros.situacion = s.situacion;
+
+    const seq = ++this._searchSeq;
+    const self = this;
+    CatalogSearch.buscar(filtros).then(function (list) {
+      if (seq !== self._searchSeq) return;
+      if (s.estado !== 'todas') list = list.filter(function (c) { return c.estado === s.estado; });
+      self.setState({ searchResults: list });
+    });
+  };
+
+  footerCols = [
+    { title: 'Formación', links: ['Cursos', 'Desempleados', 'Ocupados', 'Formación privada', 'Teleformación'] },
+    { title: 'Centro', links: ['Sobre nosotros', 'Centros', 'Contacto', 'Empleo'] },
+    { title: 'Accesos', links: ['Campus Virtual', 'Portal de transparencia', 'Docentes', 'Canal de denuncias'] },
+    { title: 'Legal', links: ['Privacidad', 'Cookies', 'Aviso legal', 'Canal de denuncias'] },
+  ];
+
+  renderVals() {
+    const accentMap = { amber: 'oklch(66% 0.17 45)', teal: 'oklch(60% 0.11 195)' };
+    const accentColor = accentMap[this.props.accentHue ?? 'amber'];
+    const s = this.state;
+
+    const fuente = s.searchResults !== null ? s.searchResults : s.cursos;
+    let list = fuente.map(this._toDisplayCourse);
+    if (s.sort === 'nombre') list = [...list].sort((a, b) => a.name.localeCompare(b.name));
+    if (s.sort === 'estado') {
+      const order = { 'Matrícula abierta': 0, 'Últimas plazas': 1, 'En curso': 2, 'Próximamente': 3 };
+      list = [...list].sort((a, b) => (order[a.status] ?? 9) - (order[b.status] ?? 9));
+    }
+
+    const situacionLabels = { desempleado: 'Desempleado/a', ocupado: 'Ocupado/a', privado: 'Formación privada' };
+    const chipDefs = [
+      { key: 'situacion', value: s.situacion, label: v => situacionLabels[v] || v, clear: () => this.setState({ situacion: 'todas' }, this._runSearch) },
+      { key: 'isla', value: s.isla, label: v => v, clear: () => this.setState({ isla: 'todas' }, this._runSearch) },
+      { key: 'modalidad', value: s.modalidad, label: v => this._modalidadLabels[v] || v, clear: () => this.setState({ modalidad: 'todas' }, this._runSearch) },
+      { key: 'familia', value: s.familia, label: v => v, clear: () => this.setState({ familia: 'todas' }, this._runSearch) },
+      { key: 'precio', value: s.precio, label: v => this._tipoPrecioLabels[v] || v, clear: () => this.setState({ precio: 'todas' }, this._runSearch) },
+      { key: 'estado', value: s.estado, label: v => (this._estadoMeta[v] || { label: v }).label, clear: () => this.setState({ estado: 'todas' }, this._runSearch) },
+    ];
+    const activeChips = chipDefs.filter(d => d.value !== 'todas').map(d => ({ label: d.label(d.value), onRemove: d.clear }));
+    const activeFilterCount = activeChips.length;
+
+    return {
+      accentColor,
+      query: s.query, sort: s.sort, situacion: s.situacion, isla: s.isla, modalidad: s.modalidad, familia: s.familia, precio: s.precio, estado: s.estado,
+      onQueryChange: e => this.setState({ query: e.target.value }, this._runSearch),
+      onSortChange: e => this.setState({ sort: e.target.value }),
+      onSituacionChange: e => this.setState({ situacion: e.target.value }, this._runSearch),
+      onIslaChange: e => this.setState({ isla: e.target.value }, this._runSearch),
+      onModalidadChange: e => this.setState({ modalidad: e.target.value }, this._runSearch),
+      onFamiliaChange: e => this.setState({ familia: e.target.value }, this._runSearch),
+      onPrecioChange: e => this.setState({ precio: e.target.value }, this._runSearch),
+      onEstadoChange: e => this.setState({ estado: e.target.value }, this._runSearch),
+      clearFilters: this.clearFilters,
+      filtersOpen: s.filtersOpen, toggleFilters: this.toggleFilters, closeFilters: this.closeFilters, closeFiltersOverlay: this.closeFiltersOverlay,
+      filtersBtnRef: this.filtersBtnRef, filtersPanelRef: this.filtersPanelRef,
+      hasFamiliaFilter: s.familiaOptions.length > 0,
+      islaOptions: s.islaOptions, modalidadOptions: s.modalidadOptions, precioOptions: s.precioOptions, estadoOptions: s.estadoOptions, familiaOptions: s.familiaOptions,
+      activeFilterCount,
+      filtersBadgeStyle: activeFilterCount > 0 ? 'display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 5px;border-radius:100px;background:' + accentColor + ';color:white;font-size:10.5px;font-weight:700;' : 'display:none',
+      hasActiveFilters: activeFilterCount > 0,
+      activeChips,
+      results: list,
+      hasResults: list.length > 0,
+      noResults: list.length === 0,
+      resultsLabel: list.length === 1 ? '1 curso encontrado' : list.length + ' cursos encontrados',
+      mobileNavOpen: s.mobileNavOpen,
+      mobileNavToggleLabel: s.mobileNavOpen ? 'Cerrar menú' : 'Abrir menú',
+      toggleMobileNav: this.toggleMobileNav, closeMobileNav: this.closeMobileNav,
+      toggleBtnRef: this.toggleBtnRef, closeBtnRef: this.closeBtnRef,
+      footerCols: this.footerCols,
+      helpOpen: s.helpOpen,
+      helpToggleLabel: s.helpOpen ? 'Cerrar centro de contacto' : '¿Necesitas ayuda? Abrir centro de contacto',
+      toggleHelp: this.toggleHelp, helpBtnRef: this.helpBtnRef, helpPanelRef: this.helpPanelRef,
+    };
+  }
+}
+
+</script>
+</body>
+</html>

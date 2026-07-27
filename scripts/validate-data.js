@@ -21,6 +21,12 @@ const ESTADOS_VALIDOS = [
   'borrador', 'proximamente', 'matricula-abierta', 'ultimas-plazas',
   'en-curso', 'finalizado', 'archivado',
 ];
+// Estados para los que scripts/build-fichas.js genera una ficha pública en
+// /web/cursos/{slug}/. 'borrador' y 'archivado' quedan fuera a propósito.
+const ESTADOS_PUBLICABLES = [
+  'proximamente', 'matricula-abierta', 'ultimas-plazas', 'en-curso', 'finalizado',
+];
+const SLUG_PATTERN = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 
 // Campos válidos del modelo público de Curso (web/data/cursos.json), para
 // poder comprobar que 'pendientesVerificacion' (que ahora vive en
@@ -235,6 +241,31 @@ if (cursosData) {
       err(`${ref}: falta imagen.src`);
     }
 
+    // slug: formato válido (necesario como nombre de directorio y segmento
+    // de URL — un slug malformado podría romper build-fichas.js o generar
+    // rutas inesperadas).
+    if (c.slug && !SLUG_PATTERN.test(c.slug)) {
+      err(`${ref}: slug "${c.slug}" no tiene un formato válido (solo minúsculas, números y guiones simples)`);
+    }
+
+    // urlFicha: si existe, debe ser una ruta relativa a /web/ (nunca
+    // absoluta ni externa), para que Home/catálogo/fichas puedan resolverla
+    // igual en local, /design-preview/, raíz o un futuro dominio.
+    if (c.urlFicha != null) {
+      if (typeof c.urlFicha !== 'string' || c.urlFicha === '') {
+        err(`${ref}: "urlFicha" debería ser una ruta de texto no vacía, o null`);
+      } else if (c.urlFicha.charAt(0) === '/' || /^[a-z]+:\/\//i.test(c.urlFicha)) {
+        err(`${ref}: "urlFicha" = "${c.urlFicha}" debe ser una ruta relativa a /web/ (sin "/" inicial ni protocolo)`);
+      }
+    }
+
+    // Datos mínimos para que la ficha generada no quede vacía de contenido
+    // editorial (esto es un aviso, no bloquea la generación: build-fichas.js
+    // ya omite limpiamente cualquier sección sin datos).
+    if (ESTADOS_PUBLICABLES.indexOf(c.estado) !== -1 && esVacio(c.descripcionCorta) && esVacio(c.descripcionCompleta)) {
+      warn(`${ref}: sin "descripcionCorta" ni "descripcionCompleta" — la ficha se generará sin sección "Sobre este curso"`);
+    }
+
     // Fechas (solo si existen — muchas son null a propósito en esta migración)
     ['fechaInicio', 'fechaFin'].forEach((campo) => {
       if (c[campo] != null && !esFechaValida(c[campo])) {
@@ -268,6 +299,21 @@ if (cursosData) {
           warn(`${ref}: "${campo}" está vacío pero no aparece en administrativo.pendientesVerificacion (data-internal)`);
         }
       });
+    }
+  });
+
+  // Colisiones de URL de ficha: cada curso publicable resuelve a
+  // urlFicha || "cursos/{slug}/" — dos cursos no pueden resolver a la misma
+  // ruta (slugs únicos ya lo garantiza salvo que alguien fije un urlFicha
+  // manual que choque con otro).
+  const rutasFicha = {};
+  cursos.forEach((c) => {
+    if (ESTADOS_PUBLICABLES.indexOf(c.estado) === -1 || !c.slug) return;
+    const ruta = c.urlFicha || `cursos/${c.slug}/`;
+    if (rutasFicha[ruta]) {
+      err(`cursos.json: colisión de ruta de ficha "${ruta}" entre "${rutasFicha[ruta]}" y "${c.id}"`);
+    } else {
+      rutasFicha[ruta] = c.id;
     }
   });
 

@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<!-- build-fichas:managed -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ofimática — Centro de Estudios Máster</title>
+<meta name="description" content="Ofimática — Presencial — Gran Canaria — Gratuito. Formación de Centro de Estudios Máster.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Ofimática — Centro de Estudios Máster">
+<meta property="og:description" content="Ofimática — Presencial — Gran Canaria — Gratuito. Formación de Centro de Estudios Máster.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../css/help-widget.css">
+<style>
+  :root{ --bg: oklch(98% 0.012 85); --ink: oklch(20% 0.02 260); --ink-soft: oklch(45% 0.02 260); --ink-strong: oklch(16% 0.02 260); --primary: oklch(30% 0.09 255); --accent: oklch(66% 0.17 45); --line: oklch(91% 0.01 85); --surface: oklch(99.5% 0.004 85); --tint: oklch(96% 0.012 85); --dark: oklch(15% 0.02 260); }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:'Work Sans',sans-serif;}
+  a{color:var(--primary);text-decoration:none;}
+  a:hover{color:oklch(56% 0.15 45);}
+  h1,h2,h3{font-family:'Sora',sans-serif;}
+  .wrap{width:100%;max-width:1920px;margin:0 auto;overflow-x:hidden;}
+  @media (prefers-reduced-motion: reduce){ *{animation-duration:0.001ms !important; transition-duration:0.001ms !important; transition:none !important;} }
+  .top-bar{display:flex;align-items:center;justify-content:flex-end;gap:20px;padding:9px 56px;background:var(--tint);border-bottom:1px solid var(--line);}
+  .top-bar a{font-size:12.5px;font-weight:500;color:var(--ink-soft);white-space:nowrap;}
+  header{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:16px 56px;background:oklch(99.5% 0.004 85 / .92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
+  .nav-primary{display:flex;align-items:center;gap:28px;}
+  nav a{white-space:nowrap;font-size:15px;font-weight:500;color:var(--ink);}
+  .nav-secondary{font-size:14px;font-weight:500;color:var(--ink-soft);border-right:1px solid var(--line);padding-right:24px;}
+  .cta-pill{white-space:nowrap;font-size:15px;font-weight:600;color:var(--surface);background:var(--accent);padding:14px 22px;border-radius:100px;}
+  .sitenav{display:flex;align-items:center;gap:28px;}
+  .nav-toggle{display:none;flex-shrink:0;align-items:center;justify-content:center;width:44px;height:44px;border-radius:10px;border:1px solid var(--line);background:var(--surface);cursor:pointer;padding:0;}
+  .nav-toggle .bars{display:flex;flex-direction:column;gap:4px;width:20px;}
+  .nav-toggle .bars span{display:block;height:2px;width:100%;background:var(--ink);border-radius:2px;}
+  #mobileOverlay{position:fixed;inset:0;background:oklch(12% 0.03 260 / .55);z-index:60;}
+  #mobileDrawer{position:fixed;top:0;right:0;height:100%;width:min(320px,86vw);background:var(--surface);box-shadow:-12px 0 32px oklch(20% 0.02 260 / .18);z-index:61;display:flex;flex-direction:column;padding:20px;overflow-y:auto;}
+  #mobileOverlay[hidden], #mobileDrawer[hidden]{display:none;}
+  .drawer-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;}
+  .drawer-close{width:44px;height:44px;display:flex;align-items:center;justify-content:center;border-radius:10px;border:1px solid var(--line);background:oklch(98% 0.008 85);font-size:22px;cursor:pointer;}
+  .drawer-nav a{font-size:16px;font-weight:600;color:var(--ink);padding:14px 10px;border-radius:10px;min-height:44px;display:flex;align-items:center;}
+  .drawer-nav a.corp{font-size:14.5px;font-weight:500;color:var(--ink-soft);}
+  .drawer-subhead{font-size:11px;font-weight:600;color:oklch(55% 0.02 260);text-transform:uppercase;letter-spacing:.05em;margin:20px 0 6px;padding:0 10px;}
+  .breadcrumb{padding:14px 56px;font-size:13px;color:oklch(50% 0.02 260);border-bottom:1px solid oklch(93% 0.008 85);}
+  .breadcrumb a{color:oklch(50% 0.02 260);}
+  .finished-banner{background:var(--tint);border-bottom:1px solid var(--line);padding:14px 56px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+  .finished-banner .warn{font-size:13px;font-weight:700;color:var(--ink-soft);}
+  .finished-banner .info{font-size:13px;color:var(--ink-soft);}
+  .course-wrap{padding:40px 56px 0;}
+  .course-hero{display:grid;grid-template-columns:1.05fr .95fr;gap:40px;align-items:start;margin-bottom:48px;}
+  .hero-photo{position:relative;border-radius:24px;overflow:hidden;aspect-ratio:16/10;background:var(--tint);}
+  .hero-photo img{width:100%;height:100%;object-fit:cover;}
+  .hero-photo img.finished{filter:grayscale(.55);opacity:.85;}
+  .status-badge{position:absolute;top:16px;left:16px;font-size:12px;font-weight:700;color:var(--surface);padding:6px 13px;border-radius:100px;}
+  .tag-row{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
+  .tag-modalidad{font-size:11.5px;font-weight:600;color:oklch(40% 0.09 200);background:oklch(94% 0.03 200);padding:5px 12px;border-radius:100px;}
+  .tag-isla, .tag-price{font-size:11.5px;font-weight:600;color:var(--ink-strong);background:oklch(93% 0.008 85);padding:5px 12px;border-radius:100px;}
+  .course-hero h1{font-weight:700;font-size:34px;margin:0 0 14px;color:var(--ink-strong);line-height:1.12;}
+  .course-hero .intro{font-size:15.5px;color:var(--ink-soft);line-height:1.6;margin:0 0 24px;max-width:520px;}
+  .course-facts{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:28px;}
+  .fact-label{font-size:11px;font-weight:600;color:oklch(55% 0.02 260);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px;}
+  .fact-value{font-size:14px;font-weight:600;color:var(--ink);}
+  .cta-row{display:flex;gap:12px;flex-wrap:wrap;}
+  .cta-row a{min-height:44px;display:flex;align-items:center;border-radius:100px;font-size:15px;font-weight:600;padding:0 26px;}
+  .cta-solid{color:var(--surface);background:var(--accent);}
+  .cta-outline{color:var(--ink-strong);border:1px solid oklch(85% 0.01 85);gap:8px;}
+  .detail-wrap{padding:0 56px 96px;max-width:1200px;}
+  .detail-section{margin-bottom:36px;}
+  .detail-section h2{font-weight:700;font-size:22px;margin:0 0 12px;color:var(--ink-strong);}
+  .detail-section p, .detail-section .plain{font-size:15px;color:oklch(38% 0.02 260);line-height:1.7;margin:0;max-width:760px;}
+  .module-box{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px 24px;}
+  .similar-wrap{padding:0 56px 96px;}
+  .similar-wrap h2{font-weight:700;font-size:26px;margin:0 0 20px;color:var(--ink-strong);}
+  .similar-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+  .similar-card{background:var(--surface);border:1px solid var(--line);border-radius:18px;overflow:hidden;}
+  .similar-card .photo{position:relative;aspect-ratio:16/10;background:var(--tint);}
+  .similar-card .photo img{width:100%;height:100%;object-fit:cover;}
+  .similar-status{position:absolute;top:12px;left:12px;font-size:10.5px;font-weight:700;color:var(--surface);padding:4px 10px;border-radius:100px;}
+  .similar-card .body{padding:18px;}
+  .similar-card h3{font-weight:600;font-size:15px;margin:0 0 8px;color:var(--ink-strong);line-height:1.25;}
+  .similar-card .meta{font-size:12px;color:var(--ink-soft);margin-bottom:12px;}
+  .similar-card a{font-size:13px;font-weight:600;}
+  footer{padding:64px 56px 32px;background:var(--dark);color:oklch(85% 0.008 260);}
+  .footer-grid{display:grid;grid-template-columns:1.3fr repeat(4,1fr);gap:32px;margin-bottom:48px;}
+  .footer-brand-title{font-family:'Sora',sans-serif;font-weight:700;font-size:19px;color:oklch(97% 0.004 85);margin-bottom:14px;}
+  .footer-brand p{font-size:13.5px;line-height:1.6;color:oklch(72% 0.01 260);max-width:250px;margin:0 0 16px;}
+  .social-row a{font-size:13px;font-weight:500;color:oklch(85% 0.008 260);}
+  .footer-col-title{font-size:12.5px;font-weight:600;color:oklch(97% 0.004 85);text-transform:uppercase;letter-spacing:.05em;margin-bottom:16px;}
+  .footer-col a{display:block;font-size:13.5px;color:oklch(75% 0.01 260);margin-bottom:10px;}
+  .footer-bottom{display:flex;justify-content:space-between;align-items:center;padding-top:28px;border-top:1px solid oklch(28% 0.02 260);font-size:12.5px;color:oklch(60% 0.01 260);flex-wrap:wrap;gap:12px;}
+  @media (max-width: 1180px){
+    header{padding-left:28px;padding-right:28px;}
+    .nav-secondary{display:none;}
+    .top-bar{padding-left:28px;padding-right:28px;gap:14px;}
+    .course-wrap,.detail-wrap,.similar-wrap{padding-left:32px;padding-right:32px;}
+    .course-hero{grid-template-columns:1fr;}
+    .course-facts{grid-template-columns:repeat(2,1fr);}
+    .similar-grid{grid-template-columns:repeat(2,1fr);}
+  }
+  @media (max-width: 860px){
+    .top-bar{display:none;}
+    .nav-primary{display:none;}
+    .nav-toggle{display:inline-flex;}
+    .footer-grid{grid-template-columns:1fr 1fr;}
+    .footer-brand{grid-column:1/-1;}
+    .cta-row{position:sticky;bottom:0;left:0;right:0;background:var(--surface);padding:12px 20px;margin:24px -20px 0;box-shadow:0 -8px 24px oklch(20% 0.02 260 / .1);z-index:20;}
+  }
+  @media (max-width: 700px){
+    .course-facts{grid-template-columns:1fr 1fr;}
+    .similar-grid{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top-bar">
+    <a href="#">Selección</a><a href="#">Docentes</a><a href="#">Portal de transparencia</a><a href="#">Canal de denuncias</a>
+    <a href="#" style="border-left:1px solid oklch(88% 0.01 85);padding-left:20px;">Intranet Microsoft ↗</a>
+  </div>
+  <header>
+    <img src="../../assets/logo-cem.png" alt="Centro de Estudios Máster" style="width:150px;height:38px;object-fit:contain;">
+    <nav class="sitenav">
+      <span class="nav-primary">
+        <a href="../../index.html#cursos">Formación ⌄</a>
+        <a href="../../index.html#empleo">Empleo</a>
+        <a href="../../index.html#nosotros">Sobre nosotros</a>
+        <a href="../../index.html#contacto">Contacto</a>
+      </span>
+      <a href="#" class="nav-secondary">Campus Virtual ↗</a>
+      <a href="../" class="cta-pill">Encontrar un curso</a>
+      <button id="navToggle" class="nav-toggle" type="button" aria-expanded="false" aria-controls="mobileDrawer" aria-label="Abrir menú">
+        <span class="bars"><span></span><span></span><span></span></span>
+      </button>
+    </nav>
+  </header>
+  <div id="mobileOverlay" hidden></div>
+  <div id="mobileDrawer" role="dialog" aria-modal="true" aria-label="Menú de navegación" hidden>
+    <div class="drawer-head">
+      <img src="../../assets/logo-cem.png" alt="Centro de Estudios Máster" style="width:130px;height:34px;object-fit:contain;">
+      <button id="drawerClose" class="drawer-close" type="button" aria-label="Cerrar menú">×</button>
+    </div>
+    <nav class="drawer-nav">
+      <a href="../../index.html#cursos">Formación</a>
+      <a href="../../index.html#empleo">Empleo</a>
+      <a href="../../index.html#nosotros">Sobre nosotros</a>
+      <a href="../../index.html#contacto">Contacto</a>
+      <a href="#">Campus Virtual ↗</a>
+    </nav>
+    <div class="drawer-subhead">Accesos corporativos</div>
+    <nav class="drawer-nav">
+      <a href="#" class="corp">Selección</a><a href="#" class="corp">Docentes</a><a href="#" class="corp">Portal de transparencia</a><a href="#" class="corp">Canal de denuncias</a><a href="#" class="corp">Intranet Microsoft ↗</a>
+    </nav>
+  </div>
+  <div class="breadcrumb"><a href="../../index.html">Inicio</a> <span>/</span> <a href="../">Formación</a> <span>/</span> <span style="color:var(--ink);font-weight:600;">Ofimática</span></div>
+
+  <div class="course-wrap">
+    <div class="course-hero">
+      <div class="hero-photo">
+        <img src="../../assets/curso-ofimatica-1200.webp" srcset="../../assets/curso-ofimatica-800.webp 800w, ../../assets/curso-ofimatica-1200.webp 1200w" sizes="(max-width:1180px) 92vw, 50vw" alt="Formadora explicando herramientas de ofimática y productividad a alumnado en aula de informática" style="object-position:center 22%;">
+        <span class="status-badge" style="background:oklch(45% 0.02 260)">Próximamente</span>
+      </div>
+      <div>
+        <div class="tag-row">
+          <span class="tag-modalidad">Presencial</span>
+          <span class="tag-isla">Gran Canaria</span>
+          <span class="tag-price">Gratuito</span>
+        </div>
+        <h1>Ofimática</h1>
+        <div class="course-facts"><div><div class="fact-label">Tipo de formación</div><div class="fact-value">Programa formativo</div></div><div><div class="fact-label">Duración</div><div class="fact-value">100h</div></div><div><div class="fact-label">Fecha de inicio</div><div class="fact-value">Otoño 2026</div></div></div>
+        <div class="cta-row">
+          
+          <a href="https://wa.me/34682821956?text=Hola%2C%20quiero%20informaci%C3%B3n%20sobre%20el%20curso%3A%20Ofim%C3%A1tica." target="_blank" rel="noopener" class="cta-outline">📱 WhatsApp</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="detail-wrap">
+  </div>
+
+  <footer>
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-brand-title">Centro de Estudios Máster</div>
+        <p>Formación para el empleo en Canarias desde hace más de 25 años.</p>
+        <div class="social-row" style="display:flex;gap:14px;">
+          <a href="https://www.instagram.com/centrodeestudiosmaster/">Instagram</a>
+          <a href="https://www.facebook.com/CentroDeEstudiosMaster/">Facebook</a>
+          <a href="https://www.tiktok.com/@centrodeestudiosmaster">Tiktok</a>
+        </div>
+      </div>
+      <div class="footer-col"><div class="footer-col-title">Formación</div><a href="#">Cursos</a><a href="#">Desempleados</a><a href="#">Ocupados</a><a href="#">Formación privada</a><a href="#">Teleformación</a></div>
+      <div class="footer-col"><div class="footer-col-title">Centro</div><a href="#">Sobre nosotros</a><a href="#">Centros</a><a href="#">Contacto</a><a href="#">Empleo</a></div>
+      <div class="footer-col"><div class="footer-col-title">Accesos</div><a href="#">Campus Virtual</a><a href="#">Portal de transparencia</a><a href="#">Docentes</a><a href="#">Canal de denuncias</a></div>
+      <div class="footer-col"><div class="footer-col-title">Legal</div><a href="#">Privacidad</a><a href="#">Cookies</a><a href="#">Aviso legal</a><a href="#">Canal de denuncias</a></div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Centro de Estudios Máster. Todos los derechos reservados.</span>
+      <span>928 75 51 05 · secretariavc@centromaster.com</span>
+    </div>
+  </footer>
+  <div class="help-hub">
+    <div id="helpPanel" class="help-panel" role="dialog" aria-modal="true" aria-label="Centro de contacto" tabindex="-1" hidden>
+      <div class="help-panel-head">
+        <h3>¿Cómo podemos ayudarte?</h3>
+        <p>Elige cómo prefieres contactar con Centro de Estudios Máster.</p>
+      </div>
+      <div class="help-panel-body">
+        <div class="help-option"><div class="title">💬 Hablar con el asistente</div><p>Encuentra cursos, resuelve dudas o déjanos tus datos.</p><a class="help-btn-primary" href="../../index.html#buscador">Abrir asistente</a></div>
+        <div class="help-option"><div class="title">📱 WhatsApp</div><p>Escríbenos directamente y te respondemos lo antes posible.</p><a class="help-btn-wa" href="https://wa.me/34682821956?text=Hola%2C%20quiero%20informaci%C3%B3n%20sobre%20los%20cursos%20de%20Centro%20de%20Estudios%20M%C3%A1ster." target="_blank" rel="noopener">Continuar por WhatsApp</a></div>
+        <div class="help-option"><div class="title">✉️ Solicitar que me contacten</div><p>Déjanos tus datos y un asesor se pondrá en contacto contigo.</p><a class="help-btn-secondary" href="../../index.html#contacto">Solicitar contacto</a></div>
+      </div>
+    </div>
+    <button id="helpFab" class="help-fab" type="button" aria-expanded="false" aria-controls="helpPanel" aria-label="¿Necesitas ayuda? Abrir centro de contacto">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3C6.48 3 2 6.8 2 11.5c0 2.4 1.16 4.56 3.03 6.11-.1.98-.5 2.4-1.36 3.6 1.6-.2 3.2-.85 4.4-1.7 1.2.38 2.52.6 3.93.6 5.52 0 10-3.8 10-8.6S17.52 3 12 3Z" fill="#fff"/></svg>
+      <span class="help-label">¿Necesitas ayuda?</span>
+    </button>
+  </div>
+</div>
+<script src="../../js/help-widget.js"></script>
+<script>
+  var navToggle = document.getElementById('navToggle');
+  var drawer = document.getElementById('mobileDrawer');
+  var overlay = document.getElementById('mobileOverlay');
+  var drawerClose = document.getElementById('drawerClose');
+  function openDrawer(){ drawer.hidden=false; overlay.hidden=false; navToggle.setAttribute('aria-expanded','true'); document.body.style.overflow='hidden'; drawerClose.focus(); }
+  function closeDrawer(){ drawer.hidden=true; overlay.hidden=true; navToggle.setAttribute('aria-expanded','false'); document.body.style.overflow=''; navToggle.focus(); }
+  navToggle.addEventListener('click', function(){ if (drawer.hidden) openDrawer(); else closeDrawer(); });
+  drawerClose.addEventListener('click', closeDrawer);
+  overlay.addEventListener('click', closeDrawer);
+  document.addEventListener('keydown', function(e){ if (e.key==='Escape' && !drawer.hidden) closeDrawer(); });
+</script>
+</body>
+</html>

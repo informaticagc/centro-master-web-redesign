@@ -21,7 +21,7 @@ var MIME = {
 
 http.createServer(function (req, res) {
   var urlPath = decodeURIComponent(req.url.split('?')[0]);
-  if (urlPath === '/') urlPath = '/index.html';
+  if (urlPath.endsWith('/')) urlPath += 'index.html'; // igual que GitHub Pages con rutas de directorio
   var filePath = path.join(root, urlPath);
   if (!filePath.startsWith(root)) { res.writeHead(403); res.end('Forbidden'); return; }
   fs.readFile(filePath, function (err, data) {

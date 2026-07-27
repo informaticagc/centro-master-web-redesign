@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Catálogo de cursos — Centro de Estudios Máster</title>
+<meta name="description" content="Explora toda la oferta formativa de Centro de Estudios Máster en Canarias: cursos gratuitos, formación privada, certificados de profesionalidad y teleformación.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Catálogo de cursos — Centro de Estudios Máster">
+<meta property="og:description" content="Explora toda la oferta formativa de Centro de Estudios Máster en Canarias: cursos gratuitos, formación privada, certificados de profesionalidad y teleformación.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/help-widget.css">
+<style>
+  :root{ --bg: oklch(98% 0.012 85); --ink: oklch(20% 0.02 260); --ink-soft: oklch(45% 0.02 260); --ink-strong: oklch(16% 0.02 260); --primary: oklch(30% 0.09 255); --accent: oklch(66% 0.17 45); --line: oklch(91% 0.01 85); --surface: oklch(99.5% 0.004 85); --tint: oklch(96% 0.012 85); --dark: oklch(15% 0.02 260); }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:'Work Sans',sans-serif;}
+  a{color:var(--primary);text-decoration:none;}
+  a:hover{color:oklch(56% 0.15 45);}
+  h1,h2,h3{font-family:'Sora',sans-serif;}
+  .wrap{width:100%;max-width:1920px;margin:0 auto;overflow-x:hidden;}
+  @media (prefers-reduced-motion: reduce){ *{animation-duration:0.001ms !important; transition-duration:0.001ms !important; transition:none !important;} }
+
+  .top-bar{display:flex;align-items:center;justify-content:flex-end;gap:20px;padding:9px 56px;background:var(--tint);border-bottom:1px solid var(--line);}
+  .top-bar a{font-size:12.5px;font-weight:500;color:var(--ink-soft);white-space:nowrap;}
+  .top-bar a.intranet{border-left:1px solid oklch(88% 0.01 85);padding-left:20px;}
+  header{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:16px 56px;background:oklch(99.5% 0.004 85 / .92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
+  .nav-primary{display:flex;align-items:center;gap:28px;}
+  nav a{white-space:nowrap;font-size:15px;font-weight:500;color:var(--ink);}
+  .nav-secondary{font-size:14px;font-weight:500;color:var(--ink-soft);border-right:1px solid var(--line);padding-right:24px;}
+  .cta-pill{white-space:nowrap;font-size:15px;font-weight:600;color:var(--surface);background:var(--accent);padding:14px 22px;border-radius:100px;}
+  .sitenav{display:flex;align-items:center;gap:28px;}
+  .nav-toggle{display:none;flex-shrink:0;align-items:center;justify-content:center;width:44px;height:44px;border-radius:10px;border:1px solid var(--line);background:var(--surface);cursor:pointer;padding:0;}
+  .nav-toggle .bars{display:flex;flex-direction:column;gap:4px;width:20px;}
+  .nav-toggle .bars span{display:block;height:2px;width:100%;background:var(--ink);border-radius:2px;}
+  #mobileOverlay{position:fixed;inset:0;background:oklch(12% 0.03 260 / .55);z-index:60;}
+  #mobileDrawer{position:fixed;top:0;right:0;height:100%;width:min(320px,86vw);background:var(--surface);box-shadow:-12px 0 32px oklch(20% 0.02 260 / .18);z-index:61;display:flex;flex-direction:column;padding:20px;overflow-y:auto;}
+  #mobileOverlay[hidden], #mobileDrawer[hidden]{display:none;}
+  .drawer-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;}
+  .drawer-close{width:44px;height:44px;display:flex;align-items:center;justify-content:center;border-radius:10px;border:1px solid var(--line);background:oklch(98% 0.008 85);font-size:22px;cursor:pointer;}
+  .drawer-nav a{font-size:16px;font-weight:600;color:var(--ink);padding:14px 10px;border-radius:10px;min-height:44px;display:flex;align-items:center;}
+  .drawer-nav a.campus{font-size:15px;font-weight:500;color:var(--ink-soft);border-top:1px solid var(--line);margin-top:8px;}
+  .drawer-nav a.corp{font-size:14.5px;font-weight:500;color:var(--ink-soft);}
+  .drawer-subhead{font-size:11px;font-weight:600;color:oklch(55% 0.02 260);text-transform:uppercase;letter-spacing:.05em;margin:20px 0 6px;padding:0 10px;}
+
+  .breadcrumb{padding:14px 56px;font-size:13px;color:oklch(50% 0.02 260);border-bottom:1px solid oklch(93% 0.008 85);}
+  .breadcrumb a{color:oklch(50% 0.02 260);}
+  .catalog-wrap{padding:0 56px;}
+  .intro{padding:48px 56px 0;}
+  .eyebrow{font-size:13px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;}
+  .intro h1{font-weight:700;font-size:38px;margin:0 0 12px;color:var(--ink-strong);}
+  .intro p{font-size:15.5px;color:var(--ink-soft);margin:0 0 32px;max-width:640px;line-height:1.6;}
+
+  .toolbar{display:flex;align-items:center;gap:12px;margin-bottom:16px;position:relative;}
+  .toolbar input{flex:1;font-size:15px;font-family:'Work Sans',sans-serif;padding:13px 16px;border-radius:12px;border:1px solid var(--line);background:var(--surface);}
+  .toolbar select{font-size:13.5px;font-family:'Work Sans',sans-serif;padding:12px 14px;border-radius:10px;border:1px solid var(--line);background:var(--surface);min-height:44px;}
+  .filters-btn{display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:600;color:var(--ink);background:var(--surface);border:1px solid var(--line);padding:12px 18px;border-radius:10px;cursor:pointer;min-height:44px;white-space:nowrap;}
+  .filters-badge{display:none;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 5px;border-radius:100px;background:var(--accent);color:white;font-size:10.5px;font-weight:700;}
+  #filtersPanel{position:absolute;top:calc(100% + 8px);right:0;z-index:61;width:340px;max-height:min(560px, calc(100vh - 160px));max-height:min(560px, calc(100dvh - 160px));overflow-y:auto;background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:0 20px 50px oklch(20% 0.02 260 / .22);padding:20px;outline:none;}
+  #filtersPanel[hidden]{display:none;}
+  #filtersOverlay{position:fixed;inset:0;z-index:60;}
+  #filtersOverlay[hidden]{display:none;}
+  .filters-panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+  .filters-panel-head span{font-weight:700;font-size:15px;font-family:'Sora',sans-serif;color:var(--ink-strong);}
+  .filters-panel-head button{width:32px;height:32px;display:flex;align-items:center;justify-content:center;border:none;background:var(--tint);border-radius:8px;cursor:pointer;font-size:15px;}
+  .filter-field{display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:600;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.04em;margin-bottom:14px;}
+  .filter-field select{font-size:14px;font-weight:400;text-transform:none;letter-spacing:normal;padding:10px 12px;border-radius:8px;border:1px solid oklch(88% 0.01 85);font-family:'Work Sans',sans-serif;}
+  .filters-actions{display:flex;gap:10px;margin-top:6px;}
+  .filters-actions button{flex:1;min-height:44px;font-size:13.5px;font-weight:600;border-radius:10px;cursor:pointer;border:1px solid var(--line);}
+  .btn-clear{color:var(--ink);background:var(--tint);}
+  .btn-apply{color:var(--surface);background:var(--primary);border:none;}
+  .chips-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:20px;}
+  .chip{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:500;color:var(--primary);background:oklch(94% 0.02 255);border:1px solid oklch(88% 0.02 255);padding:7px 12px;border-radius:100px;cursor:pointer;}
+  .chip-clear-all{font-size:12.5px;font-weight:600;color:oklch(50% 0.02 260);background:none;border:none;cursor:pointer;padding:6px;}
+  .results-label{font-size:13.5px;color:var(--ink-soft);margin:0 0 24px;}
+
+  .catalog-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;padding:0 56px 96px;}
+  .course-card{background:var(--surface);border:1px solid var(--line);border-radius:20px;overflow:hidden;display:flex;flex-direction:column;transition:box-shadow .2s,transform .2s;}
+  .course-card:hover{box-shadow:0 18px 40px oklch(20% 0.02 260 / .1);transform:translateY(-2px);}
+  .course-card .photo{position:relative;aspect-ratio:16/10;}
+  .course-card .ph{width:100%;height:100%;background:var(--tint);}
+  .course-status{position:absolute;top:14px;left:14px;font-size:11px;font-weight:700;color:var(--surface);padding:5px 11px;border-radius:100px;}
+  .course-card .body{padding:22px;display:flex;flex-direction:column;flex:1;}
+  .tag-row{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;}
+  .tag-modalidad{font-size:11px;font-weight:600;color:oklch(40% 0.09 200);background:oklch(94% 0.03 200);padding:4px 10px;border-radius:100px;}
+  .tag-isla{font-size:11px;font-weight:600;color:var(--ink-soft);background:oklch(93% 0.008 85);padding:4px 10px;border-radius:100px;}
+  .course-card h3{font-weight:600;font-size:17px;margin:0 0 6px;color:var(--ink-strong);line-height:1.25;}
+  .course-card .meta{font-size:13px;color:var(--ink-soft);margin:0 0 4px;}
+  .course-foot{display:flex;align-items:center;justify-content:space-between;border-top:1px solid oklch(93% 0.008 85);padding-top:14px;margin-top:auto;}
+  .course-foot .price{font-size:12.5px;color:var(--ink-soft);}
+  .course-foot .price b{font-weight:600;color:var(--ink-strong);}
+  .course-foot a{font-size:13.5px;font-weight:600;}
+  .empty-state{text-align:center;padding:80px 24px;background:var(--tint);border-radius:24px;grid-column:1/-1;}
+  .empty-state h3{font-weight:600;font-size:20px;margin:0 0 8px;color:var(--ink-strong);}
+  .empty-state p{font-size:14px;color:var(--ink-soft);margin:0 0 24px;max-width:420px;margin-left:auto;margin-right:auto;}
+  .empty-state button{font-size:14px;font-weight:600;color:var(--surface);background:var(--primary);border:none;padding:12px 24px;border-radius:100px;cursor:pointer;}
+
+  footer{padding:64px 56px 32px;background:var(--dark);color:oklch(85% 0.008 260);}
+  .footer-grid{display:grid;grid-template-columns:1.3fr repeat(4,1fr);gap:32px;margin-bottom:48px;}
+  .footer-brand-title{font-family:'Sora',sans-serif;font-weight:700;font-size:19px;color:oklch(97% 0.004 85);margin-bottom:14px;}
+  .footer-brand p{font-size:13.5px;line-height:1.6;color:oklch(72% 0.01 260);max-width:250px;margin:0 0 16px;}
+  .social-row a{font-size:13px;font-weight:500;color:oklch(85% 0.008 260);}
+  .footer-col-title{font-size:12.5px;font-weight:600;color:oklch(97% 0.004 85);text-transform:uppercase;letter-spacing:.05em;margin-bottom:16px;}
+  .footer-col a{display:block;font-size:13.5px;color:oklch(75% 0.01 260);margin-bottom:10px;}
+  .footer-bottom{display:flex;justify-content:space-between;align-items:center;padding-top:28px;border-top:1px solid oklch(28% 0.02 260);font-size:12.5px;color:oklch(60% 0.01 260);flex-wrap:wrap;gap:12px;}
+
+  @media (max-width: 1180px){
+    header{padding-left:28px;padding-right:28px;}
+    .sitenav{gap:16px;}
+    .nav-secondary{display:none;}
+    .top-bar{padding-left:28px;padding-right:28px;gap:14px;}
+    .catalog-wrap,.intro{padding-left:32px;padding-right:32px;}
+    .catalog-grid{grid-template-columns:repeat(2,1fr);padding-left:32px;padding-right:32px;}
+  }
+  @media (max-width: 860px){
+    .top-bar{display:none;}
+    .nav-primary{display:none;}
+    .nav-toggle{display:inline-flex;}
+    .footer-grid{grid-template-columns:1fr 1fr;}
+    .footer-brand{grid-column:1/-1;}
+    .toolbar{flex-wrap:wrap;}
+    #searchInput{order:1;flex:1 1 100%;}
+    #sortSelect{order:2;flex:1 1 auto;}
+    #filtersBtn{order:3;flex:1 1 auto;justify-content:center;}
+    #filtersPanel{position:fixed;left:0;right:0;bottom:0;top:auto;width:100%;max-width:100%;border-radius:20px 20px 0 0;max-height:min(82vh, calc(100vh - 16px));max-height:min(82dvh, calc(100dvh - 16px));padding-bottom:env(safe-area-inset-bottom);}
+  }
+  @media (max-width: 700px){
+    .catalog-grid{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="top-bar">
+    <a href="#">Selección</a><a href="#">Docentes</a><a href="#">Portal de transparencia</a><a href="#">Canal de denuncias</a>
+    <a href="#" class="intranet">Intranet Microsoft ↗</a>
+  </div>
+
+  <header>
+    <img src="../assets/logo-cem.png" alt="Centro de Estudios Máster" style="width:150px;height:38px;object-fit:contain;">
+    <nav class="sitenav">
+      <span class="nav-primary">
+        <a href="../index.html#cursos">Formación ⌄</a>
+        <a href="../index.html#empleo">Empleo</a>
+        <a href="../index.html#nosotros">Sobre nosotros</a>
+        <a href="../index.html#contacto">Contacto</a>
+      </span>
+      <a href="#" class="nav-secondary">Campus Virtual ↗</a>
+      <a href="#toolbar" id="ctaFindCourse" class="cta-pill">Encontrar un curso</a>
+      <button id="navToggle" class="nav-toggle" type="button" aria-expanded="false" aria-controls="mobileDrawer" aria-label="Abrir menú">
+        <span class="bars"><span></span><span></span><span></span></span>
+      </button>
+    </nav>
+  </header>
+
+  <div id="mobileOverlay" hidden></div>
+  <div id="mobileDrawer" role="dialog" aria-modal="true" aria-label="Menú de navegación" hidden>
+    <div class="drawer-head">
+      <img src="../assets/logo-cem.png" alt="Centro de Estudios Máster" style="width:130px;height:34px;object-fit:contain;">
+      <button id="drawerClose" class="drawer-close" type="button" aria-label="Cerrar menú">×</button>
+    </div>
+    <nav class="drawer-nav">
+      <a href="../index.html#cursos">Formación</a>
+      <a href="../index.html#empleo">Empleo</a>
+      <a href="../index.html#nosotros">Sobre nosotros</a>
+      <a href="../index.html#contacto">Contacto</a>
+      <a href="#" class="campus">Campus Virtual ↗</a>
+    </nav>
+    <div class="drawer-subhead">Accesos corporativos</div>
+    <nav class="drawer-nav">
+      <a href="#" class="corp">Selección</a><a href="#" class="corp">Docentes</a><a href="#" class="corp">Portal de transparencia</a><a href="#" class="corp">Canal de denuncias</a><a href="#" class="corp">Intranet Microsoft ↗</a>
+    </nav>
+  </div>
+
+  <div class="breadcrumb"><a href="../index.html">Inicio</a> <span>/</span> <span style="color:var(--ink);font-weight:600;">Formación</span></div>
+
+  <div class="intro">
+    <div class="eyebrow">Oferta formativa</div>
+    <h1>Catálogo de cursos</h1>
+    <p>Explora toda nuestra oferta formativa en Canarias: cursos gratuitos, formación privada, certificados de profesionalidad y teleformación.</p>
+  </div>
+
+  <div class="catalog-wrap">
+    <div class="toolbar" id="toolbar">
+      <input id="searchInput" placeholder="Buscar por nombre de curso…">
+      <select id="sortSelect">
+        <option value="relevancia">Ordenar: relevancia</option>
+        <option value="nombre">Nombre (A-Z)</option>
+        <option value="estado">Estado: matrícula abierta primero</option>
+      </select>
+      <button id="filtersBtn" class="filters-btn" aria-expanded="false" aria-controls="filtersPanel">Filtros <span id="filtersBadge" class="filters-badge">0</span></button>
+
+      <div id="filtersOverlay" hidden></div>
+      <div id="filtersPanel" role="dialog" aria-modal="true" aria-label="Filtros de búsqueda" tabindex="-1" hidden>
+        <div class="filters-panel-head"><span>Filtros</span><button id="filtersClose" aria-label="Cerrar filtros">×</button></div>
+
+        <label class="filter-field">Situación laboral
+          <select id="fSituacion">
+            <option value="todas">Cualquiera</option>
+            <option value="desempleado">Desempleado/a</option>
+            <option value="ocupado">Ocupado/a</option>
+            <option value="privado">Formación privada</option>
+          </select>
+        </label>
+        <label class="filter-field">Isla
+          <select id="fIsla"></select>
+        </label>
+        <label class="filter-field">Modalidad
+          <select id="fModalidad"></select>
+        </label>
+        <label class="filter-field" id="filterFamiliaWrap" hidden>Familia profesional
+          <select id="fFamilia"></select>
+        </label>
+        <label class="filter-field">Gratuito / Privado
+          <select id="fPrecio"></select>
+        </label>
+        <label class="filter-field">Estado
+          <select id="fEstado"></select>
+        </label>
+
+        <div class="filters-actions">
+          <button class="btn-clear" id="btnClearInPanel">Limpiar filtros</button>
+          <button class="btn-apply" id="btnApply">Aplicar</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="chipsRow" class="chips-row" hidden></div>
+    <p id="resultsLabel" class="results-label">Cargando cursos…</p>
+  </div>
+
+  <div id="catalogGrid" class="catalog-grid"></div>
+
+  <footer>
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-brand-title">Centro de Estudios Máster</div>
+        <p>Formación para el empleo en Canarias desde hace más de 25 años.</p>
+        <div class="social-row" style="display:flex;gap:14px;">
+          <a href="https://www.instagram.com/centrodeestudiosmaster/">Instagram</a>
+          <a href="https://www.facebook.com/CentroDeEstudiosMaster/">Facebook</a>
+          <a href="https://www.tiktok.com/@centrodeestudiosmaster">Tiktok</a>
+        </div>
+      </div>
+      <div class="footer-col"><div class="footer-col-title">Formación</div><a href="#">Cursos</a><a href="#">Desempleados</a><a href="#">Ocupados</a><a href="#">Formación privada</a><a href="#">Teleformación</a></div>
+      <div class="footer-col"><div class="footer-col-title">Centro</div><a href="#">Sobre nosotros</a><a href="#">Centros</a><a href="#">Contacto</a><a href="#">Empleo</a></div>
+      <div class="footer-col"><div class="footer-col-title">Accesos</div><a href="#">Campus Virtual</a><a href="#">Portal de transparencia</a><a href="#">Docentes</a><a href="#">Canal de denuncias</a></div>
+      <div class="footer-col"><div class="footer-col-title">Legal</div><a href="#">Privacidad</a><a href="#">Cookies</a><a href="#">Aviso legal</a><a href="#">Canal de denuncias</a></div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Centro de Estudios Máster. Todos los derechos reservados.</span>
+      <span>928 75 51 05 · secretariavc@centromaster.com</span>
+    </div>
+  </footer>
+
+  <div class="help-hub">
+    <div id="helpPanel" class="help-panel" role="dialog" aria-modal="true" aria-label="Centro de contacto" tabindex="-1" hidden>
+      <div class="help-panel-head">
+        <h3>¿Cómo podemos ayudarte?</h3>
+        <p>Elige cómo prefieres contactar con Centro de Estudios Máster.</p>
+      </div>
+      <div class="help-panel-body">
+        <div class="help-option"><div class="title">💬 Hablar con el asistente</div><p>Encuentra cursos, resuelve dudas o déjanos tus datos.</p><a class="help-btn-primary" href="../index.html#buscador">Abrir asistente</a></div>
+        <div class="help-option"><div class="title">📱 WhatsApp</div><p>Escríbenos directamente y te respondemos lo antes posible.</p><a class="help-btn-wa" href="https://wa.me/34682821956?text=Hola%2C%20quiero%20informaci%C3%B3n%20sobre%20los%20cursos%20de%20Centro%20de%20Estudios%20M%C3%A1ster." target="_blank" rel="noopener">Continuar por WhatsApp</a></div>
+        <div class="help-option"><div class="title">✉️ Solicitar que me contacten</div><p>Déjanos tus datos y un asesor se pondrá en contacto contigo.</p><a class="help-btn-secondary" href="../index.html#contacto">Solicitar contacto</a></div>
+      </div>
+    </div>
+    <button id="helpFab" class="help-fab" type="button" aria-expanded="false" aria-controls="helpPanel" aria-label="¿Necesitas ayuda? Abrir centro de contacto">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3C6.48 3 2 6.8 2 11.5c0 2.4 1.16 4.56 3.03 6.11-.1.98-.5 2.4-1.36 3.6 1.6-.2 3.2-.85 4.4-1.7 1.2.38 2.52.6 3.93.6 5.52 0 10-3.8 10-8.6S17.52 3 12 3Z" fill="#fff"/></svg>
+      <span class="help-label">¿Necesitas ayuda?</span>
+    </button>
+  </div>
+
+</div>
+
+<script src="../js/catalog-repository.js"></script>
+<script src="../js/catalog-search.js"></script>
+<script src="../js/help-widget.js"></script>
+<script>
+  // ---- Catálogo dinámico: fuente única CatalogRepository/CatalogSearch ----
+  var ESTADO_META = {
+    'proximamente': { label: 'Próximamente', color: 'oklch(45% 0.02 260)' },
+    'matricula-abierta': { label: 'Matrícula abierta', color: 'oklch(52% 0.14 150)' },
+    'ultimas-plazas': { label: 'Últimas plazas', color: 'oklch(58% 0.17 40)' },
+    'en-curso': { label: 'En curso', color: 'oklch(50% 0.12 250)' }
+  };
+  var MODALIDAD_LABELS = { presencial: 'Presencial', teleformacion: 'Teleformación' };
+  var TIPO_PRECIO_LABELS = { gratuito: 'Gratuito', privado: 'Privado' };
+  var SITUACION_LABELS = { desempleado: 'Desempleado/a', ocupado: 'Ocupado/a', privado: 'Formación privada' };
+  var ESTADO_ORDER = { 'matricula-abierta': 0, 'ultimas-plazas': 1, 'en-curso': 2, 'proximamente': 3 };
+
+  function estadoMeta(estado) { return ESTADO_META[estado] || { label: estado, color: 'oklch(55% 0.02 260)' }; }
+  function toCatalogPath(p) { return p ? '../' + p : null; }
+  function fichaHref(c) { return c.urlFicha ? ('../' + c.urlFicha) : (c.slug + '/'); }
+
+  function tipoLabel(c) { return c.tipoFormacion || null; }
+  function durationLabel(c) { if (c.duracionHoras) return c.duracionHoras + 'h'; if (c.duracionTexto) return c.duracionTexto; return null; }
+  function startLabel(c) { return c.fechaInicio || c.fechaInicioAproximada || null; }
+  function priceLabel(c) { return TIPO_PRECIO_LABELS[c.tipoPrecio] || null; }
+  function footHTML(c) {
+    var parts = [durationLabel(c), priceLabel(c) ? '<b>' + priceLabel(c) + '</b>' : null].filter(Boolean);
+    return parts.join(' · ');
+  }
+  function coursePhotoHTML(c, sizes) {
+    var img = c.imagen;
+    if (img && img.src) {
+      var pos = img.objectPosition || 'center';
+      return '<img src="' + toCatalogPath(img.src) + '" srcset="' + (img.srcset ? img.srcset.split(',').map(function (part) {
+        var t = part.trim(); var i = t.indexOf(' ');
+        return toCatalogPath(i === -1 ? t : t.slice(0, i)) + (i === -1 ? '' : t.slice(i));
+      }).join(', ') : '') + '" sizes="' + sizes + '" alt="' + (img.alt || '') + '" style="width:100%;height:100%;object-fit:cover;object-position:' + pos + ';" loading="lazy" decoding="async">';
+    }
+    return '<div class="ph"></div>';
+  }
+
+  function cardHTML(c) {
+    var meta = estadoMeta(c.estado);
+    var type = tipoLabel(c);
+    var start = startLabel(c);
+    return '<div class="course-card"><div class="photo">' + coursePhotoHTML(c, '(max-width:700px) 92vw,(max-width:1180px) 45vw,30vw') +
+      '<span class="course-status" style="background:' + meta.color + '">' + meta.label + '</span></div>' +
+      '<div class="body"><div class="tag-row"><span class="tag-modalidad">' + (MODALIDAD_LABELS[c.modalidad] || c.modalidad) + '</span><span class="tag-isla">' + c.isla + '</span></div>' +
+      '<h3>' + c.nombre + '</h3>' +
+      (type ? '<p class="meta">' + type + '</p>' : '') +
+      (start ? '<p class="meta">Inicio: ' + start + '</p>' : '') +
+      '<div class="course-foot"><div class="price">' + footHTML(c) + '</div><a href="' + fichaHref(c) + '">Ver curso →</a></div></div></div>';
+  }
+
+  var state = { query: '', sort: 'relevancia', situacion: 'todas', isla: 'todas', modalidad: 'todas', familia: 'todas', precio: 'todas', estado: 'todas' };
+  var hasFamiliaFilter = false;
+  var searchSeq = 0;
+
+  function distinctValues(cursos, field) {
+    var seen = {}; var out = [];
+    cursos.forEach(function (c) { var v = c[field]; if (v && !seen[v]) { seen[v] = true; out.push(v); } });
+    return out;
+  }
+
+  function populateSelect(id, values, labelFor, allLabel) {
+    var el = document.getElementById(id);
+    el.innerHTML = '<option value="todas">' + allLabel + '</option>' +
+      values.map(function (v) { return '<option value="' + v + '">' + labelFor(v) + '</option>'; }).join('');
+  }
+
+  // Los filtros solo muestran valores que existen de verdad en el catálogo
+  // público actual — nada de listas fijas ni categorías inventadas. Si en el
+  // futuro se añaden más islas/modalidades/estados/familias, aparecerán
+  // automáticamente sin tocar este HTML.
+  function buildDynamicFilterOptions(cursos) {
+    populateSelect('fIsla', distinctValues(cursos, 'isla'), function (v) { return v; }, 'Todas');
+    populateSelect('fModalidad', distinctValues(cursos, 'modalidad'), function (v) { return MODALIDAD_LABELS[v] || v; }, 'Cualquiera');
+    populateSelect('fPrecio', distinctValues(cursos, 'tipoPrecio'), function (v) { return TIPO_PRECIO_LABELS[v] || v; }, 'Cualquiera');
+    populateSelect('fEstado', distinctValues(cursos, 'estado'), function (v) { return estadoMeta(v).label; }, 'Cualquiera');
+
+    var familias = distinctValues(cursos, 'familiaProfesional');
+    hasFamiliaFilter = familias.length > 0;
+    document.getElementById('filterFamiliaWrap').hidden = !hasFamiliaFilter;
+    if (hasFamiliaFilter) populateSelect('fFamilia', familias, function (v) { return v; }, 'Todas');
+  }
+
+  function buildFiltros() {
+    var f = { texto: state.query };
+    if (state.isla !== 'todas') f.isla = state.isla;
+    if (state.modalidad !== 'todas') f.modalidad = state.modalidad;
+    if (hasFamiliaFilter && state.familia !== 'todas') f.familiaProfesional = state.familia;
+    if (state.precio !== 'todas') f.tipoPrecio = state.precio;
+    // La situación laboral es semántica fija (no depende de si hay datos hoy):
+    // "Formación privada" usa tipoPrecio; Desempleado/Ocupado usan
+    // situacionDestinataria real. Nunca un alias de precio.
+    if (state.situacion === 'privado') f.tipoPrecio = 'privado';
+    else if (state.situacion !== 'todas') f.situacion = state.situacion;
+    return f;
+  }
+
+  function runSearch() {
+    var seq = ++searchSeq;
+    var filtros = buildFiltros();
+    CatalogSearch.buscar(filtros).then(function (list) {
+      if (seq !== searchSeq) return;
+      // El repositorio no expone un filtro de "un único estado exacto" (solo
+      // el conjunto de estados públicos permitidos), así que ese refinamiento
+      // final se aplica aquí, sobre el resultado ya obtenido de CatalogSearch.
+      if (state.estado !== 'todas') list = list.filter(function (c) { return c.estado === state.estado; });
+      if (state.sort === 'nombre') list = list.slice().sort(function (a, b) { return a.nombre.localeCompare(b.nombre); });
+      if (state.sort === 'estado') list = list.slice().sort(function (a, b) { return (ESTADO_ORDER[a.estado] ?? 9) - (ESTADO_ORDER[b.estado] ?? 9); });
+      renderResults(list);
+    });
+  }
+
+  function renderResults(list) {
+    var grid = document.getElementById('catalogGrid');
+    var label = document.getElementById('resultsLabel');
+    if (list.length === 0) {
+      grid.innerHTML = '<div class="empty-state"><div style="font-size:38px;margin-bottom:16px;">🔍</div><h3>Sin resultados para estos filtros</h3><p>Prueba a ajustar la búsqueda o quita alguno de los filtros aplicados.</p><button id="btnClearEmpty">Limpiar filtros</button></div>';
+      document.getElementById('btnClearEmpty').addEventListener('click', clearFilters);
+    } else {
+      grid.innerHTML = list.map(cardHTML).join('');
+    }
+    label.textContent = list.length === 1 ? '1 curso encontrado' : list.length + ' cursos encontrados';
+    renderChips();
+  }
+
+  function renderChips() {
+    var chipDefs = [
+      { key: 'situacion', label: SITUACION_LABELS[state.situacion] },
+      { key: 'isla', label: state.isla },
+      { key: 'modalidad', label: MODALIDAD_LABELS[state.modalidad] || state.modalidad },
+      { key: 'familia', label: state.familia },
+      { key: 'precio', label: TIPO_PRECIO_LABELS[state.precio] || state.precio },
+      { key: 'estado', label: estadoMeta(state.estado).label },
+    ].filter(function (d) { return state[d.key] !== 'todas'; });
+
+    var chipsRow = document.getElementById('chipsRow');
+    var badge = document.getElementById('filtersBadge');
+    if (chipDefs.length > 0) {
+      chipsRow.hidden = false;
+      chipsRow.innerHTML = chipDefs.map(function (d) {
+        return '<button class="chip" data-clear="' + d.key + '">' + d.label + ' <span aria-hidden="true">×</span></button>';
+      }).join('') + '<button class="chip-clear-all" id="btnClearAll">Limpiar todo</button>';
+      Array.prototype.forEach.call(chipsRow.querySelectorAll('[data-clear]'), function (b) {
+        b.addEventListener('click', function () { state[b.getAttribute('data-clear')] = 'todas'; syncFilterInputs(); runSearch(); });
+      });
+      document.getElementById('btnClearAll').addEventListener('click', clearFilters);
+      badge.style.display = 'inline-flex';
+      badge.textContent = chipDefs.length;
+    } else {
+      chipsRow.hidden = true;
+      badge.style.display = 'none';
+    }
+  }
+
+  function syncFilterInputs() {
+    document.getElementById('fSituacion').value = state.situacion;
+    document.getElementById('fIsla').value = state.isla;
+    document.getElementById('fModalidad').value = state.modalidad;
+    if (hasFamiliaFilter) document.getElementById('fFamilia').value = state.familia;
+    document.getElementById('fPrecio').value = state.precio;
+    document.getElementById('fEstado').value = state.estado;
+  }
+
+  function clearFilters() {
+    state.query = ''; state.situacion = 'todas'; state.isla = 'todas'; state.modalidad = 'todas'; state.familia = 'todas'; state.precio = 'todas'; state.estado = 'todas';
+    document.getElementById('searchInput').value = '';
+    syncFilterInputs();
+    runSearch();
+  }
+
+  document.getElementById('searchInput').addEventListener('input', function (e) { state.query = e.target.value; runSearch(); });
+  document.getElementById('sortSelect').addEventListener('change', function (e) { state.sort = e.target.value; runSearch(); });
+  ['fSituacion', 'fIsla', 'fModalidad', 'fFamilia', 'fPrecio', 'fEstado'].forEach(function (id) {
+    document.getElementById(id).addEventListener('change', function (e) {
+      var key = id.slice(1, 2).toLowerCase() + id.slice(2);
+      state[key] = e.target.value;
+      runSearch();
+    });
+  });
+
+  CatalogRepository.getPublicCourses().then(function (cursos) {
+    buildDynamicFilterOptions(cursos);
+    runSearch();
+  }).catch(function (err) {
+    console.error('No se pudo cargar el catálogo de cursos:', err);
+    document.getElementById('resultsLabel').textContent = 'No se pudo cargar el catálogo.';
+  });
+
+  // Filters panel (popover en desktop, bottom sheet en móvil vía CSS)
+  var filtersBtn = document.getElementById('filtersBtn');
+  var filtersPanel = document.getElementById('filtersPanel');
+  var filtersOverlay = document.getElementById('filtersOverlay');
+  var filtersLocked = false;
+  function openFilters() {
+    var isMobile = window.innerWidth <= 860;
+    filtersLocked = isMobile;
+    if (isMobile) { document.body.style.overflow = 'hidden'; filtersOverlay.hidden = false; }
+    filtersPanel.hidden = false;
+    filtersBtn.setAttribute('aria-expanded', 'true');
+    filtersPanel.focus();
+  }
+  function closeFilters() {
+    if (filtersLocked) document.body.style.overflow = '';
+    filtersLocked = false;
+    filtersPanel.hidden = true;
+    filtersOverlay.hidden = true;
+    filtersBtn.setAttribute('aria-expanded', 'false');
+    filtersBtn.focus();
+  }
+  filtersBtn.addEventListener('click', function () { if (filtersPanel.hidden) openFilters(); else closeFilters(); });
+  document.getElementById('filtersClose').addEventListener('click', closeFilters);
+  document.getElementById('btnApply').addEventListener('click', closeFilters);
+  document.getElementById('btnClearInPanel').addEventListener('click', clearFilters);
+  filtersOverlay.addEventListener('click', closeFilters);
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !filtersPanel.hidden) closeFilters(); });
+  document.addEventListener('click', function (e) { if (!filtersPanel.hidden && !e.target.closest('.toolbar')) closeFilters(); }, true);
+
+  // "Encontrar un curso" en el header: en esta página, enfoca el buscador.
+  document.getElementById('ctaFindCourse').addEventListener('click', function (e) {
+    e.preventDefault();
+    document.getElementById('searchInput').focus();
+    document.getElementById('toolbar').scrollIntoView({ block: 'start' });
+  });
+
+  // Mobile nav drawer
+  var navToggle = document.getElementById('navToggle');
+  var drawer = document.getElementById('mobileDrawer');
+  var overlay = document.getElementById('mobileOverlay');
+  var drawerClose = document.getElementById('drawerClose');
+  function openDrawer() { drawer.hidden = false; overlay.hidden = false; navToggle.setAttribute('aria-expanded', 'true'); document.body.style.overflow = 'hidden'; drawerClose.focus(); }
+  function closeDrawer() { drawer.hidden = true; overlay.hidden = true; navToggle.setAttribute('aria-expanded', 'false'); document.body.style.overflow = ''; navToggle.focus(); }
+  navToggle.addEventListener('click', function () { if (drawer.hidden) openDrawer(); else closeDrawer(); });
+  drawerClose.addEventListener('click', closeDrawer);
+  overlay.addEventListener('click', closeDrawer);
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !drawer.hidden) closeDrawer(); });
+  Array.prototype.forEach.call(drawer.querySelectorAll('a'), function (a) { a.addEventListener('click', closeDrawer); });
+</script>
+</body>
+</html>

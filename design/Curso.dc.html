@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="../web/js/catalog-repository.js"></script>
+  <script src="../web/js/catalog-search.js"></script>
+  <style>
+    body{margin:0;background:oklch(98% 0.012 85);font-family:'Work Sans',sans-serif;}
+    a{color:oklch(30% 0.09 255);text-decoration:none;}
+    a:hover{color:oklch(56% 0.15 45);}
+    *{box-sizing:border-box;}
+    @media (prefers-reduced-motion: reduce){ *{animation-duration:0.001ms !important; transition-duration:0.001ms !important; transition:none !important;} }
+    @media (max-width: 1180px){
+      .site-header{ padding-left:28px !important; padding-right:28px !important; }
+      .site-nav{ gap:16px !important; }
+      .nav-secondary{ display:none !important; }
+      .top-bar{ padding-left:28px !important; padding-right:28px !important; gap:14px !important; }
+      .course-wrap{ padding-left:32px !important; padding-right:32px !important; }
+      .course-hero{ grid-template-columns:1fr !important; }
+      .course-facts{ grid-template-columns:repeat(2,1fr) !important; }
+      .similar-grid{ grid-template-columns:repeat(2,1fr) !important; }
+    }
+    @media (max-width: 860px){
+      .top-bar{ display:none !important; }
+      .nav-primary{ display:none !important; }
+      .nav-toggle{ display:inline-flex !important; }
+      .footer-grid{ grid-template-columns:1fr 1fr !important; }
+      .footer-brand{ grid-column:1 / -1 !important; }
+      .help-label{ display:none !important; }
+      .help-fab{ width:56px !important; height:56px !important; padding:0 !important; justify-content:center !important; }
+      .help-hub{ right:max(16px, env(safe-area-inset-right)) !important; bottom:max(16px, env(safe-area-inset-bottom)) !important; }
+      .help-panel{ position:fixed !important; left:0 !important; right:0 !important; bottom:0 !important; width:100% !important; max-width:100% !important; border-radius:20px 20px 0 0 !important; max-height:min(82vh, calc(100vh - 16px)) !important; padding-bottom:env(safe-area-inset-bottom) !important; }
+      .help-panel{ max-height:min(82dvh, calc(100dvh - 16px)) !important; }
+      .course-cta-row{ position:sticky !important; bottom:0 !important; left:0 !important; right:0 !important; background:oklch(99.5% 0.004 85) !important; padding:12px 20px !important; margin:24px -20px 0 !important; box-shadow:0 -8px 24px oklch(20% 0.02 260 / 0.1) !important; z-index:20 !important; }
+    }
+    @media (max-width: 700px){
+      .course-facts{ grid-template-columns:1fr 1fr !important; }
+      .similar-grid{ grid-template-columns:1fr !important; }
+    }
+  </style>
+</helmet>
+
+<div style="width:100%;max-width:1920px;margin:0 auto;background:oklch(98% 0.012 85);color:oklch(20% 0.02 260);font-family:'Work Sans',sans-serif;overflow-x:hidden;" data-screen-label="Ficha de curso">
+
+  <div class="top-bar" style="display:flex;align-items:center;justify-content:flex-end;gap:20px;padding:9px 56px;background:oklch(96% 0.012 85);border-bottom:1px solid oklch(91% 0.01 85);">
+    <a href="#" style="font-size:12.5px;font-weight:500;color:oklch(45% 0.02 260);white-space:nowrap;">Selección</a>
+    <a href="#" style="font-size:12.5px;font-weight:500;color:oklch(45% 0.02 260);white-space:nowrap;">Docentes</a>
+    <a href="#" style="font-size:12.5px;font-weight:500;color:oklch(45% 0.02 260);white-space:nowrap;">Portal de transparencia</a>
+    <a href="#" style="font-size:12.5px;font-weight:500;color:oklch(45% 0.02 260);white-space:nowrap;">Canal de denuncias</a>
+    <a href="#" style="font-size:12.5px;font-weight:500;color:oklch(45% 0.02 260);white-space:nowrap;border-left:1px solid oklch(88% 0.01 85);padding-left:20px;">Intranet Microsoft ↗</a>
+  </div>
+
+  <header class="site-header" style="position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:16px 56px;background:oklch(99.5% 0.004 85 / 0.92);backdrop-filter:blur(10px);border-bottom:1px solid oklch(90% 0.01 85);">
+    <img src="../web/assets/logo-cem.png" alt="Centro de Estudios Máster" style="width:150px;height:38px;flex-shrink:0;object-fit:contain;" loading="eager" decoding="async">
+    <nav class="site-nav" style="display:flex;align-items:center;gap:28px;flex-shrink:1;min-width:0;">
+      <span class="nav-primary" style="display:flex;align-items:center;gap:28px;">
+        <a href="./Home.dc.html#cursos" style="white-space:nowrap;font-size:15px;font-weight:500;color:oklch(20% 0.02 260);">Formación ⌄</a>
+        <a href="./Home.dc.html#empleo" style="white-space:nowrap;font-size:15px;font-weight:500;color:oklch(20% 0.02 260);">Empleo</a>
+        <a href="./Home.dc.html#nosotros" style="white-space:nowrap;font-size:15px;font-weight:500;color:oklch(20% 0.02 260);">Sobre nosotros</a>
+        <a href="./Home.dc.html#contacto" style="white-space:nowrap;font-size:15px;font-weight:500;color:oklch(20% 0.02 260);">Contacto</a>
+      </span>
+      <a href="#" class="nav-secondary" style="white-space:nowrap;font-size:14px;font-weight:500;color:oklch(45% 0.02 260);border-right:1px solid oklch(90% 0.01 85);padding-right:24px;">Campus Virtual ↗</a>
+      <a href="./Catálogo de cursos.dc.html" style="white-space:nowrap;flex-shrink:0;font-size:15px;font-weight:600;color:oklch(99% 0.004 85);background:{{ accentColor }};padding:14px 22px;border-radius:100px;" style-hover="transform:translateY(-1px);box-shadow:0 6px 16px oklch(20% 0.02 260 / 0.18);" style-focus="outline:2px solid oklch(30% 0.09 255);outline-offset:2px;">Encontrar un curso</a>
+      <button ref="{{ toggleBtnRef }}" class="nav-toggle" type="button" aria-expanded="{{ mobileNavOpen }}" aria-controls="mobile-nav-drawer" aria-label="{{ mobileNavToggleLabel }}" onClick="{{ toggleMobileNav }}" style="display:none;flex-shrink:0;align-items:center;justify-content:center;width:44px;height:44px;border-radius:10px;border:1px solid oklch(90% 0.01 85);background:oklch(99.5% 0.004 85);cursor:pointer;padding:0;" style-focus="outline:2px solid oklch(30% 0.09 255);outline-offset:2px;">
+        <span style="display:flex;flex-direction:column;gap:4px;width:20px;">
+          <span style="display:block;height:2px;width:100%;background:oklch(20% 0.02 260);border-radius:2px;"></span>
+          <span style="display:block;height:2px;width:100%;background:oklch(20% 0.02 260);border-radius:2px;"></span>
+          <span style="display:block;height:2px;width:100%;background:oklch(20% 0.02 260);border-radius:2px;"></span>
+        </span>
+      </button>
+    </nav>
+  </header>
+
+  <sc-if value="{{ mobileNavOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;z-index:60;">
+      <div onClick="{{ closeMobileNav }}" style="position:absolute;inset:0;background:oklch(12% 0.03 260 / 0.55);"></div>
+      <div id="mobile-nav-drawer" role="dialog" aria-modal="true" aria-label="Menú de navegación" style="position:absolute;top:0;right:0;height:100%;width:min(320px,86vw);background:oklch(99.5% 0.004 85);box-shadow:-12px 0 32px oklch(20% 0.02 260 / 0.18);display:flex;flex-direction:column;padding:20px;overflow-y:auto;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
+          <img src="../web/assets/logo-cem.png" alt="Centro de Estudios Máster" style="width:130px;height:34px;object-fit:contain;">
+          <button ref="{{ closeBtnRef }}" type="button" aria-label="Cerrar menú" onClick="{{ closeMobileNav }}" style="width:44px;height:44px;flex-shrink:0;display:flex;align-items:center;justify-content:center;border-radius:10px;border:1px solid oklch(90% 0.01 85);background:oklch(98% 0.008 85);font-size:22px;line-height:1;cursor:pointer;color:oklch(20% 0.02 260);" style-focus="outline:2px solid oklch(30% 0.09 255);outline-offset:2px;">×</button>
+        </div>
+        <nav style="display:flex;flex-direction:column;gap:2px;">
+          <a href="./Home.dc.html#cursos" onClick="{{ closeMobileNav }}" style="font-size:16px;font-weight:600;color:oklch(20% 0.02 260);padding:14px 10px;border-radius:10px;min-height:44px;display:flex;align-items:center;" style-hover="background:oklch(96% 0.012 85);">Formación</a>
+          <a href="./Home.dc.html#empleo" onClick="{{ closeMobileNav }}" style="font-size:16px;font-weight:600;color:oklch(20% 0.02 260);padding:14px 10px;border-radius:10px;min-height:44px;display:flex;align-items:center;" style-hover="background:oklch(96% 0.012 85);">Empleo</a>
+          <a href="./Home.dc.html#nosotros" onClick="{{ closeMobileNav }}" style="font-size:16px;font-weight:600;color:oklch(20% 0.02 260);padding:14px 10px;border-radius:10px;min-height:44px;display:flex;align-items:center;" style-hover="background:oklch(96% 0.012 85);">Sobre nosotros</a>
+          <a href="./Home.dc.html#contacto" onClick="{{ closeMobileNav }}" style="font-size:16px;font-weight:600;color:oklch(20% 0.02 260);padding:14px 10px;border-radius:10px;min-height:44px;display:flex;align-items:center;" style-hover="background:oklch(96% 0.012 85);">Contacto</a>
+          <a href="#" onClick="{{ closeMobileNav }}" style="font-size:15px;font-weight:500;color:oklch(45% 0.02 260);padding:14px 10px;border-radius:10px;min-height:44px;display:flex;align-items:center;border-top:1px solid oklch(91% 0.01 85);margin-top:8px;">Campus Virtual ↗</a>
+        </nav>
+        <div style="font-size:11px;font-weight:600;color:oklch(55% 0.02 260);text-transform:uppercase;letter-spacing:0.05em;margin:20px 0 6px;padding:0 10px;">Accesos corporativos</div>
+        <nav style="display:flex;flex-direction:column;gap:2px;">
+          <a href="#" onClick="{{ closeMobileNav }}" style="font-size:14.5px;font-weight:500;color:oklch(45% 0.02 260);padding:12px 10px;border-radius:10px;min-height:44px;display:flex;align-items:center;" style-hover="background:oklch(96% 0.012 85);">Selección</a>
+          <a href="#" onClick="{{ closeMobileNav }}" style="font-size:14.5px;font-weight:500;color:oklch(45% 0.02 260);padding:12px 10px;border-radius:10px;min-height:44px;display:flex;align-items:center;" style-hover="background:oklch(96% 0.012 85);">Docentes</a>
+          <a href="#" onClick="{{ closeMobileNav }}" style="font-size:14.5px;font-weight:500;color:oklch(45% 0.02 260);padding:12px 10px;border-radius:10px;min-height:44px;display:flex;align-items:center;" style-hover="background:oklch(96% 0.012 85);">Portal de transparencia</a>
+          <a href="#" onClick="{{ closeMobileNav }}" style="font-size:14.5px;font-weight:500;color:oklch(45% 0.02 260);padding:12px 10px;border-radius:10px;min-height:44px;display:flex;align-items:center;" style-hover="background:oklch(96% 0.012 85);">Canal de denuncias</a>
+          <a href="#" onClick="{{ closeMobileNav }}" style="font-size:14.5px;font-weight:500;color:oklch(45% 0.02 260);padding:12px 10px;border-radius:10px;min-height:44px;display:flex;align-items:center;" style-hover="background:oklch(96% 0.012 85);">Intranet Microsoft ↗</a>
+        </nav>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- BREADCRUMB -->
+  <div style="padding:14px 56px;font-size:13px;color:oklch(50% 0.02 260);border-bottom:1px solid oklch(93% 0.008 85);">
+    <a href="./Home.dc.html" style="color:oklch(50% 0.02 260);">Inicio</a> <span style="margin:0 6px;">/</span> <a href="./Catálogo de cursos.dc.html" style="color:oklch(50% 0.02 260);">Formación</a> <span style="margin:0 6px;">/</span> <span style="color:oklch(20% 0.02 260);font-weight:600;">{{ course.name }}</span>
+  </div>
+
+  <sc-if value="{{ isFinished }}">
+    <div style="background:oklch(96% 0.012 85);border-bottom:1px solid oklch(90% 0.01 85);padding:14px 56px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+      <span style="font-size:13px;font-weight:700;color:oklch(45% 0.02 260);">🕘 Este curso ya ha finalizado.</span>
+      <span style="font-size:13px;color:oklch(45% 0.02 260);">Se mantiene disponible como referencia. Consulta la próxima convocatoria o cursos similares abajo.</span>
+    </div>
+  </sc-if>
+
+  <!-- HERO ZONA PRINCIPAL -->
+  <div class="course-wrap" style="padding:40px 56px 0;">
+    <div class="course-hero" style="display:grid;grid-template-columns:1.05fr 0.95fr;gap:40px;align-items:start;margin-bottom:48px;">
+      <div style="position:relative;border-radius:24px;overflow:hidden;aspect-ratio:16/10;">
+        <img src="{{ course.photoSrc }}" srcset="{{ course.photoSrcset }}" sizes="(max-width: 1180px) 92vw, 50vw" alt="{{ course.photoAlt }}" style="{{ heroImgStyle }}" loading="eager" decoding="async">
+        <span style="position:absolute;top:16px;left:16px;font-size:12px;font-weight:700;color:oklch(99% 0.004 85);background:{{ statusBadgeBg }};padding:6px 13px;border-radius:100px;z-index:2;">{{ statusBadgeText }}</span>
+      </div>
+      <div>
+        <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
+          <span style="font-size:11.5px;font-weight:600;color:oklch(40% 0.09 200);background:oklch(94% 0.03 200);padding:5px 12px;border-radius:100px;">{{ course.modalidad }}</span>
+          <span style="font-size:11.5px;font-weight:600;color:oklch(45% 0.02 260);background:oklch(93% 0.008 85);padding:5px 12px;border-radius:100px;">{{ course.isla }}</span>
+          <sc-if value="{{ course.price }}">
+            <span style="font-size:11.5px;font-weight:600;color:oklch(16% 0.02 260);background:oklch(93% 0.008 85);padding:5px 12px;border-radius:100px;">{{ course.price }}</span>
+          </sc-if>
+        </div>
+        <h1 style="font-family:'Sora',sans-serif;font-weight:700;font-size:34px;margin:0 0 14px;color:oklch(16% 0.02 260);line-height:1.12;">{{ course.name }}</h1>
+        <sc-if value="{{ course.intro }}">
+          <p style="font-size:15.5px;color:oklch(45% 0.02 260);line-height:1.6;margin:0 0 24px;max-width:520px;">{{ course.intro }}</p>
+        </sc-if>
+
+        <div class="course-facts" style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:28px;">
+          <sc-if value="{{ course.type }}">
+            <div>
+              <div style="font-size:11px;font-weight:600;color:oklch(55% 0.02 260);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:4px;">Tipo de formación</div>
+              <div style="font-size:14px;font-weight:600;color:oklch(20% 0.02 260);">{{ course.type }}</div>
+            </div>
+          </sc-if>
+          <sc-if value="{{ course.duration }}">
+            <div>
+              <div style="font-size:11px;font-weight:600;color:oklch(55% 0.02 260);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:4px;">Duración</div>
+              <div style="font-size:14px;font-weight:600;color:oklch(20% 0.02 260);">{{ course.duration }}</div>
+            </div>
+          </sc-if>
+          <sc-if value="{{ course.startDate }}">
+            <div>
+              <div style="font-size:11px;font-weight:600;color:oklch(55% 0.02 260);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:4px;">Fecha de inicio</div>
+              <div style="font-size:14px;font-weight:600;color:oklch(20% 0.02 260);">{{ course.startDate }}</div>
+            </div>
+          </sc-if>
+          <sc-if value="{{ course.sede }}">
+            <div>
+              <div style="font-size:11px;font-weight:600;color:oklch(55% 0.02 260);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:4px;">Sede</div>
+              <div style="font-size:14px;font-weight:600;color:oklch(20% 0.02 260);">{{ course.sede }}</div>
+            </div>
+          </sc-if>
+        </div>
+
+        <div class="course-cta-row" style="display:flex;gap:12px;flex-wrap:wrap;">
+          <sc-if value="{{ showPrimaryCta }}">
+            <a href="{{ primaryCtaHref }}" target="{{ primaryCtaTarget }}" rel="{{ primaryCtaRel }}" style="font-size:15px;font-weight:600;color:oklch(99% 0.004 85);background:{{ accentColor }};padding:15px 26px;border-radius:100px;min-height:44px;display:flex;align-items:center;">{{ primaryCtaLabel }}</a>
+          </sc-if>
+          <sc-if value="{{ showSecondaryWhatsapp }}">
+            <a href="{{ whatsappHref }}" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:8px;font-size:15px;font-weight:600;color:oklch(16% 0.02 260);border:1px solid oklch(85% 0.01 85);padding:15px 24px;border-radius:100px;min-height:44px;">📱 WhatsApp</a>
+          </sc-if>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTENIDO DETALLADO -->
+  <div class="course-wrap" style="padding:0 56px 96px;max-width:1200px;">
+    <div style="display:flex;flex-direction:column;gap:36px;">
+
+      <sc-if value="{{ course.about }}">
+        <div>
+          <h2 style="font-family:'Sora',sans-serif;font-weight:700;font-size:22px;margin:0 0 12px;color:oklch(16% 0.02 260);">Sobre este curso</h2>
+          <p style="font-size:15px;color:oklch(38% 0.02 260);line-height:1.7;margin:0;max-width:760px;">{{ course.about }}</p>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ certNivel }}">
+        <div>
+          <h2 style="font-family:'Sora',sans-serif;font-weight:700;font-size:22px;margin:0 0 12px;color:oklch(16% 0.02 260);">Certificación / nivel</h2>
+          <p style="font-size:15px;color:oklch(38% 0.02 260);line-height:1.7;margin:0;">{{ certNivel }}</p>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ course.destinatarios }}">
+        <div>
+          <h2 style="font-family:'Sora',sans-serif;font-weight:700;font-size:22px;margin:0 0 12px;color:oklch(16% 0.02 260);">Destinatarios</h2>
+          <p style="font-size:15px;color:oklch(38% 0.02 260);line-height:1.7;margin:0;">{{ course.destinatarios }}</p>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ course.requisitos }}">
+        <div>
+          <h2 style="font-family:'Sora',sans-serif;font-weight:700;font-size:22px;margin:0 0 12px;color:oklch(16% 0.02 260);">Requisitos de acceso</h2>
+          <p style="font-size:15px;color:oklch(38% 0.02 260);line-height:1.7;margin:0;">{{ course.requisitos }}</p>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ course.horario }}">
+        <div>
+          <h2 style="font-family:'Sora',sans-serif;font-weight:700;font-size:22px;margin:0 0 12px;color:oklch(16% 0.02 260);">Horario</h2>
+          <p style="font-size:15px;color:oklch(38% 0.02 260);line-height:1.7;margin:0;">{{ course.horario }}</p>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ course.ayudas }}">
+        <div>
+          <h2 style="font-family:'Sora',sans-serif;font-weight:700;font-size:22px;margin:0 0 12px;color:oklch(16% 0.02 260);">Ayudas y becas</h2>
+          <p style="font-size:15px;color:oklch(38% 0.02 260);line-height:1.7;margin:0;">{{ course.ayudas }}</p>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ course.documentacion }}">
+        <div>
+          <h2 style="font-family:'Sora',sans-serif;font-weight:700;font-size:22px;margin:0 0 12px;color:oklch(16% 0.02 260);">Documentación necesaria</h2>
+          <p style="font-size:15px;color:oklch(38% 0.02 260);line-height:1.7;margin:0;">{{ course.documentacion }}</p>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ course.plazas }}">
+        <div>
+          <h2 style="font-family:'Sora',sans-serif;font-weight:700;font-size:22px;margin:0 0 12px;color:oklch(16% 0.02 260);">Plazas disponibles</h2>
+          <p style="font-size:15px;color:oklch(38% 0.02 260);line-height:1.7;margin:0;">{{ course.plazas }}</p>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ course.modulos }}">
+        <div>
+          <h2 style="font-family:'Sora',sans-serif;font-weight:700;font-size:22px;margin:0 0 12px;color:oklch(16% 0.02 260);">Módulos / unidades formativas</h2>
+          <div style="background:oklch(99.5% 0.004 85);border:1px solid oklch(91% 0.01 85);border-radius:16px;padding:20px 24px;">
+            <p style="font-size:15px;color:oklch(38% 0.02 260);line-height:1.7;margin:0;">{{ course.modulos }}</p>
+          </div>
+        </div>
+      </sc-if>
+
+    </div>
+  </div>
+
+  <!-- CURSOS SIMILARES (solo en finalizado) / OTROS CURSOS DISPONIBLES (fallback honesto si no hay coincidencia real) -->
+  <sc-if value="{{ showSimilar }}">
+    <div class="course-wrap" style="padding:0 56px 96px;">
+      <h2 style="font-family:'Sora',sans-serif;font-weight:700;font-size:26px;margin:0 0 20px;color:oklch(16% 0.02 260);">{{ similarHeading }}</h2>
+      <div class="similar-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;">
+        <sc-for list="{{ similarCourses }}" as="c" hint-placeholder-count="3">
+          <div style="background:oklch(99.5% 0.004 85);border:1px solid oklch(91% 0.01 85);border-radius:18px;overflow:hidden;">
+            <div style="position:relative;aspect-ratio:16/10;">
+              <img src="{{ c.photoSrc }}" srcset="{{ c.photoSrcset }}" sizes="(max-width: 700px) 92vw, 30vw" alt="{{ c.photoAlt }}" style="width:100%;height:100%;object-fit:cover;object-position:{{ c.photoPos }};" loading="lazy" decoding="async">
+              <span style="position:absolute;top:12px;left:12px;font-size:10.5px;font-weight:700;color:oklch(99% 0.004 85);background:{{ c.statusColor }};padding:4px 10px;border-radius:100px;">{{ c.status }}</span>
+            </div>
+            <div style="padding:18px;">
+              <h3 style="font-family:'Sora',sans-serif;font-weight:600;font-size:15px;margin:0 0 8px;color:oklch(16% 0.02 260);line-height:1.25;">{{ c.name }}</h3>
+              <div style="font-size:12px;color:oklch(45% 0.02 260);margin-bottom:12px;">{{ c.modalidad }} · {{ c.isla }} · {{ c.duration }}</div>
+              <a href="{{ c.href }}" style="font-size:13px;font-weight:600;">Ver curso →</a>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- FOOTER -->
+  <footer id="contacto" style="padding:64px 56px 32px;background:oklch(15% 0.02 260);color:oklch(85% 0.008 260);">
+    <div class="footer-grid" style="display:grid;grid-template-columns:1.3fr repeat(4,1fr);gap:32px;margin-bottom:48px;">
+      <div class="footer-brand">
+        <div style="font-family:'Sora',sans-serif;font-weight:700;font-size:19px;color:oklch(97% 0.004 85);margin-bottom:14px;">Centro de Estudios Máster</div>
+        <p style="font-size:13.5px;line-height:1.6;color:oklch(72% 0.01 260);max-width:250px;margin:0 0 16px;">Formación para el empleo en Canarias desde hace más de 25 años.</p>
+        <div style="display:flex;gap:14px;">
+          <a href="https://www.instagram.com/centrodeestudiosmaster/" style="font-size:13px;font-weight:500;color:oklch(85% 0.008 260);">Instagram</a>
+          <a href="https://www.facebook.com/CentroDeEstudiosMaster/" style="font-size:13px;font-weight:500;color:oklch(85% 0.008 260);">Facebook</a>
+          <a href="https://www.tiktok.com/@centrodeestudiosmaster" style="font-size:13px;font-weight:500;color:oklch(85% 0.008 260);">Tiktok</a>
+        </div>
+      </div>
+      <sc-for list="{{ footerCols }}" as="col" hint-placeholder-count="4">
+        <div>
+          <div style="font-size:12.5px;font-weight:600;color:oklch(97% 0.004 85);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:16px;">{{ col.title }}</div>
+          <sc-for list="{{ col.links }}" as="l" hint-placeholder-count="4">
+            <div style="margin-bottom:10px;">
+              <a href="#" style="font-size:13.5px;color:oklch(75% 0.01 260);">{{ l }}</a>
+            </div>
+          </sc-for>
+        </div>
+      </sc-for>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding-top:28px;border-top:1px solid oklch(28% 0.02 260);font-size:12.5px;color:oklch(60% 0.01 260);flex-wrap:wrap;gap:12px;">
+      <span>© 2026 Centro de Estudios Máster. Todos los derechos reservados.</span>
+      <span>928 75 51 05 · secretariavc@centromaster.com</span>
+    </div>
+  </footer>
+
+  <!-- HELP HUB -->
+  <div class="help-hub" style="position:fixed;right:28px;bottom:28px;z-index:55;display:flex;flex-direction:column;align-items:flex-end;gap:12px;">
+    <sc-if value="{{ helpOpen }}" hint-placeholder-val="{{ false }}">
+      <div id="help-panel" ref="{{ helpPanelRef }}" class="help-panel" role="dialog" aria-modal="true" aria-label="Centro de contacto" tabIndex="-1" style="width:340px;max-width:calc(100vw - 32px);max-height:min(400px, calc(100vh - 120px));max-height:min(400px, calc(100dvh - 120px));display:flex;flex-direction:column;background:oklch(99.5% 0.004 85);border:1px solid oklch(90% 0.01 85);border-radius:20px;box-shadow:0 20px 50px oklch(20% 0.02 260 / 0.22);overflow:hidden;outline:none;">
+        <div style="padding:22px 22px 4px;flex-shrink:0;">
+          <h3 style="font-family:'Sora',sans-serif;font-weight:700;font-size:18px;margin:0 0 6px;color:oklch(16% 0.02 260);">¿Cómo podemos ayudarte?</h3>
+          <p style="font-size:13px;color:oklch(45% 0.02 260);margin:0;">Elige cómo prefieres contactar con Centro de Estudios Máster.</p>
+        </div>
+        <div style="padding:14px 22px 22px;display:flex;flex-direction:column;gap:10px;overflow-y:auto;flex:1;min-height:0;">
+          <div style="border:1px solid oklch(91% 0.01 85);border-radius:14px;padding:16px;">
+            <div style="font-weight:600;font-size:14.5px;color:oklch(16% 0.02 260);margin-bottom:6px;">💬 Hablar con el asistente</div>
+            <p style="font-size:12.5px;color:oklch(45% 0.02 260);margin:0 0 12px;line-height:1.5;">Encuentra cursos, resuelve dudas o déjanos tus datos.</p>
+            <a href="./Home.dc.html" style="display:flex;align-items:center;justify-content:center;width:100%;min-height:44px;font-size:13.5px;font-weight:600;color:oklch(99% 0.004 85);background:oklch(30% 0.09 255);border-radius:10px;">Abrir asistente</a>
+          </div>
+          <div style="border:1px solid oklch(91% 0.01 85);border-radius:14px;padding:16px;">
+            <div style="font-weight:600;font-size:14.5px;color:oklch(16% 0.02 260);margin-bottom:6px;">📱 WhatsApp</div>
+            <p style="font-size:12.5px;color:oklch(45% 0.02 260);margin:0 0 12px;line-height:1.5;">Escríbenos directamente y te respondemos lo antes posible.</p>
+            <a href="https://wa.me/34682821956?text=Hola%2C%20quiero%20informaci%C3%B3n%20sobre%20los%20cursos%20de%20Centro%20de%20Estudios%20M%C3%A1ster." target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:center;min-height:44px;font-size:13.5px;font-weight:600;color:oklch(99% 0.004 85);background:oklch(45% 0.14 150);border-radius:10px;">Continuar por WhatsApp</a>
+          </div>
+          <div style="border:1px solid oklch(91% 0.01 85);border-radius:14px;padding:16px;">
+            <div style="font-weight:600;font-size:14.5px;color:oklch(16% 0.02 260);margin-bottom:6px;">✉️ Solicitar que me contacten</div>
+            <p style="font-size:12.5px;color:oklch(45% 0.02 260);margin:0 0 12px;line-height:1.5;">Déjanos tus datos y un asesor se pondrá en contacto contigo.</p>
+            <a href="./Home.dc.html#contacto" style="display:flex;align-items:center;justify-content:center;width:100%;min-height:44px;font-size:13.5px;font-weight:600;color:oklch(16% 0.02 260);background:oklch(96% 0.012 85);border:1px solid oklch(85% 0.01 85);border-radius:10px;">Solicitar contacto</a>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+    <button ref="{{ helpBtnRef }}" class="help-fab" type="button" aria-expanded="{{ helpOpen }}" aria-controls="help-panel" aria-label="{{ helpToggleLabel }}" onClick="{{ toggleHelp }}" style="display:flex;align-items:center;gap:10px;background:oklch(30% 0.09 255);color:oklch(99% 0.004 85);border:none;border-radius:100px;padding:0 18px 0 14px;height:56px;cursor:pointer;box-shadow:0 10px 24px oklch(20% 0.02 260 / 0.2);" style-hover="filter:brightness(1.08);" style-focus="outline:2px solid oklch(66% 0.17 45);outline-offset:2px;">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3C6.48 3 2 6.8 2 11.5c0 2.4 1.16 4.56 3.03 6.11-.1.98-.5 2.4-1.36 3.6 1.6-.2 3.2-.85 4.4-1.7 1.2.38 2.52.6 3.93.6 5.52 0 10-3.8 10-8.6S17.52 3 12 3Z" fill="oklch(99% 0.004 85)"/></svg>
+      <span class="help-label" style="font-size:14px;font-weight:600;white-space:nowrap;">¿Necesitas ayuda?</span>
+    </button>
+  </div>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;accentHue&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;amber&quot;,&quot;options&quot;:[&quot;amber&quot;,&quot;teal&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Marca&quot;},&quot;courseStatus&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;activo&quot;,&quot;options&quot;:[&quot;activo&quot;,&quot;finalizado&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Estado de la ficha (solo vista previa en Claude Design — la ficha real usa el estado del propio curso)&quot;},&quot;slugPreview&quot;:{&quot;editor&quot;:&quot;string&quot;,&quot;default&quot;:&quot;socorrismo-en-instalaciones-acuaticas&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Vista previa&quot;}}">
+class Component extends DCLogic {
+  // NOTA: esta plantilla es la fuente EDITABLE en Claude Design, para
+  // previsualizar el lenguaje visual de la ficha. La generación real de
+  // /web/cursos/{slug}/index.html la hace scripts/build-fichas.js a partir
+  // de los mismos datos (CatalogRepository), no este fichero. El prop
+  // "slugPreview" solo elige qué curso real previsualizar aquí; "courseStatus"
+  // solo fuerza la variante visual activo/finalizado para revisar diseño.
+  state = { mobileNavOpen: false, helpOpen: false, cursos: [], publicCourses: [] };
+  toggleBtnRef = React.createRef();
+  closeBtnRef = React.createRef();
+  helpBtnRef = React.createRef();
+  helpPanelRef = React.createRef();
+
+  _estadoMeta = {
+    'proximamente': { label: 'Próximamente', color: 'oklch(45% 0.02 260)' },
+    'matricula-abierta': { label: 'Matrícula abierta', color: 'oklch(52% 0.14 150)' },
+    'ultimas-plazas': { label: 'Últimas plazas', color: 'oklch(58% 0.17 40)' },
+    'en-curso': { label: 'En curso', color: 'oklch(50% 0.12 250)' },
+    'finalizado': { label: 'Finalizado', color: 'oklch(45% 0.02 260)' },
+  };
+  _modalidadLabels = { presencial: 'Presencial', teleformacion: 'Teleformación' };
+  _tipoPrecioLabels = { gratuito: 'Gratuito', privado: 'Privado' };
+  _nivelLabels = { 'nivel-1': 'Nivel 1', 'nivel-2': 'Nivel 2', 'nivel-3': 'Nivel 3' };
+  _situacionDestLabels = { desempleado: 'Desempleados/as', ocupado: 'Ocupados/as' };
+
+  componentDidMount() {
+    this._onKeyDown = e => {
+      if (e.key === 'Escape' && this.state.mobileNavOpen) this.closeMobileNav();
+      if (e.key === 'Escape' && this.state.helpOpen) this.closeHelp();
+    };
+    document.addEventListener('keydown', this._onKeyDown);
+    this._onClickOutside = e => {
+      if (this.state.helpOpen && this.helpBtnRef.current && !this.helpBtnRef.current.closest('.help-hub').contains(e.target)) this.closeHelp();
+    };
+    document.addEventListener('click', this._onClickOutside, true);
+
+    const self = this;
+    Promise.all([CatalogRepository.getAll(), CatalogRepository.getPublicCourses()]).then(function (results) {
+      self.setState({ cursos: results[0], publicCourses: results[1] });
+    }).catch(function (err) {
+      console.error('No se pudo cargar el catálogo de cursos:', err);
+    });
+  }
+  componentWillUnmount() {
+    document.removeEventListener('keydown', this._onKeyDown);
+    document.removeEventListener('click', this._onClickOutside, true);
+    document.body.style.overflow = '';
+  }
+
+  toggleMobileNav = () => { if (this.state.mobileNavOpen) this.closeMobileNav(); else this.openMobileNav(); };
+  openMobileNav = () => { this.setState({ mobileNavOpen: true }); document.body.style.overflow = 'hidden'; setTimeout(() => { if (this.closeBtnRef.current) this.closeBtnRef.current.focus(); }, 0); };
+  closeMobileNav = () => { this.setState({ mobileNavOpen: false }); document.body.style.overflow = ''; setTimeout(() => { if (this.toggleBtnRef.current) this.toggleBtnRef.current.focus(); }, 0); };
+
+  toggleHelp = () => { if (this.state.helpOpen) this.closeHelp(); else this.openHelp(); };
+  openHelp = () => { this.setState({ helpOpen: true }, () => { if (this.helpPanelRef.current) this.helpPanelRef.current.focus(); }); };
+  closeHelp = () => { this.setState({ helpOpen: false }); setTimeout(() => { if (this.helpBtnRef.current) this.helpBtnRef.current.focus(); }, 0); };
+
+  _fichaHref = (c) => c.urlFicha ? ('../web/' + c.urlFicha) : ('../web/cursos/' + c.slug + '/');
+
+  _whatsappHref = (texto) => 'https://wa.me/34682821956?text=' + encodeURIComponent(texto);
+
+  // Mismo algoritmo que scripts/build-fichas.js (documentado allí en
+  // detalle): +4 familiaProfesional, +2 modalidad, +1 isla; si nadie puntúa,
+  // fallback honesto a "Otros cursos disponibles" en vez de inventar similitud.
+  _calcularSimilares = (curso, publicCourses) => {
+    const self = this;
+    const candidatos = publicCourses.filter(function (c) { return c.id !== curso.id; });
+    function puntuacion(c) {
+      let s = 0;
+      if (curso.familiaProfesional && c.familiaProfesional === curso.familiaProfesional) s += 4;
+      if (c.modalidad === curso.modalidad) s += 2;
+      if (c.isla === curso.isla) s += 1;
+      return s;
+    }
+    const puntuados = candidatos.map(function (c) { return { c: c, s: puntuacion(c) }; }).filter(function (x) { return x.s > 0; });
+    if (puntuados.length > 0) {
+      puntuados.sort(function (a, b) { return b.s - a.s; });
+      return { heading: 'Cursos similares disponibles ahora', courses: puntuados.slice(0, 3).map(function (x) { return x.c; }) };
+    }
+    return { heading: 'Otros cursos disponibles', courses: candidatos.slice(0, 3) };
+  };
+
+  _toSimilarCard = (c) => {
+    const meta = this._estadoMeta[c.estado] || { label: c.estado, color: 'oklch(55% 0.02 260)' };
+    const img = c.imagen || {};
+    return {
+      name: c.nombre,
+      modalidad: this._modalidadLabels[c.modalidad] || c.modalidad,
+      isla: c.isla,
+      duration: c.duracionHoras ? (c.duracionHoras + 'h') : (c.duracionTexto || ''),
+      status: meta.label,
+      statusColor: meta.color,
+      photoSrc: img.src ? '../web/' + img.src : null,
+      photoSrcset: img.srcset ? img.srcset.split(',').map(function (part) {
+        const t = part.trim(); const i = t.indexOf(' ');
+        return '../web/' + (i === -1 ? t : t.slice(0, i)) + (i === -1 ? '' : t.slice(i));
+      }).join(', ') : null,
+      photoAlt: img.alt || '',
+      photoPos: img.objectPosition || 'center',
+      href: this._fichaHref(c),
+    };
+  };
+
+  footerCols = [
+    { title: 'Formación', links: ['Cursos', 'Desempleados', 'Ocupados', 'Formación privada', 'Teleformación'] },
+    { title: 'Centro', links: ['Sobre nosotros', 'Centros', 'Contacto', 'Empleo'] },
+    { title: 'Accesos', links: ['Campus Virtual', 'Portal de transparencia', 'Docentes', 'Canal de denuncias'] },
+    { title: 'Legal', links: ['Privacidad', 'Cookies', 'Aviso legal', 'Canal de denuncias'] },
+  ];
+
+  renderVals() {
+    const accentMap = { amber: 'oklch(66% 0.17 45)', teal: 'oklch(60% 0.11 195)' };
+    const accentColor = accentMap[this.props.accentHue ?? 'amber'];
+
+    const slug = this.props.slugPreview || '';
+    const raw = this.state.cursos.find(c => c.slug === slug) || this.state.cursos[0] || null;
+
+    if (!raw) {
+      // Aún cargando, o slugPreview no coincide con ningún curso real.
+      return {
+        accentColor, course: { name: 'Cargando…' }, isFinished: false, isActive: false,
+        heroImgStyle: '', statusBadgeBg: 'oklch(55% 0.02 260)', statusBadgeText: '',
+        showPrimaryCta: false, showSecondaryWhatsapp: false, primaryCtaHref: '#', primaryCtaTarget: '_self', primaryCtaRel: '', primaryCtaLabel: '',
+        whatsappHref: '#', certNivel: '', showSimilar: false, similarHeading: '', similarCourses: [],
+        footerCols: this.footerCols,
+        mobileNavOpen: this.state.mobileNavOpen,
+        mobileNavToggleLabel: this.state.mobileNavOpen ? 'Cerrar menú' : 'Abrir menú',
+        toggleMobileNav: this.toggleMobileNav, closeMobileNav: this.closeMobileNav,
+        toggleBtnRef: this.toggleBtnRef, closeBtnRef: this.closeBtnRef,
+        helpOpen: this.state.helpOpen,
+        helpToggleLabel: this.state.helpOpen ? 'Cerrar centro de contacto' : '¿Necesitas ayuda? Abrir centro de contacto',
+        toggleHelp: this.toggleHelp, helpBtnRef: this.helpBtnRef, helpPanelRef: this.helpPanelRef,
+      };
+    }
+
+    // courseStatus solo fuerza la variante visual en la vista previa de
+    // Claude Design; la ficha real siempre usa raw.estado tal cual.
+    const previewOverride = this.props.courseStatus === 'finalizado' ? 'finalizado' : null;
+    const estadoEfectivo = previewOverride || raw.estado;
+    const isFinished = estadoEfectivo === 'finalizado';
+    const isActive = !isFinished;
+    const meta = this._estadoMeta[estadoEfectivo] || { label: estadoEfectivo, color: 'oklch(55% 0.02 260)' };
+    const img = raw.imagen || {};
+
+    const nivel = raw.nivel && this._nivelLabels[raw.nivel] ? ' ' + this._nivelLabels[raw.nivel] : '';
+    const certNivel = raw.certificacion ? (raw.certificacion + nivel) : '';
+    const destinatariosArr = (raw.situacionDestinataria || []).map(v => this._situacionDestLabels[v] || v);
+
+    let showPrimaryCta = false, primaryCtaHref = '#', primaryCtaTarget = '_self', primaryCtaRel = '', primaryCtaLabel = '';
+    let showSecondaryWhatsapp = true;
+    const waCourse = this._whatsappHref('Hola, quiero información sobre el curso: ' + raw.nombre + '.');
+    if (isFinished) {
+      showPrimaryCta = true; primaryCtaLabel = 'Consultar próxima convocatoria';
+      primaryCtaHref = this._whatsappHref('Hola, quiero información sobre la próxima convocatoria del curso: ' + raw.nombre + '.');
+      primaryCtaTarget = '_blank'; primaryCtaRel = 'noopener';
+      showSecondaryWhatsapp = false;
+    } else if (raw.urlInscripcion) {
+      showPrimaryCta = true; primaryCtaLabel = 'Solicitar plaza'; primaryCtaHref = raw.urlInscripcion;
+      if (/^https?:\/\//i.test(raw.urlInscripcion)) { primaryCtaTarget = '_blank'; primaryCtaRel = 'noopener'; }
+    } else if (raw.inscripcionAbierta) {
+      showPrimaryCta = true; primaryCtaLabel = 'Solicitar información'; primaryCtaHref = waCourse;
+      primaryCtaTarget = '_blank'; primaryCtaRel = 'noopener';
+      showSecondaryWhatsapp = false;
+    }
+
+    let showSimilar = false, similarHeading = '', similarCourses = [];
+    if (isFinished) {
+      const similar = this._calcularSimilares(raw, this.state.publicCourses);
+      similarHeading = similar.heading;
+      similarCourses = similar.courses.map(this._toSimilarCard);
+      showSimilar = similarCourses.length > 0;
+    }
+
+    return {
+      accentColor,
+      course: {
+        name: raw.nombre,
+        type: raw.tipoFormacion || '',
+        modalidad: this._modalidadLabels[raw.modalidad] || raw.modalidad,
+        isla: raw.isla,
+        sede: raw.municipio || '',
+        duration: raw.duracionHoras ? (raw.duracionHoras + 'h') : (raw.duracionTexto || ''),
+        price: this._tipoPrecioLabels[raw.tipoPrecio] || '',
+        startDate: raw.fechaInicio || raw.fechaInicioAproximada || '',
+        photoSrc: img.src ? '../web/' + img.src : '',
+        photoSrcset: img.srcset ? img.srcset.split(',').map(function (part) {
+          const t = part.trim(); const i = t.indexOf(' ');
+          return '../web/' + (i === -1 ? t : t.slice(0, i)) + (i === -1 ? '' : t.slice(i));
+        }).join(', ') : '',
+        photoAlt: img.alt || '',
+        intro: raw.descripcionCorta || '',
+        about: raw.descripcionCompleta || '',
+        destinatarios: destinatariosArr.join(', '),
+        requisitos: (raw.requisitos || []).join(', '),
+        horario: raw.horario || '',
+        ayudas: raw.ayudasBecas || '',
+        documentacion: (raw.documentacionNecesaria || []).join(', '),
+        plazas: raw.plazasDisponibles != null ? String(raw.plazasDisponibles) : '',
+        modulos: (raw.modulosUnidadesFormativas || []).join(', '),
+      },
+      isFinished,
+      isActive,
+      heroImgStyle: isFinished
+        ? 'width:100%;height:100%;object-fit:cover;filter:grayscale(0.55);opacity:0.85;'
+        : 'width:100%;height:100%;object-fit:cover;',
+      statusBadgeBg: meta.color,
+      statusBadgeText: meta.label,
+      certNivel,
+      showPrimaryCta, primaryCtaHref, primaryCtaTarget, primaryCtaRel, primaryCtaLabel,
+      showSecondaryWhatsapp, whatsappHref: waCourse,
+      showSimilar, similarHeading, similarCourses,
+      footerCols: this.footerCols,
+      mobileNavOpen: this.state.mobileNavOpen,
+      mobileNavToggleLabel: this.state.mobileNavOpen ? 'Cerrar menú' : 'Abrir menú',
+      toggleMobileNav: this.toggleMobileNav, closeMobileNav: this.closeMobileNav,
+      toggleBtnRef: this.toggleBtnRef, closeBtnRef: this.closeBtnRef,
+      helpOpen: this.state.helpOpen,
+      helpToggleLabel: this.state.helpOpen ? 'Cerrar centro de contacto' : '¿Necesitas ayuda? Abrir centro de contacto',
+      toggleHelp: this.toggleHelp, helpBtnRef: this.helpBtnRef, helpPanelRef: this.helpPanelRef,
+    };
+  }
+}
+
+</script>
+</body>
+</html>

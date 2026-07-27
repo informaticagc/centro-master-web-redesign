@@ -407,7 +407,7 @@
         <div class="eyebrow">Oferta formativa</div>
         <h2 id="coursesTitle">Cursos destacados</h2>
       </div>
-      <a href="#">Ver toda la oferta formativa →</a>
+      <a href="cursos/">Ver toda la oferta formativa →</a>
     </div>
     <div class="courses-editorial" id="coursesGrid"></div>
   </section>
@@ -722,8 +722,16 @@
     return parts.join(' · ');
   }
 
+  // urlFicha ya viene expresado en relativo a /web/ (p.ej. "cursos/mi-curso/");
+  // si no existe, se deriva del slug. Se usa tal cual porque este fichero
+  // vive en la raíz de /web/.
+  function fichaHref(c) {
+    return c.urlFicha || ('cursos/' + c.slug + '/');
+  }
+
   function featuredCardHTML(c) {
     var meta = estadoMeta(c.estado);
+    var href = fichaHref(c);
     return '<div class="course-featured">' +
       '<div class="photo">' + coursePhotoHTML(c, '(max-width: 1180px) 90vw, 55vw') + '<span class="course-status" style="background:' + meta.color + '">' + meta.label + '</span></div>' +
       '<div class="body">' +
@@ -731,19 +739,20 @@
         '<h3>' + c.nombre + '</h3>' +
         metaLine(tipoLabel(c)) +
         metaLine(startLabel(c) ? 'Inicio: ' + startLabel(c) : null) +
-        '<div class="course-foot"><div class="price">' + footHTML(c) + '</div><a href="#">Ver curso →</a></div>' +
+        '<div class="course-foot"><div class="price">' + footHTML(c) + '</div><a href="' + href + '">Ver curso →</a></div>' +
       '</div>' +
     '</div>';
   }
   function secondaryCardHTML(c) {
     var meta = estadoMeta(c.estado);
     var foot = footHTML(c);
+    var href = fichaHref(c);
     return '<div class="course-secondary">' +
       coursePhotoHTML(c, '120px') +
       '<div class="body">' +
         '<div class="meta-row"><b style="color:' + meta.color + '">' + meta.label + '</b><span style="color:oklch(60% 0.01 260)">· ' + (MODALIDAD_LABELS[c.modalidad] || c.modalidad) + ' · ' + c.isla + '</span></div>' +
         '<h3>' + c.nombre + '</h3>' +
-        '<div class="foot">' + (foot ? foot + ' · ' : '') + '<a href="#"><b>Ver →</b></a></div>' +
+        '<div class="foot">' + (foot ? foot + ' · ' : '') + '<a href="' + href + '"><b>Ver →</b></a></div>' +
       '</div>' +
     '</div>';
   }
