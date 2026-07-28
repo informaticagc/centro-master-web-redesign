@@ -1,15 +1,29 @@
 <%- include('partials/head', { titulo: titulo }) %>
 
+<div class="kpi-row">
+  <div class="kpi-card"><div class="kpi-value"><%= contadores.total %></div><div class="kpi-label">Total de cursos</div></div>
+  <div class="kpi-card"><div class="kpi-value"><%= contadores['matricula-abierta'] %></div><div class="kpi-label">Matrícula abierta</div></div>
+  <div class="kpi-card"><div class="kpi-value"><%= totalConAvisos %></div><div class="kpi-label">Con avisos de validación</div></div>
+  <div class="kpi-card"><div class="kpi-value"><%= gitInfo && gitInfo.hayPendientesDePublicar ? 'Sí' : 'No' %></div><div class="kpi-label">Pendiente de publicar</div></div>
+</div>
+
 <div class="cards-grid">
-  <div class="stat-card"><div class="stat-value"><%= contadores.total %></div><div class="stat-label">Total de cursos</div></div>
   <div class="stat-card"><div class="stat-value"><%= contadores.borrador %></div><div class="stat-label">Borradores</div></div>
   <div class="stat-card"><div class="stat-value"><%= contadores.proximamente %></div><div class="stat-label">Próximamente</div></div>
-  <div class="stat-card"><div class="stat-value"><%= contadores['matricula-abierta'] %></div><div class="stat-label">Matrícula abierta</div></div>
   <div class="stat-card"><div class="stat-value"><%= contadores['ultimas-plazas'] %></div><div class="stat-label">Últimas plazas</div></div>
   <div class="stat-card"><div class="stat-value"><%= contadores['en-curso'] %></div><div class="stat-label">En curso</div></div>
   <div class="stat-card"><div class="stat-value"><%= contadores.finalizado %></div><div class="stat-label">Finalizados</div></div>
   <div class="stat-card"><div class="stat-value"><%= contadores.archivado %></div><div class="stat-label">Archivados</div></div>
   <div class="stat-card"><div class="stat-value"><%= contadores.destacados %></div><div class="stat-label">Destacados en Home</div></div>
+</div>
+
+<div class="card">
+  <legend>Accesos rápidos</legend>
+  <div class="quick-actions">
+    <a class="btn btn-primary" href="/cursos/nuevo">+ Crear curso</a>
+    <a class="btn btn-secondary" href="/cursos">Ver listado</a>
+    <a class="btn btn-secondary" href="/publicar">Estado de publicación</a>
+  </div>
 </div>
 
 <div class="dash-columns">
@@ -28,16 +42,9 @@
     <% if (!totalConAvisos) { %><p class="muted">Sin avisos pendientes.</p><% } %>
     <p class="field-hint">Revisa el detalle al editar cada curso o antes de publicar.</p>
   </div>
+</div>
 
-  <div class="card">
-    <legend>Accesos rápidos</legend>
-    <div class="quick-actions">
-      <a class="btn btn-primary" href="/cursos/nuevo">+ Crear curso</a>
-      <a class="btn btn-secondary" href="/cursos">Ver listado</a>
-      <a class="btn btn-secondary" href="/publicar">Estado de publicación</a>
-    </div>
-  </div>
-
+<div class="dash-columns-secondary">
   <div class="card">
     <legend>Operaciones recientes</legend>
     <% if (!recientes.length) { %><p class="muted">Sin actividad registrada todavía.</p><% } %>
@@ -53,10 +60,12 @@
     <% if (!gitInfo) { %>
       <p class="muted">No se encontró un repositorio Git.</p>
     <% } else { %>
-      <p>Rama activa: <strong><%= gitInfo.rama %></strong></p>
-      <p><%= gitInfo.limpio ? '✅ Sin cambios pendientes' : '🟡 Hay ' + gitInfo.archivosModificados + ' archivo(s) modificado(s)' %></p>
-      <p><%= gitInfo.hayPendientesDePublicar ? '🟡 Hay cambios sin publicar en origin/design' : '✅ Al día con origin/design (según último conocimiento local)' %></p>
-      <details>
+      <div class="repo-status">
+        <p>Rama activa: <strong><%= gitInfo.rama %></strong></p>
+        <p><%= gitInfo.limpio ? '✅ Sin cambios pendientes' : '🟡 Hay ' + gitInfo.archivosModificados + ' archivo(s) modificado(s)' %></p>
+        <p><%= gitInfo.hayPendientesDePublicar ? '🟡 Hay cambios sin publicar en origin/design' : '✅ Al día con origin/design (según último conocimiento local)' %></p>
+      </div>
+      <details style="margin-top:8px;">
         <summary class="muted">Detalles técnicos</summary>
         <p class="muted">Último commit local: <%= gitInfo.commitLocal ? gitInfo.commitLocal.hash.slice(0,8) + ' — ' + gitInfo.commitLocal.asunto : '—' %></p>
         <p class="muted">Último origin/design conocido: <%= gitInfo.commitRemotoConocido ? gitInfo.commitRemotoConocido.hash.slice(0,8) + ' — ' + gitInfo.commitRemotoConocido.asunto : '—' %></p>

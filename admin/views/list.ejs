@@ -39,30 +39,35 @@
       <td><%= c.fechaInicio || c.fechaInicioAproximada || '—' %></td>
       <td><%= c._publicada ? 'Pública' : 'No pública' %></td>
       <td class="actions">
-        <a href="/cursos/<%= c.id %>/editar">Editar</a>
-        <form method="post" action="/cursos/<%= c.id %>/duplicar" class="inline-form">
-          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-          <button type="submit" class="link-btn">Duplicar</button>
-        </form>
-        <form method="post" action="/cursos/<%= c.id %>/vista-previa" class="inline-form">
-          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-          <button type="submit" class="link-btn">Previsualizar</button>
-        </form>
-        <% if (c._puedeNuevaConvocatoria) { %>
-        <form method="post" action="/cursos/<%= c.id %>/nueva-convocatoria" class="inline-form">
-          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-          <button type="submit" class="link-btn">Nueva convocatoria</button>
-        </form>
-        <% } %>
-        <form method="post" action="/cursos/<%= c.id %>/archivar" class="inline-form" data-confirm="¿Archivar «<%= c.nombre %>»? Dejará de ser inscribible y de aparecer en el catálogo.">
-          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-          <button type="submit" class="link-btn" <%= c.estado === 'archivado' ? 'disabled' : '' %>>Archivar</button>
-        </form>
-        <form method="post" action="/cursos/<%= c.id %>/papelera" class="inline-form" data-confirm-motivo="¿Mover «<%= c.nombre %>» a la papelera?">
-          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-          <input type="hidden" name="motivo" value="">
-          <button type="submit" class="link-btn link-btn-danger" <%= c._eliminable ? '' : 'disabled title="Solo borradores nunca publicados"' %>>Mover a papelera</button>
-        </form>
+        <a href="/cursos/<%= c.id %>/editar" class="link-btn">Editar</a>
+        <div class="row-menu">
+          <button type="button" class="row-menu-btn" aria-label="Más acciones" title="Más acciones">⋯</button>
+          <div class="row-menu-list">
+            <form method="post" action="/cursos/<%= c.id %>/duplicar">
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+              <button type="submit" class="link-btn">Duplicar</button>
+            </form>
+            <form method="post" action="/cursos/<%= c.id %>/vista-previa">
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+              <button type="submit" class="link-btn">Previsualizar</button>
+            </form>
+            <% if (c._puedeNuevaConvocatoria) { %>
+            <form method="post" action="/cursos/<%= c.id %>/nueva-convocatoria">
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+              <button type="submit" class="link-btn">Nueva convocatoria</button>
+            </form>
+            <% } %>
+            <form method="post" action="/cursos/<%= c.id %>/archivar" data-confirm="¿Archivar «<%= c.nombre %>»? Dejará de ser inscribible y de aparecer en el catálogo.">
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+              <button type="submit" class="link-btn" <%= c.estado === 'archivado' ? 'disabled' : '' %>>Archivar</button>
+            </form>
+            <form method="post" action="/cursos/<%= c.id %>/papelera" data-confirm-motivo="¿Mover «<%= c.nombre %>» a la papelera?">
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+              <input type="hidden" name="motivo" value="">
+              <button type="submit" class="link-btn link-btn-danger" <%= c._eliminable ? '' : 'disabled title="Solo borradores nunca publicados"' %>>Mover a papelera</button>
+            </form>
+          </div>
+        </div>
       </td>
     </tr>
     <% }) %>
