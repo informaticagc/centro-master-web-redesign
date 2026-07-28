@@ -74,7 +74,6 @@ const certificacionNivelText = format.certificacionNivelText;
 const destinatariosText = format.destinatariosText;
 const sedeText = format.sedeText;
 const fichaHrefDesdeFicha = format.fichaHrefDesdeFicha;
-const metaLine = format.metaLine;
 const detailSection = format.detailSection;
 const buildMetaDescription = format.buildMetaDescription;
 const MODALIDAD_LABELS = format.MODALIDAD_LABELS;
@@ -136,6 +135,30 @@ function similarCardHTML(c) {
     '<a href="' + fichaHrefDesdeFicha(c) + '">Ver curso →</a></div></div>';
 }
 
+// ---------------------------------------------------------------------
+// Bloque superior de la ficha (Fase 1 de la nueva ficha de curso).
+// Funciones locales de esta fase: prototipo del "quick facts" con icono
+// antes de consolidarlas en scripts/lib/components.js (Fase 0B). No
+// sustituyen ni modifican format.metaLine (sigue disponible en
+// scripts/lib/format.js para cuando la Fase 0B decida qué hacer con ella).
+// ---------------------------------------------------------------------
+const HERO_FACT_ICONS = {
+  tipoFormacion: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5Z"></path><path d="M6 12v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"></path></svg>',
+  duracion: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 3"></path></svg>',
+  fecha: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M16 3v4M8 3v4M3 10h18"></path></svg>',
+  sede: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s7-6.5 7-12a7 7 0 1 0-14 0c0 5.5 7 12 7 12Z"></path><circle cx="12" cy="10" r="2.5"></circle></svg>',
+};
+
+// Lista semántica (<li>), no <dl>: el icono decorativo conviviendo con
+// etiqueta+valor dentro del mismo ítem rompería el modelo de contenido de
+// <dl> (un div hijo de <dl> solo puede contener dt/dd). Se omite limpio si
+// el valor está vacío — mismo criterio que ya usaba format.metaLine.
+function heroFactHTML(iconKey, label, value) {
+  if (esVacio(value)) return '';
+  return '<li class="fact-item"><span class="fact-icon" aria-hidden="true">' + HERO_FACT_ICONS[iconKey] + '</span>' +
+    '<span class="fact-text"><span class="fact-label">' + label + '</span><span class="fact-value">' + value + '</span></span></li>';
+}
+
 function renderFichaHTML(curso, sedesById, publicCourses) {
   const isFinished = curso.estado === 'finalizado';
   const meta = estadoMeta(curso.estado);
@@ -149,11 +172,11 @@ function renderFichaHTML(curso, sedesById, publicCourses) {
   const destinatarios = destinatariosText(curso);
   const sede = sedeText(curso, sedesById);
   const facts = [
-    metaLine('Tipo de formación', curso.tipoFormacion),
-    metaLine('Duración', durationLabel(curso)),
-    metaLine('Fecha de inicio', startLabel(curso)),
-    metaLine('Fecha de fin', curso.fechaFin),
-    metaLine('Sede', sede),
+    heroFactHTML('tipoFormacion', 'Tipo de formación', curso.tipoFormacion),
+    heroFactHTML('duracion', 'Duración', durationLabel(curso)),
+    heroFactHTML('fecha', 'Fecha de inicio', startLabel(curso)),
+    heroFactHTML('fecha', 'Fecha de fin', curso.fechaFin),
+    heroFactHTML('sede', 'Sede', sede),
   ].filter(Boolean).join('');
 
   // CTA principal: nunca un enlace muerto. Si no hay urlInscripcion real ni
@@ -214,23 +237,28 @@ partials.BREADCRUMB_CSS +
 '  .finished-banner .warn{font-size:13px;font-weight:700;color:var(--ink-soft);}\n' +
 '  .finished-banner .info{font-size:13px;color:var(--ink-soft);}\n' +
 '  .course-wrap{padding:40px 56px 0;}\n' +
-'  .course-hero{display:grid;grid-template-columns:1.05fr .95fr;gap:40px;align-items:start;margin-bottom:48px;}\n' +
-'  .hero-photo{position:relative;border-radius:24px;overflow:hidden;aspect-ratio:16/10;background:var(--tint);}\n' +
+'  .course-hero{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:start;margin-bottom:56px;}\n' +
+'  .hero-photo{position:relative;border-radius:24px;overflow:hidden;aspect-ratio:16/10;background:var(--tint);box-shadow:0 20px 48px oklch(20% 0.02 260 / .12);}\n' +
 '  .hero-photo img{width:100%;height:100%;object-fit:cover;}\n' +
 '  .hero-photo img.finished{filter:grayscale(.55);opacity:.85;}\n' +
-'  .status-badge{position:absolute;top:16px;left:16px;font-size:12px;font-weight:700;color:var(--surface);padding:6px 13px;border-radius:100px;}\n' +
-'  .tag-row{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}\n' +
+'  .status-badge{position:absolute;top:18px;left:18px;font-size:12.5px;font-weight:700;color:var(--surface);padding:7px 15px;border-radius:100px;box-shadow:0 4px 12px oklch(20% 0.02 260 / .18);}\n' +
+'  .tag-row{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;}\n' +
 '  .tag-modalidad{font-size:11.5px;font-weight:600;color:oklch(40% 0.09 200);background:oklch(94% 0.03 200);padding:5px 12px;border-radius:100px;}\n' +
 '  .tag-isla, .tag-price{font-size:11.5px;font-weight:600;color:var(--ink-strong);background:oklch(93% 0.008 85);padding:5px 12px;border-radius:100px;}\n' +
-'  .course-hero h1{font-weight:700;font-size:34px;margin:0 0 14px;color:var(--ink-strong);line-height:1.12;}\n' +
-'  .course-hero .intro{font-size:15.5px;color:var(--ink-soft);line-height:1.6;margin:0 0 24px;max-width:520px;}\n' +
-'  .course-facts{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:28px;}\n' +
-'  .fact-label{font-size:11px;font-weight:600;color:oklch(55% 0.02 260);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px;}\n' +
+'  .course-hero h1{font-weight:700;font-size:clamp(28px,4vw,40px);margin:0 0 16px;color:var(--ink-strong);line-height:1.15;}\n' +
+'  .course-hero .intro{font-size:16px;color:var(--ink-soft);line-height:1.6;margin:0 0 28px;max-width:520px;}\n' +
+'  .fact-grid{list-style:none;display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:0 0 28px;padding:0;}\n' +
+'  .fact-item{display:flex;align-items:flex-start;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;}\n' +
+'  .fact-icon{flex-shrink:0;width:20px;height:20px;color:var(--accent);}\n' +
+'  .fact-icon svg{display:block;width:100%;height:100%;}\n' +
+'  .fact-text{display:flex;flex-direction:column;}\n' +
+'  .fact-label{font-size:11px;font-weight:600;color:oklch(55% 0.02 260);text-transform:uppercase;letter-spacing:.04em;margin-bottom:2px;}\n' +
 '  .fact-value{font-size:14px;font-weight:600;color:var(--ink);}\n' +
 '  .cta-row{display:flex;gap:12px;flex-wrap:wrap;}\n' +
 '  .cta-row a{min-height:44px;display:flex;align-items:center;border-radius:100px;font-size:15px;font-weight:600;padding:0 26px;}\n' +
 '  .cta-solid{color:var(--surface);background:var(--accent);}\n' +
 '  .cta-outline{color:var(--ink-strong);border:1px solid oklch(85% 0.01 85);gap:8px;}\n' +
+'  .cta-row a:focus-visible{outline:2px solid var(--primary);outline-offset:2px;}\n' +
 '  .detail-wrap{padding:0 56px 96px;max-width:1200px;}\n' +
 '  .detail-section{margin-bottom:36px;}\n' +
 '  .detail-section h2{font-weight:700;font-size:22px;margin:0 0 12px;color:var(--ink-strong);}\n' +
@@ -252,16 +280,16 @@ partials.FOOTER_CSS_BASE +
 partials.HEADER_CSS_1180 +
 '    .course-wrap,.detail-wrap,.similar-wrap{padding-left:32px;padding-right:32px;}\n' +
 '    .course-hero{grid-template-columns:1fr;}\n' +
-'    .course-facts{grid-template-columns:repeat(2,1fr);}\n' +
 '    .similar-grid{grid-template-columns:repeat(2,1fr);}\n' +
 '  }\n' +
 '  @media (max-width: 860px){\n' +
 partials.HEADER_CSS_860 +
 partials.FOOTER_CSS_860 +
+'    .course-wrap{padding-left:20px;padding-right:20px;}\n' +
 '    .cta-row{position:sticky;bottom:0;left:0;right:0;background:var(--surface);padding:12px 20px;margin:24px -20px 0;box-shadow:0 -8px 24px oklch(20% 0.02 260 / .1);z-index:20;}\n' +
 '  }\n' +
 '  @media (max-width: 700px){\n' +
-'    .course-facts{grid-template-columns:1fr 1fr;}\n' +
+'    .fact-grid{grid-template-columns:1fr;}\n' +
 '    .similar-grid{grid-template-columns:1fr;}\n' +
 '  }\n' +
 '</style>\n' +
@@ -292,7 +320,7 @@ finishedBanner + '\n' +
 '        </div>\n' +
 '        <h1>' + curso.nombre + '</h1>\n' +
 (!esVacio(curso.descripcionCorta) ? '        <p class="intro">' + curso.descripcionCorta + '</p>\n' : '') +
-(facts ? '        <div class="course-facts">' + facts + '</div>\n' : '') +
+(facts ? '        <ul class="fact-grid">' + facts + '</ul>\n' : '') +
 '        <div class="cta-row">\n' +
 '          ' + primaryCta + '\n' +
 '          ' + secondaryWhatsapp + '\n' +
