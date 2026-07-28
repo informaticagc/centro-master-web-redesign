@@ -47,23 +47,28 @@
   .finished-banner .warn{font-size:13px;font-weight:700;color:var(--ink-soft);}
   .finished-banner .info{font-size:13px;color:var(--ink-soft);}
   .course-wrap{padding:40px 56px 0;}
-  .course-hero{display:grid;grid-template-columns:1.05fr .95fr;gap:40px;align-items:start;margin-bottom:48px;}
-  .hero-photo{position:relative;border-radius:24px;overflow:hidden;aspect-ratio:16/10;background:var(--tint);}
+  .course-hero{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:start;margin-bottom:56px;}
+  .hero-photo{position:relative;border-radius:24px;overflow:hidden;aspect-ratio:16/10;background:var(--tint);box-shadow:0 20px 48px oklch(20% 0.02 260 / .12);}
   .hero-photo img{width:100%;height:100%;object-fit:cover;}
   .hero-photo img.finished{filter:grayscale(.55);opacity:.85;}
-  .status-badge{position:absolute;top:16px;left:16px;font-size:12px;font-weight:700;color:var(--surface);padding:6px 13px;border-radius:100px;}
-  .tag-row{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
+  .status-badge{position:absolute;top:18px;left:18px;font-size:12.5px;font-weight:700;color:var(--surface);padding:7px 15px;border-radius:100px;box-shadow:0 4px 12px oklch(20% 0.02 260 / .18);}
+  .tag-row{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;}
   .tag-modalidad{font-size:11.5px;font-weight:600;color:oklch(40% 0.09 200);background:oklch(94% 0.03 200);padding:5px 12px;border-radius:100px;}
   .tag-isla, .tag-price{font-size:11.5px;font-weight:600;color:var(--ink-strong);background:oklch(93% 0.008 85);padding:5px 12px;border-radius:100px;}
-  .course-hero h1{font-weight:700;font-size:34px;margin:0 0 14px;color:var(--ink-strong);line-height:1.12;}
-  .course-hero .intro{font-size:15.5px;color:var(--ink-soft);line-height:1.6;margin:0 0 24px;max-width:520px;}
-  .course-facts{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:28px;}
-  .fact-label{font-size:11px;font-weight:600;color:oklch(55% 0.02 260);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px;}
+  .course-hero h1{font-weight:700;font-size:clamp(28px,4vw,40px);margin:0 0 16px;color:var(--ink-strong);line-height:1.15;}
+  .course-hero .intro{font-size:16px;color:var(--ink-soft);line-height:1.6;margin:0 0 28px;max-width:520px;}
+  .fact-grid{list-style:none;display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:0 0 28px;padding:0;}
+  .fact-item{display:flex;align-items:flex-start;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;}
+  .fact-icon{flex-shrink:0;width:20px;height:20px;color:var(--accent);}
+  .fact-icon svg{display:block;width:100%;height:100%;}
+  .fact-text{display:flex;flex-direction:column;}
+  .fact-label{font-size:11px;font-weight:600;color:oklch(55% 0.02 260);text-transform:uppercase;letter-spacing:.04em;margin-bottom:2px;}
   .fact-value{font-size:14px;font-weight:600;color:var(--ink);}
   .cta-row{display:flex;gap:12px;flex-wrap:wrap;}
   .cta-row a{min-height:44px;display:flex;align-items:center;border-radius:100px;font-size:15px;font-weight:600;padding:0 26px;}
   .cta-solid{color:var(--surface);background:var(--accent);}
   .cta-outline{color:var(--ink-strong);border:1px solid oklch(85% 0.01 85);gap:8px;}
+  .cta-row a:focus-visible{outline:2px solid var(--primary);outline-offset:2px;}
   .detail-wrap{padding:0 56px 96px;max-width:1200px;}
   .detail-section{margin-bottom:36px;}
   .detail-section h2{font-weight:700;font-size:22px;margin:0 0 12px;color:var(--ink-strong);}
@@ -94,7 +99,6 @@
     .top-bar{padding-left:28px;padding-right:28px;gap:14px;}
     .course-wrap,.detail-wrap,.similar-wrap{padding-left:32px;padding-right:32px;}
     .course-hero{grid-template-columns:1fr;}
-    .course-facts{grid-template-columns:repeat(2,1fr);}
     .similar-grid{grid-template-columns:repeat(2,1fr);}
   }
   @media (max-width: 860px){
@@ -103,10 +107,11 @@
     .nav-toggle{display:inline-flex;}
     .footer-grid{grid-template-columns:1fr 1fr;}
     .footer-brand{grid-column:1/-1;}
+    .course-wrap{padding-left:20px;padding-right:20px;}
     .cta-row{position:sticky;bottom:0;left:0;right:0;background:var(--surface);padding:12px 20px;margin:24px -20px 0;box-shadow:0 -8px 24px oklch(20% 0.02 260 / .1);z-index:20;}
   }
   @media (max-width: 700px){
-    .course-facts{grid-template-columns:1fr 1fr;}
+    .fact-grid{grid-template-columns:1fr;}
     .similar-grid{grid-template-columns:1fr;}
   }
 </style>
@@ -166,7 +171,7 @@
           <span class="tag-price">Privado</span>
         </div>
         <h1>DESA · Desfibrilador semiautomático</h1>
-        <div class="course-facts"><div><div class="fact-label">Tipo de formación</div><div class="fact-value">Curso privado</div></div><div><div class="fact-label">Fecha de inicio</div><div class="fact-value">Varias fechas</div></div></div>
+        <ul class="fact-grid"><li class="fact-item"><span class="fact-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5Z"></path><path d="M6 12v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"></path></svg></span><span class="fact-text"><span class="fact-label">Tipo de formación</span><span class="fact-value">Curso privado</span></span></li><li class="fact-item"><span class="fact-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M16 3v4M8 3v4M3 10h18"></path></svg></span><span class="fact-text"><span class="fact-label">Fecha de inicio</span><span class="fact-value">Varias fechas</span></span></li></ul>
         <div class="cta-row">
           <a href="https://wa.me/34682821956?text=Hola%2C%20quiero%20informaci%C3%B3n%20sobre%20el%20curso%3A%20DESA%20%C2%B7%20Desfibrilador%20semiautom%C3%A1tico." target="_blank" rel="noopener" class="cta-solid">Solicitar información</a>
           
