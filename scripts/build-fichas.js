@@ -434,7 +434,7 @@ similarHTML + '\n' +
 '    <div class="footer-grid">\n' +
 '      <div class="footer-brand">\n' +
 '        <div class="footer-brand-title">Centro de Estudios Máster</div>\n' +
-'        <p>Formación para el empleo en Canarias desde hace más de 25 años.</p>\n' +
+'        <p>Formación para el empleo en Canarias desde hace más de 30 años.</p>\n' +
 '        <div class="social-row" style="display:flex;gap:14px;">\n' +
 '          <a href="https://www.instagram.com/centrodeestudiosmaster/">Instagram</a>\n' +
 '          <a href="https://www.facebook.com/CentroDeEstudiosMaster/">Facebook</a>\n' +

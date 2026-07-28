@@ -30,14 +30,16 @@
   .ph span{font-family:monospace;font-size:11.5px;color:oklch(38% 0.05 255);padding:10px 12px;background:oklch(99% 0.004 85 / 0.6);border-radius:0 0 8px 8px;}
   @media (prefers-reduced-motion: reduce){ *{animation-duration:0.001ms !important; transition-duration:0.001ms !important; transition:none !important;} .help-messages{scroll-behavior:auto !important;} }
 
-  header{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:16px 56px;background:oklch(99.5% 0.004 85 / 0.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
+  header{position:sticky;top:0;z-index:50;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:clamp(12px,3vw,24px);padding:16px clamp(16px,6vw,56px);background:oklch(99.5% 0.004 85 / 0.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
+  header img{max-width:150px;width:clamp(110px,32vw,150px);height:auto;flex-shrink:1;min-width:0;}
   nav.sitenav{display:flex;align-items:center;gap:28px;flex-shrink:1;min-width:0;}
   .nav-primary{display:flex;align-items:center;gap:28px;}
   nav a{white-space:nowrap;font-size:15px;font-weight:500;color:var(--ink);}
   .nav-secondary{font-size:14px;font-weight:500;color:var(--ink-soft);border-right:1px solid var(--line);padding-right:24px;}
-  .cta-pill{white-space:nowrap;font-size:15px;font-weight:600;color:var(--surface);background:var(--accent);padding:14px 22px;border-radius:100px;transition:transform .15s,box-shadow .15s;}
+  .cta-pill{display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap;font-size:15px;font-weight:600;color:var(--surface);background:var(--accent);padding:14px 22px;border-radius:100px;transition:transform .15s,box-shadow .15s;flex-shrink:0;}
   .cta-pill:hover{transform:translateY(-1px);box-shadow:0 6px 16px oklch(20% 0.02 260 / .18);}
   .cta-pill:focus-visible{outline:2px solid var(--primary);outline-offset:2px;}
+  .cta-pill svg{width:18px;height:18px;flex-shrink:0;}
 
   .nav-toggle{display:none;flex-shrink:0;align-items:center;justify-content:center;width:44px;height:44px;border-radius:10px;border:1px solid var(--line);background:var(--surface);cursor:pointer;padding:0;}
   .nav-toggle:focus-visible{outline:2px solid var(--primary);outline-offset:2px;}
@@ -58,11 +60,11 @@
   .hero{position:relative;min-height:660px;display:flex;align-items:flex-end;}
   .hero .ph{position:absolute;inset:0;width:100%;height:100%;justify-content:flex-start;}
   .hero-scrim{position:absolute;inset:0;background:linear-gradient(0deg, oklch(12% 0.03 260 / .92) 0%, oklch(12% 0.03 260 / .6) 45%, oklch(12% 0.03 260 / .15) 100%);}
-  .hero-text{position:relative;z-index:2;padding:64px 64px 96px;max-width:760px;backdrop-filter:blur(2px);}
+  .hero-text{position:relative;z-index:2;padding:clamp(32px,8vw,64px) clamp(20px,6vw,64px) clamp(56px,12vw,96px);max-width:760px;backdrop-filter:blur(2px);}
   .hero-tag{display:inline-flex;align-items:center;gap:8px;background:oklch(99% 0.004 85 / .15);border:1px solid oklch(99% 0.004 85 / .35);color:var(--surface);font-size:13px;font-weight:600;padding:7px 14px;border-radius:100px;margin-bottom:24px;backdrop-filter:blur(4px);}
-  .hero-text h1{font-weight:700;font-size:60px;line-height:1.04;letter-spacing:-.02em;margin:0 0 20px;color:var(--surface);text-wrap:balance;}
+  .hero-text h1{font-weight:700;font-size:clamp(32px,7vw,60px);line-height:1.08;letter-spacing:-.02em;margin:0 0 20px;color:var(--surface);text-wrap:balance;}
   .hero-text h1 span{color:var(--accent);}
-  .hero-text p{font-size:18px;line-height:1.55;color:oklch(92% 0.01 260);max-width:520px;margin:0 0 32px;text-wrap:pretty;}
+  .hero-text p{font-size:clamp(15px,3.5vw,18px);line-height:1.55;color:oklch(92% 0.01 260);max-width:520px;margin:0 0 32px;text-wrap:pretty;}
   .hero-actions{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
   .btn-light{font-size:16px;font-weight:600;color:var(--ink-strong);background:var(--surface);padding:16px 28px;border-radius:100px;transition:transform .15s;}
   .btn-light:hover{transform:translateY(-2px);}
@@ -147,23 +149,22 @@
   .testimonial p{font-weight:500;font-size:18px;line-height:1.5;color:oklch(25% 0.02 260);margin:0 0 16px;font-style:italic;}
   .testimonial .who{font-size:13.5px;color:oklch(50% 0.02 260);}
 
-  .sedes-section{padding:100px 56px;}
-  .sedes-section > h2{font-weight:700;font-size:32px;margin:0 0 8px;color:var(--ink-strong);}
-  .sedes-section > p.lead{font-size:15px;color:var(--ink-soft);margin:0 0 40px;max-width:560px;}
-  .sede-group{margin-bottom:40px;}
-  .sede-group-head{display:flex;align-items:center;gap:10px;margin-bottom:20px;}
-  .sede-group-head i{width:9px;height:9px;border-radius:50%;background:var(--accent);}
-  .sede-group-head span{font-weight:600;font-size:16px;color:var(--ink-strong);}
-  .sede-list{display:flex;flex-direction:column;gap:20px;}
-  .sede-split{display:grid;grid-template-columns:1.2fr 1fr;border-radius:20px;overflow:hidden;border:1px solid var(--line);background:var(--surface);min-height:220px;}
-  .sede-split .ph{width:100%;height:100%;}
-  .sede-split .body{padding:28px;display:flex;flex-direction:column;justify-content:center;}
-  .sede-split h3{font-weight:600;font-size:19px;margin:0 0 10px;color:var(--ink-strong);}
-  .sede-split p{font-size:13.5px;color:var(--ink-soft);line-height:1.5;margin:0 0 4px;}
-  .sede-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px;}
-  .sede-actions a.solid{font-size:13px;font-weight:600;color:var(--surface);background:var(--primary);padding:9px 16px;border-radius:100px;}
-  .sede-actions a.outline{font-size:13px;font-weight:600;color:var(--ink);border:1px solid oklch(85% 0.01 85);padding:9px 16px;border-radius:100px;}
-  .sedes-footnote{font-size:12px;color:oklch(55% 0.02 260);font-style:italic;margin:0;}
+  .sedes-section{padding:56px 56px;}
+  .sedes-section > h2{font-weight:700;font-size:24px;margin:0 0 6px;color:var(--ink-strong);}
+  .sedes-section > p.lead{font-size:14px;color:var(--ink-soft);margin:0 0 24px;max-width:560px;}
+  .sede-list{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  .sede-split{display:flex;flex-direction:column;border-radius:16px;overflow:hidden;border:1px solid var(--line);background:var(--surface);min-width:0;}
+  .sede-split .photo{position:relative;width:100%;aspect-ratio:4/3;flex-shrink:0;}
+  .sede-split .photo .ph,.sede-split .photo img{position:absolute;inset:0;width:100%;height:100%;}
+  .sede-split .photo::after{content:"";position:absolute;inset:0;background:rgba(0,0,0,0.30);pointer-events:none;}
+  .sede-split .region-tag{position:absolute;top:10px;left:10px;z-index:2;font-size:11px;font-weight:600;color:var(--surface);background:oklch(20% 0.02 260 / .45);padding:4px 10px;border-radius:100px;backdrop-filter:blur(2px);}
+  .sede-split .body{padding:16px;display:flex;flex-direction:column;justify-content:center;min-width:0;}
+  .sede-split h3{font-weight:600;font-size:16px;margin:0 0 6px;color:var(--ink-strong);}
+  .sede-split p{font-size:12.5px;color:var(--ink-soft);line-height:1.45;margin:0 0 3px;overflow-wrap:break-word;}
+  .sede-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+  .sede-actions a.solid{font-size:12px;font-weight:600;color:var(--surface);background:var(--primary);padding:8px 14px;border-radius:100px;min-height:44px;display:inline-flex;align-items:center;}
+  .sede-actions a.outline{font-size:12px;font-weight:600;color:var(--ink);border:1px solid oklch(85% 0.01 85);padding:8px 14px;border-radius:100px;min-height:44px;display:inline-flex;align-items:center;}
+  .sedes-footnote{font-size:12px;color:oklch(55% 0.02 260);font-style:italic;margin:12px 0 0;}
 
   .collab-section{padding:0 56px 96px;}
   .collab-panel{background:var(--tint);border-radius:24px;padding:48px 52px;}
@@ -262,27 +263,32 @@
     header{padding-left:28px;padding-right:28px;}
     .sitenav{gap:16px;}
     .nav-secondary{display:none;}
-    .hero-text{max-width:100%;padding:48px 32px;}
-    .hero-text h1{font-size:40px;}
+    .hero-text{max-width:100%;}
     .search-float{margin:-40px 32px 0;padding:24px;grid-template-columns:1fr;}
     .quick-access{border-left:none;border-top:1px solid var(--line);padding-left:0;padding-top:16px;margin-top:4px;}
     .courses-editorial{grid-template-columns:1fr;}
     .tiles-grid{grid-template-columns:repeat(2,1fr);}
     .vp-row{grid-template-columns:1fr;}
     .vp-row .vp-photo{order:-1;}
-    .sede-split{grid-template-columns:1fr;}
   }
   @media (max-width: 860px){
     .top-bar{display:none;}
     .nav-primary{display:none;}
     .nav-toggle{display:inline-flex;}
+    .cta-pill-text{display:none;}
+    .cta-pill{padding:12px;width:44px;height:44px;}
+    .hero{min-height:clamp(480px,88vh,660px);}
     .tiles-grid{grid-template-columns:1fr;}
+    .sede-list{display:flex;grid-template-columns:none;overflow-x:auto;scroll-snap-type:x mandatory;gap:12px;margin:0 -20px;padding:0 20px 4px;}
+    .sede-split{flex:0 0 min(78vw,280px);scroll-snap-align:start;}
     .stats-inline{flex-direction:column;align-items:flex-start;gap:20px;}
     .footer-grid{grid-template-columns:1fr 1fr;}
     .footer-brand{grid-column:1 / -1;}
     .collab-section{padding:0 20px 64px;}
     .collab-panel{padding:32px 24px;}
     .collab-logos{justify-content:flex-start;}
+    .courses-section,.tiles-section,.discover-wrap,.sedes-section,.trust-section,.vp-section,.cta-final,footer{padding-left:20px;padding-right:20px;}
+    footer{padding-bottom:96px;}
     .help-label{display:none;}
     .help-fab{width:56px;height:56px;padding:0;justify-content:center;}
     .help-hub{right:max(16px, env(safe-area-inset-right));bottom:max(16px, env(safe-area-inset-bottom));}
@@ -303,7 +309,7 @@
   </div>
 
   <header>
-    <img src="assets/logo-cem.png" alt="Centro de Estudios Máster" style="width:150px;height:38px;flex-shrink:0;object-fit:contain;" loading="eager" decoding="async">
+    <img src="assets/logo-cem.png" alt="Centro de Estudios Máster" loading="eager" decoding="async">
     <nav class="sitenav">
       <span class="nav-primary">
         <a href="#cursos">Formación ⌄</a>
@@ -312,7 +318,10 @@
         <a href="#contacto">Contacto</a>
       </span>
       <a href="#" class="nav-secondary">Campus Virtual ↗</a>
-      <a href="#buscador" class="cta-pill">Encontrar un curso</a>
+      <a href="#buscador" class="cta-pill" aria-label="Encontrar un curso">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <span class="cta-pill-text">Encontrar un curso</span>
+      </a>
       <button id="navToggle" class="nav-toggle" type="button" aria-expanded="false" aria-controls="mobileDrawer" aria-label="Abrir menú">
         <span class="bars"><span></span><span></span><span></span></span>
       </button>
@@ -351,7 +360,7 @@
          loading="eager" fetchpriority="high" decoding="async">
     <div class="hero-scrim"></div>
     <div class="hero-text">
-      <div class="hero-tag">+25 años formando en Canarias</div>
+      <div class="hero-tag">+30 años formando en Canarias</div>
       <h1>La formación que te acerca a <span>tu próximo empleo</span></h1>
       <p>Cursos gratuitos y privados, certificados de profesionalidad y teleformación en Gran Canaria y Tenerife.</p>
       <div class="hero-actions">
@@ -433,9 +442,9 @@
     <div class="trust-scrim"></div>
     <div class="trust-copy">
       <h2>Un centro consolidado, pensado para el empleo real</h2>
-      <p>Más de dos décadas formando en Canarias, con programas diseñados junto a empresas y organismos públicos para que la formación se traduzca en oportunidades reales.</p>
+      <p>Más de tres décadas formando en Canarias, con programas diseñados junto a empresas y organismos públicos para que la formación se traduzca en oportunidades reales.</p>
       <div class="stats-inline">
-        <div><div class="stat-value">+25</div><div class="stat-label">años de experiencia en formación para el empleo</div></div>
+        <div><div class="stat-value">+30</div><div class="stat-label">años de experiencia en formación para el empleo</div></div>
         <div><div class="stat-value">+80</div><div class="stat-label">acciones formativas cada año</div></div>
         <div><div class="stat-value">+1.000</div><div class="stat-label">alumnos formados cada año</div></div>
       </div>
@@ -546,7 +555,7 @@
     <div class="footer-grid">
       <div class="footer-brand">
         <div class="footer-brand-title">Centro de Estudios Máster</div>
-        <p>Formación para el empleo en Canarias desde hace más de 25 años.</p>
+        <p>Formación para el empleo en Canarias desde hace más de 30 años.</p>
         <div class="social-row">
           <a href="https://www.instagram.com/centrodeestudiosmaster/">Instagram</a>
           <a href="https://www.facebook.com/CentroDeEstudiosMaster/">Facebook</a>
@@ -800,10 +809,12 @@
   function sedeCardHTML(s) {
     var img = s.imagen;
     var photoHTML = (img && img.src)
-      ? '<img src="' + img.src + '" srcset="' + (img.srcset || '') + '" sizes="(max-width: 1180px) 100vw, 50vw" alt="' + (img.alt || '') + '" style="width:100%;height:100%;object-fit:cover;object-position:center;" loading="lazy" decoding="async">'
+      ? '<img src="' + img.src + '" srcset="' + (img.srcset || '') + '" sizes="(max-width: 860px) 78vw, (max-width: 1180px) 33vw, 20vw" alt="' + (img.alt || '') + '" style="width:100%;height:100%;object-fit:cover;object-position:center;" loading="lazy" decoding="async">'
       : '<div class="ph" style="width:100%;height:100%;"></div>';
     var telefonoHTML = s.telefono ? '<p>' + s.telefono + '</p>' : '';
-    return '<div class="sede-split">' + photoHTML +
+    var regionTagHTML = s.region ? '<span class="region-tag">' + s.region + '</span>' : '';
+    return '<div class="sede-split" role="listitem">' +
+      '<div class="photo">' + regionTagHTML + photoHTML + '</div>' +
       '<div class="body">' +
         '<h3>' + s.municipio + '</h3>' +
         '<p>' + s.direccion + '</p>' +
@@ -815,17 +826,7 @@
 
   function renderSedes(sedes) {
     var container = document.getElementById('sedesContainer');
-    var orderedRegions = [];
-    var byRegion = {};
-    sedes.forEach(function (s) {
-      var region = s.region || 'Otras sedes';
-      if (!byRegion[region]) { byRegion[region] = []; orderedRegions.push(region); }
-      byRegion[region].push(s);
-    });
-    container.innerHTML = orderedRegions.map(function (region) {
-      return '<div class="sede-group"><div class="sede-group-head"><i></i><span>' + region + '</span></div>' +
-        '<div class="sede-list">' + byRegion[region].map(sedeCardHTML).join('') + '</div></div>';
-    }).join('');
+    container.innerHTML = '<div class="sede-list" role="list" aria-label="Nuestras sedes" tabindex="0">' + sedes.map(sedeCardHTML).join('') + '</div>';
   }
 
   var catalogReadyPromise = Promise.all([

@@ -23,14 +23,12 @@
       .site-header{ padding-left:28px !important; padding-right:28px !important; }
       .site-nav{ gap:16px !important; }
       .nav-secondary{ display:none !important; }
-      .hero-text{ max-width:100% !important; padding:48px 32px !important; }
-      .hero-text h1{ font-size:40px !important; }
+      .hero-text{ max-width:100% !important; }
       .search-float{ margin:-40px 32px 0 !important; padding:24px !important; grid-template-columns:1fr !important; }
       .courses-editorial{ grid-template-columns:1fr !important; }
       .tiles-grid{ grid-template-columns:repeat(2,1fr) !important; }
       .vp-row{ grid-template-columns:1fr !important; }
       .vp-row .vp-photo{ order:-1 !important; }
-      .sede-split{ grid-template-columns:1fr !important; }
       .search-quick{ border-left:none !important; border-top:1px solid oklch(91% 0.01 85) !important; padding-left:0 !important; padding-top:16px !important; margin-top:4px !important; }
       .top-bar{ padding-left:28px !important; padding-right:28px !important; gap:14px !important; }
     }
@@ -38,13 +36,19 @@
       .top-bar{ display:none !important; }
       .nav-primary{ display:none !important; }
       .nav-toggle{ display:inline-flex !important; }
+      .cta-pill-text{ display:none !important; }
+      .cta-pill{ padding:12px !important; width:44px !important; height:44px !important; }
+      .hero-section{ min-height:clamp(480px,88vh,660px) !important; }
       .tiles-grid{ grid-template-columns:1fr !important; }
       .stats-inline{ flex-direction:column !important; align-items:flex-start !important; gap:20px !important; }
       .footer-grid{ grid-template-columns:1fr 1fr !important; }
       .footer-brand{ grid-column:1 / -1 !important; }
+      .site-footer{ padding-bottom:96px !important; }
       .collab-logos{ justify-content:flex-start !important; }
       .collab-section{ padding:0 20px 64px !important; }
       .collab-inner{ padding:32px 24px !important; }
+      .sede-list{ display:flex !important; grid-template-columns:none !important; overflow-x:auto !important; scroll-snap-type:x mandatory !important; gap:12px !important; margin:0 -20px !important; padding:0 20px 4px !important; }
+      .sede-split{ flex:0 0 min(78vw,280px) !important; scroll-snap-align:start !important; }
       .help-label{ display:none !important; }
       .help-fab{ width:56px !important; height:56px !important; padding:0 !important; justify-content:center !important; }
       .help-hub{ right:max(16px, env(safe-area-inset-right)) !important; bottom:max(16px, env(safe-area-inset-bottom)) !important; }
@@ -70,8 +74,8 @@
   </div>
 
   <!-- HEADER -->
-  <header class="site-header" style="position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:16px 56px;background:oklch(99.5% 0.004 85 / 0.92);backdrop-filter:blur(10px);border-bottom:1px solid oklch(90% 0.01 85);">
-    <img src="../web/assets/logo-cem.png" alt="Centro de Estudios Máster" style="width:150px;height:38px;flex-shrink:0;object-fit:contain;" loading="eager" decoding="async">
+  <header class="site-header" style="position:sticky;top:0;z-index:50;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:clamp(12px,3vw,24px);padding:16px clamp(16px,6vw,56px);background:oklch(99.5% 0.004 85 / 0.92);backdrop-filter:blur(10px);border-bottom:1px solid oklch(90% 0.01 85);">
+    <img src="../web/assets/logo-cem.png" alt="Centro de Estudios Máster" style="max-width:150px;width:clamp(110px,32vw,150px);height:auto;flex-shrink:1;min-width:0;object-fit:contain;" loading="eager" decoding="async">
     <nav class="site-nav" style="display:flex;align-items:center;gap:28px;flex-shrink:1;min-width:0;">
       <span class="nav-primary" style="display:flex;align-items:center;gap:28px;">
         <a href="#cursos" style="white-space:nowrap;font-size:15px;font-weight:500;color:oklch(20% 0.02 260);">Formación ⌄</a>
@@ -80,7 +84,10 @@
         <a href="#contacto" style="white-space:nowrap;font-size:15px;font-weight:500;color:oklch(20% 0.02 260);">Contacto</a>
       </span>
       <a href="#" class="nav-secondary" style="white-space:nowrap;font-size:14px;font-weight:500;color:oklch(45% 0.02 260);border-right:1px solid oklch(90% 0.01 85);padding-right:24px;">Campus Virtual ↗</a>
-      <a href="#buscador" style="white-space:nowrap;flex-shrink:0;font-size:15px;font-weight:600;color:oklch(99% 0.004 85);background:{{ accentColor }};padding:14px 22px;border-radius:100px;transition:transform 0.15s,box-shadow 0.15s;" style-hover="transform:translateY(-1px);box-shadow:0 6px 16px oklch(20% 0.02 260 / 0.18);" style-focus="outline:2px solid oklch(30% 0.09 255);outline-offset:2px;">Encontrar un curso</a>
+      <a href="#buscador" class="cta-pill" aria-label="Encontrar un curso" style="display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap;flex-shrink:0;font-size:15px;font-weight:600;color:oklch(99% 0.004 85);background:{{ accentColor }};padding:14px 22px;border-radius:100px;transition:transform 0.15s,box-shadow 0.15s;" style-hover="transform:translateY(-1px);box-shadow:0 6px 16px oklch(20% 0.02 260 / 0.18);" style-focus="outline:2px solid oklch(30% 0.09 255);outline-offset:2px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:18px;height:18px;flex-shrink:0;"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <span class="cta-pill-text">Encontrar un curso</span>
+      </a>
       <button ref="{{ toggleBtnRef }}" class="nav-toggle" type="button" aria-expanded="{{ mobileNavOpen }}" aria-controls="mobile-nav-drawer" aria-label="{{ mobileNavToggleLabel }}" onClick="{{ toggleMobileNav }}" style="display:none;flex-shrink:0;align-items:center;justify-content:center;width:44px;height:44px;border-radius:10px;border:1px solid oklch(90% 0.01 85);background:oklch(99.5% 0.004 85);cursor:pointer;padding:0;" style-focus="outline:2px solid oklch(30% 0.09 255);outline-offset:2px;">
         <span style="display:flex;flex-direction:column;gap:4px;width:20px;">
           <span style="display:block;height:2px;width:100%;background:oklch(20% 0.02 260);border-radius:2px;"></span>
@@ -119,7 +126,7 @@
   </sc-if>
 
   <!-- HERO -->
-  <section style="position:relative;min-height:660px;display:flex;align-items:flex-end;">
+  <section class="hero-section" style="position:relative;min-height:660px;display:flex;align-items:flex-end;">
     <img src="../web/assets/hero-1200.webp"
          srcset="../web/assets/hero-800.webp 800w, ../web/assets/hero-1200.webp 1200w, ../web/assets/hero-1920.webp 1920w"
          sizes="100vw"
@@ -127,14 +134,14 @@
          style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 35%;"
          loading="eager" fetchpriority="high" decoding="async">
     <div style="position:absolute;inset:0;background:linear-gradient(0deg, oklch(12% 0.03 260 / 0.92) 0%, oklch(12% 0.03 260 / 0.6) 45%, oklch(12% 0.03 260 / 0.15) 100%);"></div>
-    <div class="hero-text" style="position:relative;z-index:2;padding:64px 64px 96px;max-width:760px;backdrop-filter:blur(2px);">
+    <div class="hero-text" style="position:relative;z-index:2;padding:clamp(32px,8vw,64px) clamp(20px,6vw,64px) clamp(56px,12vw,96px);max-width:760px;backdrop-filter:blur(2px);">
       <div style="display:inline-flex;align-items:center;gap:8px;background:oklch(99% 0.004 85 / 0.15);border:1px solid oklch(99% 0.004 85 / 0.35);color:oklch(99% 0.004 85);font-size:13px;font-weight:600;padding:7px 14px;border-radius:100px;margin-bottom:24px;backdrop-filter:blur(4px);">
-        +25 años formando en Canarias
+        +30 años formando en Canarias
       </div>
-      <h1 style="font-family:'Sora',sans-serif;font-weight:700;font-size:60px;line-height:1.04;letter-spacing:-0.02em;margin:0 0 20px;color:oklch(99% 0.004 85);text-wrap:balance;">
+      <h1 style="font-family:'Sora',sans-serif;font-weight:700;font-size:clamp(32px,7vw,60px);line-height:1.08;letter-spacing:-0.02em;margin:0 0 20px;color:oklch(99% 0.004 85);text-wrap:balance;">
         La formación que te acerca a <span style="color:{{ accentColor }};">tu próximo empleo</span>
       </h1>
-      <p style="font-size:18px;line-height:1.55;color:oklch(92% 0.01 260);max-width:520px;margin:0 0 32px;text-wrap:pretty;">
+      <p style="font-size:clamp(15px,3.5vw,18px);line-height:1.55;color:oklch(92% 0.01 260);max-width:520px;margin:0 0 32px;text-wrap:pretty;">
         Cursos gratuitos y privados, certificados de profesionalidad y teleformación en Gran Canaria y Tenerife.
       </p>
       <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
@@ -286,7 +293,7 @@
     <div style="position:absolute;inset:0;background:linear-gradient(100deg, oklch(14% 0.03 260 / 0.92) 0%, oklch(14% 0.03 260 / 0.75) 55%, oklch(14% 0.03 260 / 0.5) 100%);"></div>
     <div style="position:relative;z-index:2;max-width:620px;">
       <h2 style="font-family:'Sora',sans-serif;font-weight:700;font-size:32px;margin:0 0 20px;color:oklch(99% 0.004 85);">Un centro consolidado, pensado para el empleo real</h2>
-      <p style="font-size:16px;line-height:1.6;color:oklch(90% 0.02 255);margin:0 0 40px;">Más de dos décadas formando en Canarias, con programas diseñados junto a empresas y organismos públicos para que la formación se traduzca en oportunidades reales.</p>
+      <p style="font-size:16px;line-height:1.6;color:oklch(90% 0.02 255);margin:0 0 40px;">Más de tres décadas formando en Canarias, con programas diseñados junto a empresas y organismos públicos para que la formación se traduzca en oportunidades reales.</p>
       <div class="stats-inline" style="display:flex;gap:48px;">
         <sc-for list="{{ stats }}" as="s" hint-placeholder-count="3">
           <div>
@@ -327,31 +334,38 @@
   </section>
 
   <!-- SEDES -->
-  <section style="padding:100px 56px;">
-    <h2 style="font-family:'Sora',sans-serif;font-weight:700;font-size:32px;margin:0 0 8px;color:oklch(16% 0.02 260);">Presencia en Gran Canaria y Tenerife</h2>
-    <p style="font-size:15px;color:oklch(45% 0.02 260);margin:0 0 40px;max-width:560px;">Nuestras sedes.<sup>*</sup></p>
+  <section style="padding:56px 56px;">
+    <h2 style="font-family:'Sora',sans-serif;font-weight:700;font-size:24px;margin:0 0 6px;color:oklch(16% 0.02 260);">Presencia en Gran Canaria y Tenerife</h2>
+    <p style="font-size:14px;color:oklch(45% 0.02 260);margin:0 0 24px;max-width:560px;">Nuestras sedes.<sup>*</sup></p>
+    <div class="sede-list" role="list" aria-label="Nuestras sedes" tabindex="0" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;">
     <sc-for list="{{ sedeGroups }}" as="grp" hint-placeholder-count="2">
-      <div style="margin-bottom:40px;">
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;">
+      <div style="display:contents;">
+        <div style="display:none;">
           <span style="width:9px;height:9px;border-radius:50%;background:{{ accentColor }};"></span>
-          <span style="font-family:'Sora',sans-serif;font-weight:600;font-size:16px;color:oklch(16% 0.02 260);">{{ grp.region }}</span>
+          <span style="font-family:'Sora',sans-serif;font-weight:600;font-size:15px;color:oklch(16% 0.02 260);">{{ grp.region }}</span>
         </div>
-        <div style="display:flex;flex-direction:column;gap:20px;">
+        <div style="display:contents;">
           <sc-for list="{{ grp.items }}" as="sede" hint-placeholder-count="2">
-            <div class="sede-split" style="display:grid;grid-template-columns:1.2fr 1fr;border-radius:20px;overflow:hidden;border:1px solid oklch(91% 0.01 85);background:oklch(99.5% 0.004 85);min-height:220px;">
-              <sc-if value="{{ sede.photoSrc }}">
-                <img src="{{ sede.photoSrc }}" srcset="{{ sede.photoSrcset }}" sizes="(max-width: 1180px) 100vw, 50vw" alt="{{ sede.photoAlt }}" style="width:100%;height:100%;object-fit:cover;object-position:center;" loading="lazy" decoding="async">
-              </sc-if>
-              <sc-if value="{{ sede.photoMissing }}">
-                <image-slot id="{{ sede.slotId }}" style="width:100%;height:100%;" shape="rect" placeholder="{{ sede.photo }}"></image-slot>
-              </sc-if>
-              <div style="padding:28px;display:flex;flex-direction:column;justify-content:center;">
-                <h3 style="font-family:'Sora',sans-serif;font-weight:600;font-size:19px;margin:0 0 10px;color:oklch(16% 0.02 260);">{{ sede.city }}</h3>
-                <p style="font-size:13.5px;color:oklch(45% 0.02 260);line-height:1.5;margin:0 0 4px;">{{ sede.address }}</p>
-                <p style="font-size:13.5px;color:oklch(45% 0.02 260);margin:0 0 20px;">{{ sede.phone }}</p>
-                <div style="display:flex;gap:10px;flex-wrap:wrap;">
-                  <a href="#" style="font-size:13px;font-weight:600;color:oklch(99% 0.004 85);background:oklch(30% 0.09 255);padding:9px 16px;border-radius:100px;">Ver sede</a>
-                  <a href="#" style="font-size:13px;font-weight:600;color:oklch(20% 0.02 260);border:1px solid oklch(85% 0.01 85);padding:9px 16px;border-radius:100px;">Cómo llegar</a>
+            <div class="sede-split" role="listitem" style="display:flex;flex-direction:column;border-radius:16px;overflow:hidden;border:1px solid oklch(91% 0.01 85);background:oklch(99.5% 0.004 85);min-width:0;">
+              <div style="position:relative;width:100%;aspect-ratio:4/3;flex-shrink:0;">
+                <sc-if value="{{ sede.photoSrc }}">
+                  <img src="{{ sede.photoSrc }}" srcset="{{ sede.photoSrcset }}" sizes="(max-width: 860px) 78vw, (max-width: 1180px) 33vw, 20vw" alt="{{ sede.photoAlt }}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;" loading="lazy" decoding="async">
+                </sc-if>
+                <sc-if value="{{ sede.photoMissing }}">
+                  <image-slot id="{{ sede.slotId }}" style="position:absolute;inset:0;width:100%;height:100%;" shape="rect" placeholder="{{ sede.photo }}"></image-slot>
+                </sc-if>
+                <div style="position:absolute;inset:0;background:rgba(0,0,0,0.30);pointer-events:none;"></div>
+                <sc-if value="{{ sede.region }}">
+                  <span style="position:absolute;top:10px;left:10px;z-index:2;font-size:11px;font-weight:600;color:oklch(99% 0.004 85);background:oklch(20% 0.02 260 / 0.45);padding:4px 10px;border-radius:100px;backdrop-filter:blur(2px);">{{ sede.region }}</span>
+                </sc-if>
+              </div>
+              <div style="padding:16px;display:flex;flex-direction:column;justify-content:center;min-width:0;">
+                <h3 style="font-family:'Sora',sans-serif;font-weight:600;font-size:16px;margin:0 0 6px;color:oklch(16% 0.02 260);">{{ sede.city }}</h3>
+                <p style="font-size:12.5px;color:oklch(45% 0.02 260);line-height:1.45;margin:0 0 3px;overflow-wrap:break-word;">{{ sede.address }}</p>
+                <p style="font-size:12.5px;color:oklch(45% 0.02 260);margin:0 0 12px;">{{ sede.phone }}</p>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                  <a href="#" style="font-size:12px;font-weight:600;color:oklch(99% 0.004 85);background:oklch(30% 0.09 255);padding:8px 14px;border-radius:100px;min-height:44px;display:inline-flex;align-items:center;">Ver sede</a>
+                  <a href="#" style="font-size:12px;font-weight:600;color:oklch(20% 0.02 260);border:1px solid oklch(85% 0.01 85);padding:8px 14px;border-radius:100px;min-height:44px;display:inline-flex;align-items:center;">Cómo llegar</a>
                 </div>
               </div>
             </div>
@@ -359,7 +373,8 @@
         </div>
       </div>
     </sc-for>
-    <p style="font-size:12px;color:oklch(55% 0.02 260);font-style:italic;margin:0;">* [DATO PENDIENTE] — verificar el número total de sedes activas antes de publicar.</p>
+    </div>
+    <p style="font-size:12px;color:oklch(55% 0.02 260);font-style:italic;margin:12px 0 0;">* [DATO PENDIENTE] — verificar el número total de sedes activas antes de publicar.</p>
   </section>
 
   <!-- ALQUILER DE INSTALACIONES -->
@@ -416,11 +431,11 @@
   </section>
 
   <!-- FOOTER -->
-  <footer id="contacto" style="padding:64px 56px 32px;background:oklch(15% 0.02 260);color:oklch(85% 0.008 260);">
+  <footer id="contacto" class="site-footer" style="padding:64px 56px 32px;background:oklch(15% 0.02 260);color:oklch(85% 0.008 260);">
     <div class="footer-grid" style="display:grid;grid-template-columns:1.3fr repeat(4,1fr);gap:32px;margin-bottom:48px;">
       <div class="footer-brand">
         <div style="font-family:'Sora',sans-serif;font-weight:700;font-size:19px;color:oklch(97% 0.004 85);margin-bottom:14px;">Centro de Estudios Máster</div>
-        <p style="font-size:13.5px;line-height:1.6;color:oklch(72% 0.01 260);max-width:250px;margin:0 0 16px;">Formación para el empleo en Canarias desde hace más de 25 años.</p>
+        <p style="font-size:13.5px;line-height:1.6;color:oklch(72% 0.01 260);max-width:250px;margin:0 0 16px;">Formación para el empleo en Canarias desde hace más de 30 años.</p>
         <div style="display:flex;gap:14px;">
           <a href="https://www.instagram.com/centrodeestudiosmaster/" style="font-size:13px;font-weight:500;color:oklch(85% 0.008 260);">Instagram</a>
           <a href="https://www.facebook.com/CentroDeEstudiosMaster/" style="font-size:13px;font-weight:500;color:oklch(85% 0.008 260);">Facebook</a>
@@ -872,7 +887,7 @@ class Component extends DCLogic {
   ];
 
   stats = [
-    { value: '+25', label: 'años de experiencia en formación para el empleo' },
+    { value: '+30', label: 'años de experiencia en formación para el empleo' },
     { value: '+80', label: 'acciones formativas cada año' },
     { value: '+1.000', label: 'alumnos formados cada año' },
   ];
