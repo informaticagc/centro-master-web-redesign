@@ -10,22 +10,60 @@
 <% if (typeof dryRun !== 'undefined' && dryRun) { %>
   <div class="dryrun-banner">MODO SIMULACIÓN: no se publicará ningún cambio</div>
 <% } %>
-<header class="admin-header">
-  <div class="admin-header-brand">Panel interno · Centro de Estudios Máster</div>
-  <nav class="admin-header-nav">
-    <a href="/">Dashboard</a>
-    <a href="/cursos">Cursos</a>
-    <a href="/cursos/nuevo">Crear curso</a>
-    <a href="/papelera">Papelera</a>
-    <a href="/historial">Historial</a>
-    <a href="/publicar">Estado de publicación</a>
-    <% if (typeof usuarioActual !== 'undefined' && usuarioActual) { %>
-      <span class="nav-user"><%= usuarioActual %></span>
-      <form method="post" action="/logout" class="inline-form">
-        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-        <button type="submit" class="link-btn">Cerrar sesión</button>
-      </form>
-    <% } %>
-  </nav>
-</header>
-<main class="admin-main">
+<div class="app-shell" id="appShell">
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 19V6a2 2 0 0 1 2-2h9l5 5v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"/><path d="M14 4v5h5"/></svg>
+      <span class="sidebar-brand-text">Panel CEM</span>
+      <button type="button" class="sidebar-collapse-btn" id="sidebarCollapseBtn" aria-label="Contraer barra lateral" title="Contraer barra lateral">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg>
+      </button>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="/" class="nav-item" data-nav="/" data-nav-exact="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="5" rx="1.5"/><rect x="13" y="12" width="8" height="9" rx="1.5"/><rect x="3" y="15" width="8" height="6" rx="1.5"/></svg>
+        <span>Dashboard</span>
+      </a>
+      <a href="/cursos" class="nav-item" data-nav="/cursos">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v17H6.5A2.5 2.5 0 0 0 4 21.5v-17Z"/><path d="M4 19a2.5 2.5 0 0 1 2.5-2.5H20"/></svg>
+        <span>Cursos</span>
+      </a>
+      <a href="/cursos/nuevo" class="nav-item nav-item-cta" data-nav="/cursos/nuevo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        <span>Crear curso</span>
+      </a>
+      <div class="sidebar-divider"></div>
+      <a href="/papelera" class="nav-item" data-nav="/papelera">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M6 7l1 13a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-13"/><path d="M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3"/></svg>
+        <span>Papelera</span>
+      </a>
+      <a href="/historial" class="nav-item" data-nav="/historial">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>
+        <span>Historial</span>
+      </a>
+      <a href="/publicar" class="nav-item" data-nav="/publicar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18a4.5 4.5 0 0 1-1-8.9 5.5 5.5 0 0 1 10.7-1.8A4.5 4.5 0 0 1 17 18H7Z"/><path d="M12 12v6M9.5 14.5 12 12l2.5 2.5"/></svg>
+        <span>Publicación</span>
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <% if (typeof usuarioActual !== 'undefined' && usuarioActual) { %>
+        <span class="sidebar-user"><%= usuarioActual %></span>
+        <form method="post" action="/logout">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <button type="submit" class="link-btn" title="Cerrar sesión" aria-label="Cerrar sesión">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+          </button>
+        </form>
+      <% } %>
+    </div>
+  </aside>
+  <div class="shell-main">
+    <header class="topbar">
+      <button type="button" class="sidebar-toggle-mobile" id="sidebarToggleMobile" aria-label="Abrir menú">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+      <div class="topbar-title"><%= titulo %></div>
+    </header>
+    <main class="admin-main">
