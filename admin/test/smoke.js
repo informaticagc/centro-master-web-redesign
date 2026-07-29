@@ -305,6 +305,119 @@ assert.strictEqual(avisosDuplicado.length, 1, 'debe producirse exactamente un ú
 assert.ok(avisosDuplicado[0].indexOf('curso-a') !== -1 && avisosDuplicado[0].indexOf('curso-b') !== -1 && avisosDuplicado[0].indexOf('curso-c') !== -1, 'el aviso debe indicar los identificadores de los cursos implicados');
 ok('validate-data.js: nombre duplicado (trim + minúsculas) produce un único aviso indicando los ids implicados, nunca error');
 
+// --- Fase V3: urlInscripcion (política de URL en la entrada, siempre error, nunca aviso) ---
+[
+  null, 'https://example.com/inscripcion', 'http://example.com/inscripcion',
+  '/inscripcion', './inscripcion', '../inscripcion',
+  'inscripcion.html', 'formularios/inscripcion.html',
+].forEach(function (valorValido) {
+  const r = ejecutarValidadorConCurso(cursoDePruebaValidacion({ urlInscripcion: valorValido }));
+  assert.strictEqual(r.errores.length, 0, 'urlInscripcion = ' + JSON.stringify(valorValido) + ' debería aceptarse');
+});
+const BACKSLASH3 = String.fromCharCode(92);
+[
+  '', '   ', 'javascript:alert(1)', 'data:text/html,test', 'file:///tmp/test',
+  'mailto:info@example.com', 'tel:123456789', '//example.com/path',
+  BACKSLASH3 + BACKSLASH3 + 'server' + BACKSLASH3 + 'share', 'C:' + BACKSLASH3 + 'temp' + BACKSLASH3 + 'file',
+  '#section', '?curso=1',
+].forEach(function (valorInvalido) {
+  const r = ejecutarValidadorConCurso(cursoDePruebaValidacion({ urlInscripcion: valorInvalido }));
+  assert.ok(r.errores.length > 0, 'urlInscripcion = ' + JSON.stringify(valorInvalido) + ' debería rechazarse con error');
+  assert.strictEqual(r.avisos.some(function (a) { return a.indexOf('urlInscripcion') !== -1; }), false, 'urlInscripcion = ' + JSON.stringify(valorInvalido) + ' no debe producir un aviso (debe ser error)');
+});
+ok('validate-data.js: urlInscripcion aplica la política de safeHttpOrRelativeURL() en la entrada, siempre como error');
+
+// --- Fase V3: imagen.src (política de URL + existencia local segura) ---
+// Las URLs externas (http/https) solo se comprueban por política, nunca
+// contra el disco — se verifica con un valor que no existe realmente.
+assert.strictEqual(ejecutarValidadorConCurso(cursoDePruebaValidacion({ imagen: { src: 'https://example.com/curso.webp', srcset: null, alt: 'x', objectPosition: null } })).errores.length, 0, 'imagen.src con URL externa https no debe comprobar el disco');
+assert.strictEqual(ejecutarValidadorConCurso(cursoDePruebaValidacion({ imagen: { src: 'http://example.com/curso.webp', srcset: null, alt: 'x', objectPosition: null } })).errores.length, 0, 'imagen.src con URL externa http no debe comprobar el disco');
+[
+  'javascript:alert(1)', 'data:text/html,test', 'file:///tmp/test',
+  'mailto:info@example.com', 'tel:123456789', '//example.com/path',
+  BACKSLASH3 + BACKSLASH3 + 'server' + BACKSLASH3 + 'share', 'C:' + BACKSLASH3 + 'temp' + BACKSLASH3 + 'file',
+  '#section', '?curso=1',
+].forEach(function (valorInvalido) {
+  const r = ejecutarValidadorConCurso(cursoDePruebaValidacion({ imagen: { src: valorInvalido, srcset: null, alt: 'x', objectPosition: null } }));
+  assert.ok(r.errores.length > 0, 'imagen.src = ' + JSON.stringify(valorInvalido) + ' debería rechazarse con error');
+});
+ok('validate-data.js: imagen.src aplica la política de URL en la entrada (acepta http/https/relativo, rechaza esquemas peligrosos)');
+
+// Ruta local existente → válida (0 errores); ruta local inexistente → error.
+assert.strictEqual(ejecutarValidadorConCurso(cursoDePruebaValidacion({ imagen: { src: 'assets/curso-socorrismo-1200.webp', srcset: null, alt: 'x', objectPosition: null } })).errores.length, 0, 'imagen.src con una ruta local existente debe aceptarse');
+assert.ok(ejecutarValidadorConCurso(cursoDePruebaValidacion({ imagen: { src: 'assets/no-existe-de-verdad-999.webp', srcset: null, alt: 'x', objectPosition: null } })).errores.length > 0, 'imagen.src con una ruta local inexistente debe producir error');
+// Ruta que escapa del directorio web/ (../ un nivel por encima de web/):
+// debe ser error aunque la política de URL la acepte sintácticamente.
+assert.ok(ejecutarValidadorConCurso(cursoDePruebaValidacion({ imagen: { src: '../fuera-de-web.webp', srcset: null, alt: 'x', objectPosition: null } })).errores.length > 0, 'imagen.src que resuelve fuera de web/ debe producir error');
+ok('validate-data.js: imagen.src distingue recurso local (comprueba disco, sin escapar de web/) de URL externa (nunca comprueba disco)');
+
+// El valor almacenado en imagen.src se interpreta relativo a la raíz
+// pública web/ (no relativo al propio documento de la ficha, que vive dos
+// niveles más abajo, en web/cursos/{slug}/index.html — build-fichas.js
+// antepone su propio "../../" para compensar esa profundidad). Por tanto
+// "../assets/x.webp" y "../../assets/x.webp" no son solo "sintácticamente
+// arriesgados": aplicados a un fichero real, generan en la ficha un src
+// que el navegador resuelve FUERA de web/ (comprobado con
+// renderFichaHTML() + resolución relativa: "../assets/x.webp" en
+// cursos.json → "../../../assets/x.webp" en el HTML → se resuelve, desde
+// web/cursos/{slug}/, a una ruta un nivel por encima de web/ — imagen
+// rota). Se rechazan por tanto ambas condiciones a la vez: escapan de
+// web/ Y producirían una imagen rota. "assets/x.webp", "./assets/x.webp"
+// y "/assets/x.webp" sí resuelven correctamente dentro de web/.
+(function () {
+  const real = 'assets/curso-socorrismo-1200.webp';
+  const variantes = {
+    'assets/curso-socorrismo-1200.webp': true,
+    './assets/curso-socorrismo-1200.webp': true,
+    '../assets/curso-socorrismo-1200.webp': false,
+    '../../assets/curso-socorrismo-1200.webp': false,
+    '/assets/curso-socorrismo-1200.webp': true,
+  };
+  Object.keys(variantes).forEach(function (valor) {
+    const debeAceptarse = variantes[valor];
+    const r = ejecutarValidadorConCurso(cursoDePruebaValidacion({ imagen: { src: valor, srcset: null, alt: 'x', objectPosition: null } }));
+    if (debeAceptarse) {
+      assert.strictEqual(r.errores.length, 0, 'imagen.src = ' + JSON.stringify(valor) + ' (recurso real existente) debería aceptarse');
+    } else {
+      assert.ok(r.errores.length > 0, 'imagen.src = ' + JSON.stringify(valor) + ' debería rechazarse por resolver fuera de web/');
+    }
+  });
+})();
+ok('validate-data.js: de las 5 variantes de ruta documentadas, solo assets/x.webp, ./assets/x.webp y /assets/x.webp resuelven dentro de web/ — ../ y ../../ se rechazan por producir una imagen rota en la ficha real');
+
+// --- Fase V3: imagen.srcset (validación estricta: todo el campo es
+// inválido si cualquier candidato lo es; comprobación de recursos locales) ---
+assert.strictEqual(ejecutarValidadorConCurso(cursoDePruebaValidacion({ imagen: { src: 'assets/curso-socorrismo-1200.webp', srcset: 'assets/curso-socorrismo-1200.webp 480w, assets/curso-ofimatica-1200.webp 960w', alt: 'x', objectPosition: null } })).errores.length, 0, 'srcset con descriptores "w" y ficheros locales reales debe aceptarse');
+assert.strictEqual(ejecutarValidadorConCurso(cursoDePruebaValidacion({ imagen: { src: 'assets/curso-socorrismo-1200.webp', srcset: 'assets/curso-socorrismo-1200.webp 1x, assets/curso-ofimatica-1200.webp 2x', alt: 'x', objectPosition: null } })).errores.length, 0, 'srcset con descriptores "x" y ficheros locales reales debe aceptarse');
+assert.strictEqual(ejecutarValidadorConCurso(cursoDePruebaValidacion({ imagen: { src: 'assets/curso-socorrismo-1200.webp', srcset: 'https://example.com/a.webp 1x, https://example.com/b.webp 2x', alt: 'x', objectPosition: null } })).errores.length, 0, 'srcset con URLs externas debe aceptarse sin comprobar disco');
+
+[
+  'assets/a.webp', 'assets/a.webp 0w', 'assets/a.webp 1.5x', 'assets/a.webp 480h',
+  'assets/a.webp 480w extra', 'javascript:alert(1) 1x', 'data:image/svg+xml,test 1x',
+].forEach(function (srcsetInvalido) {
+  const r = ejecutarValidadorConCurso(cursoDePruebaValidacion({ imagen: { src: 'assets/curso-socorrismo-1200.webp', srcset: srcsetInvalido, alt: 'x', objectPosition: null } }));
+  assert.ok(r.errores.length > 0, 'srcset = ' + JSON.stringify(srcsetInvalido) + ' debería rechazarse con error');
+});
+ok('validate-data.js: imagen.srcset rechaza candidatos sin descriptor, con descriptor inválido, con más de dos componentes o con esquema peligroso');
+
+// Candidato local inexistente y candidato que escapa de web/ dentro de srcset.
+assert.ok(ejecutarValidadorConCurso(cursoDePruebaValidacion({ imagen: { src: 'assets/curso-socorrismo-1200.webp', srcset: 'assets/no-existe-de-verdad-999.webp 1x', alt: 'x', objectPosition: null } })).errores.length > 0, 'srcset con un candidato local inexistente debe producir error');
+assert.ok(ejecutarValidadorConCurso(cursoDePruebaValidacion({ imagen: { src: 'assets/curso-socorrismo-1200.webp', srcset: '../fuera-de-web.webp 1x', alt: 'x', objectPosition: null } })).errores.length > 0, 'srcset con un candidato que escapa de web/ debe producir error');
+// Combinación de candidato válido e inválido: el campo entero es inválido.
+assert.ok(ejecutarValidadorConCurso(cursoDePruebaValidacion({ imagen: { src: 'assets/curso-socorrismo-1200.webp', srcset: 'assets/curso-socorrismo-1200.webp 1x, javascript:alert(1) 2x', alt: 'x', objectPosition: null } })).errores.length > 0, 'srcset con un candidato válido y otro inválido debe rechazar el campo entero');
+// Campo completamente vacío.
+assert.ok(ejecutarValidadorConCurso(cursoDePruebaValidacion({ imagen: { src: 'assets/curso-socorrismo-1200.webp', srcset: '', alt: 'x', objectPosition: null } })).errores.length > 0, 'srcset vacío (cadena "") debe producir error');
+// Espacios alrededor de candidatos válidos: deben seguir aceptándose.
+assert.strictEqual(ejecutarValidadorConCurso(cursoDePruebaValidacion({ imagen: { src: 'assets/curso-socorrismo-1200.webp', srcset: '  assets/curso-socorrismo-1200.webp 1x ,  assets/curso-ofimatica-1200.webp 2x  ', alt: 'x', objectPosition: null } })).errores.length, 0, 'espacios alrededor de candidatos válidos no deben afectar la validación');
+// Espacios múltiples y tabulación entre la URL y el descriptor dentro de
+// un mismo candidato (no solo alrededor de la coma): el separador se
+// parte con /\s+/, así que ambos deben seguir aceptándose.
+const TAB = String.fromCharCode(9);
+assert.strictEqual(ejecutarValidadorConCurso(cursoDePruebaValidacion({ imagen: { src: 'assets/curso-socorrismo-1200.webp', srcset: 'assets/curso-socorrismo-1200.webp    480w', alt: 'x', objectPosition: null } })).errores.length, 0, 'múltiples espacios entre URL y descriptor deben aceptarse');
+assert.strictEqual(ejecutarValidadorConCurso(cursoDePruebaValidacion({ imagen: { src: 'assets/curso-socorrismo-1200.webp', srcset: 'assets/curso-socorrismo-1200.webp' + TAB + '480w', alt: 'x', objectPosition: null } })).errores.length, 0, 'una tabulación entre URL y descriptor debe aceptarse');
+assert.ok(ejecutarValidadorConCurso(cursoDePruebaValidacion({ imagen: { src: 'assets/curso-socorrismo-1200.webp', srcset: 'assets/curso-socorrismo-1200.webp 480w extra', alt: 'x', objectPosition: null } })).errores.length > 0, 'un tercer token ("extra") sigue rechazando el candidato');
+ok('validate-data.js: imagen.srcset comprueba recursos locales (existencia y que no escapen de web/), rechaza mezclas válido/inválido, campo vacío, y tolera espacios');
+
 // --- scripts/lib/escape.js: escapeHTML / text ---
 assert.strictEqual(escape.text('<script>alert(1)</script>'), '&lt;script&gt;alert(1)&lt;/script&gt;');
 assert.strictEqual(escape.text('Tom & Jerry'), 'Tom &amp; Jerry');

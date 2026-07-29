@@ -10,6 +10,9 @@
 
 const fs = require('fs');
 const path = require('path');
+const {
+  safeHttpOrRelativeURL, safeImageURL, esDescriptorSrcsetValido,
+} = require('./lib/url-policy.js');
 
 const ROOT = path.join(__dirname, '..');
 // VALIDATE_DATA_DIR: override opcional (usado por admin/ para validar una
@@ -127,6 +130,22 @@ function esFechaValida(str) {
 
 function archivoExiste(rutaRelativaAWeb) {
   return fs.existsSync(path.join(WEB_DIR, rutaRelativaAWeb));
+}
+
+// Resuelve una ruta local (ya validada por la política de URL) dentro de
+// /web/, sin permitir que "../" (o un "/" inicial mal interpretado) escape
+// del directorio raíz. Devuelve la ruta absoluta resuelta, o null si queda
+// fuera de /web/. Se quita cualquier "/" inicial antes de resolver porque
+// aquí una ruta como "/assets/x.webp" es relativa a la raíz del sitio
+// (/web/), no a la raíz del sistema de archivos — path.resolve() trataría
+// un segundo argumento absoluto como una ruta del sistema de archivos e
+// ignoraría por completo la base, así que hay que evitarlo explícitamente.
+function resolverRutaLocalDentroDeWeb(rutaRelativa) {
+  const sinBarraInicial = rutaRelativa.replace(/^\/+/, '');
+  const resuelto = path.resolve(WEB_DIR, sinBarraInicial);
+  const base = path.resolve(WEB_DIR);
+  if (resuelto !== base && resuelto.indexOf(base + path.sep) !== 0) return null;
+  return resuelto;
 }
 
 function duplicados(lista) {
@@ -322,11 +341,65 @@ if (cursosData) {
       }
     }
 
-    // Imagen
+    // Imagen: política de URL primero (misma que aplica build-fichas.js en
+    // la salida — impide guardar lo que el generador ya descartaría),
+    // después existencia local solo para rutas dentro de /web/, nunca para
+    // URLs externas (ni peticiones de red).
     if (c.imagen && c.imagen.src) {
-      if (!archivoExiste(c.imagen.src)) err(`${ref}: imagen.src no existe en /web/: ${c.imagen.src}`);
+      if (typeof c.imagen.src !== 'string' || c.imagen.src.trim() === '') {
+        err(`${ref}: "imagen.src" debería ser una URL o ruta de texto no vacía`);
+      } else {
+        const urlSegura = safeImageURL(c.imagen.src);
+        if (!urlSegura) {
+          err(`${ref}: "imagen.src" contiene una URL o ruta no permitida: "${c.imagen.src}"`);
+        } else if (!/^https?:\/\//i.test(urlSegura)) {
+          const resuelto = resolverRutaLocalDentroDeWeb(urlSegura);
+          if (!resuelto) {
+            err(`${ref}: "imagen.src" queda fuera del directorio "web/": "${c.imagen.src}"`);
+          } else if (!fs.existsSync(resuelto)) {
+            err(`${ref}: imagen.src no existe en /web/: ${c.imagen.src}`);
+          }
+        }
+      }
     } else {
       err(`${ref}: falta imagen.src`);
+    }
+
+    // imagen.srcset: misma política que imagen.src por candidato, más el
+    // descriptor. A diferencia de safeSrcset() (protección de salida, que
+    // filtra en silencio), aquí CUALQUIER candidato inválido rechaza el
+    // campo entero — los datos persistidos deben ser íntegramente válidos.
+    if (c.imagen && c.imagen.srcset != null) {
+      if (typeof c.imagen.srcset !== 'string' || c.imagen.srcset.trim() === '') {
+        err(`${ref}: "imagen.srcset" debería ser una lista de texto no vacía, o null`);
+      } else {
+        c.imagen.srcset.split(',').forEach((parteBruta) => {
+          const candidato = parteBruta.trim();
+          if (!candidato) {
+            err(`${ref}: "imagen.srcset" contiene un candidato inválido: "${parteBruta}"`);
+            return;
+          }
+          const componentes = candidato.split(/\s+/);
+          if (componentes.length !== 2 || !esDescriptorSrcsetValido(componentes[1])) {
+            err(`${ref}: "imagen.srcset" contiene un candidato inválido: "${candidato}"`);
+            return;
+          }
+          const urlBruta = componentes[0];
+          const urlSegura = safeImageURL(urlBruta);
+          if (!urlSegura) {
+            err(`${ref}: "imagen.srcset" contiene un candidato inválido: "${candidato}"`);
+            return;
+          }
+          if (!/^https?:\/\//i.test(urlSegura)) {
+            const resuelto = resolverRutaLocalDentroDeWeb(urlSegura);
+            if (!resuelto) {
+              err(`${ref}: el recurso local de "imagen.srcset" queda fuera del directorio "web/": "${urlBruta}"`);
+            } else if (!fs.existsSync(resuelto)) {
+              err(`${ref}: el recurso local de "imagen.srcset" no existe: "${urlBruta}"`);
+            }
+          }
+        });
+      }
     }
 
     // slug: formato válido (necesario como nombre de directorio y segmento
@@ -338,12 +411,27 @@ if (cursosData) {
 
     // urlFicha: si existe, debe ser una ruta relativa a /web/ (nunca
     // absoluta ni externa), para que Home/catálogo/fichas puedan resolverla
-    // igual en local, /design-preview/, raíz o un futuro dominio.
+    // igual en local, /design-preview/, raíz o un futuro dominio. Semántica
+    // sin cambios en esta fase: no se convierte a la política general de
+    // safeHttpOrRelativeURL() porque su regla ("sin '/' inicial") es más
+    // estricta que esa política.
     if (c.urlFicha != null) {
       if (typeof c.urlFicha !== 'string' || c.urlFicha === '') {
         err(`${ref}: "urlFicha" debería ser una ruta de texto no vacía, o null`);
       } else if (c.urlFicha.charAt(0) === '/' || /^[a-z]+:\/\//i.test(c.urlFicha)) {
         err(`${ref}: "urlFicha" = "${c.urlFicha}" debe ser una ruta relativa a /web/ (sin "/" inicial ni protocolo)`);
+      }
+    }
+
+    // urlInscripcion: misma política que build-fichas.js aplica en la
+    // salida (safeHttpOrRelativeURL) — impide guardar una URL que el
+    // generador ya descartaría. null o ausente sigue siendo válido y sin
+    // aviso (dato editorial opcional).
+    if (c.urlInscripcion != null) {
+      if (typeof c.urlInscripcion !== 'string' || c.urlInscripcion.trim() === '') {
+        err(`${ref}: "urlInscripcion" debería ser una URL o ruta de texto no vacía, o null`);
+      } else if (!safeHttpOrRelativeURL(c.urlInscripcion)) {
+        err(`${ref}: "urlInscripcion" contiene una URL o ruta no permitida: "${c.urlInscripcion}"`);
       }
     }
 
