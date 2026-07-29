@@ -90,7 +90,7 @@ function cursoDePruebaValidacion(overrides) {
     orden: null, urlFicha: null, palabrasClave: [],
   }, overrides);
 }
-function ejecutarValidadorConCurso(curso) {
+function ejecutarValidadorConCursos(cursosArray) {
   const dataDirReal = path.join(__dirname, '..', '..', 'web', 'data');
   const stagingDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cem-validate-test-'));
   try {
@@ -101,13 +101,16 @@ function ejecutarValidadorConCurso(curso) {
     const cursosData = {
       version: '1.2', actualizado: '2026-01-01', notas: '',
       estadosPermitidos: ['borrador', 'proximamente', 'matricula-abierta', 'ultimas-plazas', 'en-curso', 'finalizado', 'archivado'],
-      estadosPublicos: [], cursos: [curso],
+      estadosPublicos: [], cursos: cursosArray,
     };
     fs.writeFileSync(path.join(stagingDir, 'cursos.json'), JSON.stringify(cursosData, null, 2), 'utf8');
     return runValidator(stagingDir);
   } finally {
     fs.rmSync(stagingDir, { recursive: true, force: true });
   }
+}
+function ejecutarValidadorConCurso(curso) {
+  return ejecutarValidadorConCursos([curso]);
 }
 
 // Caso base: la fixture de prueba, sin modificar, debe validar sin errores
@@ -231,6 +234,76 @@ ok('validate-data.js rechaza un cursos.json con NaN/Infinity literal (JSON invá
   });
 });
 ok('validate-data.js acepta true/false y rechaza "true"/"false"/1/0 en inscripcionAbierta/destacado');
+
+// --- Fase V2: nivel (aviso, no error) ---
+[null, 'nivel-1', 'nivel-2', 'nivel-3'].forEach(function (valorValido) {
+  const r = ejecutarValidadorConCurso(cursoDePruebaValidacion({ nivel: valorValido }));
+  assert.strictEqual(r.errores.length, 0, 'nivel = ' + JSON.stringify(valorValido) + ' no debería producir error');
+  assert.strictEqual(r.avisos.some(function (a) { return a.indexOf('nivel') !== -1 && a.indexOf('no está en el enum') !== -1; }), false, 'nivel = ' + JSON.stringify(valorValido) + ' no debería producir aviso de enum');
+});
+['nivel-4', 'avanzado'].forEach(function (valorInvalido) {
+  const r = ejecutarValidadorConCurso(cursoDePruebaValidacion({ nivel: valorInvalido }));
+  assert.strictEqual(r.errores.length, 0, 'nivel = "' + valorInvalido + '" no debería producir error');
+  assert.ok(r.avisos.some(function (a) { return a.indexOf('nivel "' + valorInvalido + '"') !== -1; }), 'nivel = "' + valorInvalido + '" debería producir un aviso');
+});
+ok('validate-data.js: nivel desconocido produce aviso (nunca error); null y los tres valores reales no producen aviso');
+
+// --- Fase V2: situacionDestinataria (aviso semántico, no error) ---
+[[], ['desempleado'], ['ocupado'], ['desempleado', 'ocupado']].forEach(function (valorValido) {
+  const r = ejecutarValidadorConCurso(cursoDePruebaValidacion({ situacionDestinataria: valorValido }));
+  assert.strictEqual(r.errores.length, 0, JSON.stringify(valorValido) + ' no debería producir error');
+  assert.strictEqual(r.avisos.some(function (a) { return a.indexOf('situacionDestinataria contiene un valor no reconocido') !== -1; }), false, JSON.stringify(valorValido) + ' no debería producir aviso semántico');
+});
+[['autonomo'], ['desempleado', 'estudiante']].forEach(function (valorInvalido) {
+  const r = ejecutarValidadorConCurso(cursoDePruebaValidacion({ situacionDestinataria: valorInvalido }));
+  assert.strictEqual(r.errores.length, 0, JSON.stringify(valorInvalido) + ' no debería producir error');
+  assert.ok(r.avisos.some(function (a) { return a.indexOf('situacionDestinataria contiene un valor no reconocido') !== -1; }), JSON.stringify(valorInvalido) + ' debería producir un aviso');
+});
+// La validación estructural ya existente (tipo de elemento) sigue siendo error.
+assert.ok(ejecutarValidadorConCurso(cursoDePruebaValidacion({ situacionDestinataria: [123] })).errores.length > 0, 'situacionDestinataria: [123] sigue siendo error estructural');
+assert.ok(ejecutarValidadorConCurso(cursoDePruebaValidacion({ situacionDestinataria: [true] })).errores.length > 0, 'situacionDestinataria: [true] sigue siendo error estructural');
+assert.ok(ejecutarValidadorConCurso(cursoDePruebaValidacion({ situacionDestinataria: [{}] })).errores.length > 0, 'situacionDestinataria: [{}] sigue siendo error estructural');
+ok('validate-data.js: situacionDestinataria con valor semántico desconocido produce aviso; el chequeo estructural de tipo sigue siendo error');
+
+// --- Fase V2: coherencia fechaInicio/fechaFin (aviso, no error) ---
+[
+  { fechaInicio: '2026-01-01', fechaFin: '2026-06-01' },
+  { fechaInicio: '2026-01-01', fechaFin: '2026-01-01' },
+  { fechaInicio: '2026-01-01', fechaFin: null },
+  { fechaInicio: null, fechaFin: '2026-06-01' },
+  { fechaInicio: null, fechaFin: null },
+].forEach(function (overrides) {
+  const r = ejecutarValidadorConCurso(cursoDePruebaValidacion(overrides));
+  assert.strictEqual(r.errores.length, 0, JSON.stringify(overrides) + ' no debería producir error');
+  assert.strictEqual(r.avisos.some(function (a) { return a.indexOf('es posterior a') !== -1; }), false, JSON.stringify(overrides) + ' no debería producir aviso de orden de fechas');
+});
+const rFechasInvertidas = ejecutarValidadorConCurso(cursoDePruebaValidacion({ fechaInicio: '2026-06-01', fechaFin: '2026-01-01' }));
+assert.strictEqual(rFechasInvertidas.errores.length, 0, 'fechaInicio > fechaFin no debería producir error');
+assert.ok(rFechasInvertidas.avisos.some(function (a) { return a.indexOf('es posterior a') !== -1; }), 'fechaInicio > fechaFin debería producir un aviso');
+// Si una fecha ya es inválida, no se añade además el aviso de orden invertido.
+const rFechaInvalida = ejecutarValidadorConCurso(cursoDePruebaValidacion({ fechaInicio: '2026-13-99', fechaFin: '2026-01-01' }));
+assert.ok(rFechaInvalida.errores.length > 0, 'una fecha inválida sigue siendo error');
+assert.strictEqual(rFechaInvalida.avisos.some(function (a) { return a.indexOf('es posterior a') !== -1; }), false, 'no debe añadirse el aviso de orden si una fecha ya es inválida');
+ok('validate-data.js: fechaInicio posterior a fechaFin produce aviso; nunca si alguna fecha falta o ya es inválida');
+
+// --- Fase V2: nombre duplicado (aviso, un único aviso por grupo) ---
+const rNombresDiferentes = ejecutarValidadorConCursos([
+  cursoDePruebaValidacion({ id: 'curso-a', slug: 'curso-a', nombre: 'Curso de Ofimática' }),
+  cursoDePruebaValidacion({ id: 'curso-b', slug: 'curso-b', nombre: 'Curso de Socorrismo' }),
+]);
+assert.strictEqual(rNombresDiferentes.errores.length, 0, 'nombres diferentes no deberían producir error');
+assert.strictEqual(rNombresDiferentes.avisos.some(function (a) { return a.indexOf('nombre duplicado') !== -1; }), false, 'nombres diferentes no deberían producir aviso de nombre duplicado');
+
+const rNombresDuplicados = ejecutarValidadorConCursos([
+  cursoDePruebaValidacion({ id: 'curso-a', slug: 'curso-a', nombre: 'Curso de Ofimática' }),
+  cursoDePruebaValidacion({ id: 'curso-b', slug: 'curso-b', nombre: 'curso de ofimática' }),
+  cursoDePruebaValidacion({ id: 'curso-c', slug: 'curso-c', nombre: '  Curso de Ofimática  ' }),
+]);
+assert.strictEqual(rNombresDuplicados.errores.length, 0, 'un nombre duplicado nunca debe producir error');
+const avisosDuplicado = rNombresDuplicados.avisos.filter(function (a) { return a.indexOf('nombre duplicado') !== -1; });
+assert.strictEqual(avisosDuplicado.length, 1, 'debe producirse exactamente un único aviso por grupo de nombres duplicados, no uno por curso');
+assert.ok(avisosDuplicado[0].indexOf('curso-a') !== -1 && avisosDuplicado[0].indexOf('curso-b') !== -1 && avisosDuplicado[0].indexOf('curso-c') !== -1, 'el aviso debe indicar los identificadores de los cursos implicados');
+ok('validate-data.js: nombre duplicado (trim + minúsculas) produce un único aviso indicando los ids implicados, nunca error');
 
 // --- scripts/lib/escape.js: escapeHTML / text ---
 assert.strictEqual(escape.text('<script>alert(1)</script>'), '&lt;script&gt;alert(1)&lt;/script&gt;');

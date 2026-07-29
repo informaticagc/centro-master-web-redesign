@@ -38,6 +38,10 @@ const SLUG_PATTERN = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 // queda pendiente para otra fase.
 const MODALIDADES_VALIDAS = ['presencial', 'teleformacion'];
 const TIPOS_PRECIO_VALIDOS = ['gratuito', 'privado'];
+// nivel/situacionDestinataria: enums opcionales de baja frecuencia — un
+// valor desconocido es solo aviso (ver Fase V2), nunca error.
+const NIVELES_VALIDOS = ['nivel-1', 'nivel-2', 'nivel-3'];
+const SITUACIONES_DESTINATARIA_VALIDAS = ['desempleado', 'ocupado'];
 
 // Campos válidos del modelo público de Curso (web/data/cursos.json), para
 // poder comprobar que 'pendientesVerificacion' (que ahora vive en
@@ -230,6 +234,25 @@ if (cursosData) {
   duplicados(ids).forEach((id) => err(`cursos.json: id duplicado "${id}"`));
   duplicados(slugs).forEach((slug) => err(`cursos.json: slug duplicado "${slug}"`));
 
+  // Nombres duplicados (aviso, no error): distintas convocatorias pueden
+  // compartir legítimamente el mismo nombre (ver nuevaConvocatoria() en
+  // admin/services/curso-model.js). Comparación normalizada (trim +
+  // minúsculas) para detectar también variantes como " Curso X " y
+  // "curso x". Un solo aviso por grupo duplicado, no uno por curso.
+  const gruposPorNombre = {};
+  cursos.forEach((c) => {
+    if (typeof c.nombre !== 'string') return;
+    const clave = c.nombre.trim().toLowerCase();
+    if (!clave) return;
+    (gruposPorNombre[clave] = gruposPorNombre[clave] || []).push(c.id || '??');
+  });
+  Object.keys(gruposPorNombre).forEach((clave) => {
+    const idsImplicados = gruposPorNombre[clave];
+    if (idsImplicados.length > 1) {
+      warn(`cursos.json: nombre duplicado (comparación sin mayúsculas ni espacios exteriores) entre ${idsImplicados.map((id) => `"${id}"`).join(', ')}`);
+    }
+  });
+
   cursos.forEach((c, i) => {
     const ref = `cursos.json[${i}] (id=${c.id || '??'})`;
 
@@ -266,6 +289,13 @@ if (cursosData) {
     }
     if (typeof c.tipoPrecio === 'string' && c.tipoPrecio.trim() !== '' && TIPOS_PRECIO_VALIDOS.indexOf(c.tipoPrecio) === -1) {
       err(`${ref}: tipoPrecio "${c.tipoPrecio}" no está en el enum ${JSON.stringify(TIPOS_PRECIO_VALIDOS)}`);
+    }
+
+    // nivel: enum opcional — null o ausente es válido y sin aviso. Un valor
+    // desconocido es solo aviso (no bloquea el guardado ni el build: la
+    // ficha ya omite limpiamente el sufijo de nivel si no lo reconoce).
+    if (c.nivel != null && NIVELES_VALIDOS.indexOf(c.nivel) === -1) {
+      warn(`${ref}: nivel "${c.nivel}" no está en el enum ${JSON.stringify(NIVELES_VALIDOS)}`);
     }
 
     // Números: si existen, deben ser number finito y no negativo. Nunca se
@@ -331,6 +361,16 @@ if (cursosData) {
       }
     });
 
+    // Coherencia fechaInicio/fechaFin (aviso, no error): solo si ambas
+    // existen y ya son fechas ISO válidas — si alguna es inválida, ya se
+    // reportó como error arriba y no se duplica con este aviso. Formato
+    // YYYY-MM-DD: la comparación de strings ya respeta el orden cronológico.
+    // fechaInicioAproximada es texto editorial libre y no se interpreta
+    // aquí como fecha.
+    if (c.fechaInicio != null && c.fechaFin != null && esFechaValida(c.fechaInicio) && esFechaValida(c.fechaFin) && c.fechaInicio > c.fechaFin) {
+      warn(`${ref}: "fechaInicio" (${c.fechaInicio}) es posterior a "fechaFin" (${c.fechaFin})`);
+    }
+
     // Tipos de array esperados. prioridadColectivos recibe exactamente la
     // misma validación mínima de tipo que el resto (array + elementos de
     // texto) aunque siga sin consumidor ni semántica de negocio decidida
@@ -350,6 +390,17 @@ if (cursosData) {
         }
       });
     });
+
+    // situacionDestinataria: valores semánticos reconocidos (aviso, no
+    // error — dato editorial de baja frecuencia, no bloquea el guardado).
+    // No se elimina ni transforma ningún elemento.
+    if (Array.isArray(c.situacionDestinataria)) {
+      c.situacionDestinataria.forEach((valor) => {
+        if (typeof valor === 'string' && SITUACIONES_DESTINATARIA_VALIDAS.indexOf(valor) === -1) {
+          warn(`${ref}: situacionDestinataria contiene un valor no reconocido: "${valor}"`);
+        }
+      });
+    }
 
     // Separación pública/interna: el JSON público NUNCA debe volver a traer
     // 'administrativo' ni 'origenLegacy' — ese contenido vive en
