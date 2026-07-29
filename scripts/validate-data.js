@@ -31,6 +31,14 @@ const ESTADOS_PUBLICABLES = [
 ];
 const SLUG_PATTERN = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 
+// Enums cerrados que ya restringe el <select> del formulario admin
+// (admin/config.js) — un valor fuera de esta lista solo puede llegar por
+// una edición manual de cursos.json, nunca por el formulario. Duplicadas a
+// propósito (scripts/ no depende de admin/); extraerlas a una fuente común
+// queda pendiente para otra fase.
+const MODALIDADES_VALIDAS = ['presencial', 'teleformacion'];
+const TIPOS_PRECIO_VALIDOS = ['gratuito', 'privado'];
+
 // Campos válidos del modelo público de Curso (web/data/cursos.json), para
 // poder comprobar que 'pendientesVerificacion' (que ahora vive en
 // data-internal/cursos-administrativo.json) no referencia un nombre de campo
@@ -75,6 +83,15 @@ function esNombreDeCampoValido(nombre) {
 
 function esVacio(valor) {
   return valor === null || valor === undefined || (Array.isArray(valor) && valor.length === 0);
+}
+
+// Validación estructural pura: tipo correcto, sin convertir nada. Un string
+// numérico como "10" no es un número válido aquí a propósito.
+function esNumeroEstructuralmenteValido(valor) {
+  return typeof valor === 'number' && Number.isFinite(valor) && valor >= 0;
+}
+function esBooleanoValido(valor) {
+  return typeof valor === 'boolean';
 }
 
 const errores = [];
@@ -216,11 +233,12 @@ if (cursosData) {
   cursos.forEach((c, i) => {
     const ref = `cursos.json[${i}] (id=${c.id || '??'})`;
 
-    // Campos obligatorios críticos
-    if (!c.id || typeof c.id !== 'string') err(`${ref}: "id" ausente o no es texto`);
-    if (!c.slug || typeof c.slug !== 'string') err(`${ref}: "slug" ausente o no es texto`);
-    if (!c.nombre || typeof c.nombre !== 'string') err(`${ref}: "nombre" ausente o no es texto`);
-    if (!c.estado) err(`${ref}: "estado" ausente`);
+    // Campos obligatorios críticos (string no vacía tras trim — un valor
+    // de solo espacios no cuenta como presente).
+    if (!c.id || typeof c.id !== 'string' || c.id.trim() === '') err(`${ref}: "id" ausente o no es texto`);
+    if (!c.slug || typeof c.slug !== 'string' || c.slug.trim() === '') err(`${ref}: "slug" ausente o no es texto`);
+    if (!c.nombre || typeof c.nombre !== 'string' || c.nombre.trim() === '') err(`${ref}: "nombre" ausente o no es texto`);
+    if (!c.estado || typeof c.estado !== 'string' || c.estado.trim() === '') err(`${ref}: "estado" ausente`);
 
     // Estado dentro del enum
     if (c.estado && ESTADOS_VALIDOS.indexOf(c.estado) === -1) {
@@ -229,6 +247,43 @@ if (cursosData) {
     if (c.estado && estadosPermitidos.indexOf(c.estado) === -1 && ESTADOS_VALIDOS.indexOf(c.estado) !== -1) {
       warn(`${ref}: estado "${c.estado}" válido pero no listado en cursos.json.estadosPermitidos`);
     }
+
+    // Campos de texto obligatorios (ya son "required" en el <select>/input
+    // del formulario admin — esto cierra el hueco de una edición manual del
+    // JSON que se salte esa restricción). Espacios en blanco cuentan como
+    // vacío.
+    ['isla', 'modalidad', 'tipoPrecio'].forEach((campo) => {
+      if (typeof c[campo] !== 'string' || c[campo].trim() === '') {
+        err(`${ref}: "${campo}" ausente o vacío`);
+      }
+    });
+
+    // Enums cerrados (modalidad, tipoPrecio): un valor fuera de la lista
+    // solo puede llegar por una edición manual del JSON. Solo se comprueba
+    // si el campo ya pasó el chequeo de "obligatorio" de arriba.
+    if (typeof c.modalidad === 'string' && c.modalidad.trim() !== '' && MODALIDADES_VALIDAS.indexOf(c.modalidad) === -1) {
+      err(`${ref}: modalidad "${c.modalidad}" no está en el enum ${JSON.stringify(MODALIDADES_VALIDAS)}`);
+    }
+    if (typeof c.tipoPrecio === 'string' && c.tipoPrecio.trim() !== '' && TIPOS_PRECIO_VALIDOS.indexOf(c.tipoPrecio) === -1) {
+      err(`${ref}: tipoPrecio "${c.tipoPrecio}" no está en el enum ${JSON.stringify(TIPOS_PRECIO_VALIDOS)}`);
+    }
+
+    // Números: si existen, deben ser number finito y no negativo. Nunca se
+    // convierte un string numérico como "10" — es un error, no un dato a
+    // normalizar aquí.
+    ['duracionHoras', 'plazasDisponibles', 'orden'].forEach((campo) => {
+      if (c[campo] != null && !esNumeroEstructuralmenteValido(c[campo])) {
+        err(`${ref}: "${campo}" = ${JSON.stringify(c[campo])} debería ser un número finito no negativo, o null`);
+      }
+    });
+
+    // Booleanos: si existen, deben ser boolean real — "true"/"false" (texto)
+    // o 1/0 no cuentan.
+    ['inscripcionAbierta', 'destacado'].forEach((campo) => {
+      if (c[campo] != null && !esBooleanoValido(c[campo])) {
+        err(`${ref}: "${campo}" = ${JSON.stringify(c[campo])} debería ser un booleano, o null`);
+      }
+    });
 
     // Referencia sedeId
     if (c.sedeId != null) {
@@ -276,11 +331,24 @@ if (cursosData) {
       }
     });
 
-    // Tipos de array esperados
-    ['situacionDestinataria', 'requisitos', 'documentacionNecesaria', 'modulosUnidadesFormativas', 'prioridadColectivos', 'palabrasClave'].forEach((campo) => {
-      if (c[campo] !== undefined && !Array.isArray(c[campo])) {
-        err(`${ref}: "${campo}" debería ser un array`);
-      }
+    // Tipos de array esperados. prioridadColectivos recibe exactamente la
+    // misma validación mínima de tipo que el resto (array + elementos de
+    // texto) aunque siga sin consumidor ni semántica de negocio decidida
+    // (ver informe) — solo tipo, sin enum, sin duplicados, sin avisos, sin
+    // obligatoriedad.
+    const CAMPOS_ARRAY_DE_TEXTO = ['situacionDestinataria', 'requisitos', 'documentacionNecesaria', 'modulosUnidadesFormativas', 'prioridadColectivos', 'palabrasClave'];
+    CAMPOS_ARRAY_DE_TEXTO.forEach((campo) => {
+      if (c[campo] == null) return;
+      if (!Array.isArray(c[campo])) { err(`${ref}: "${campo}" debería ser un array`); return; }
+      // Cada elemento debe ser texto (aunque sea vacío o solo espacios: esa
+      // es una comprobación editorial, no estructural, y queda fuera de esta
+      // fase). Un número, booleano u objeto como elemento sí es un error
+      // estructural: no es el tipo que espera build-fichas.js.
+      c[campo].forEach((elemento, j) => {
+        if (typeof elemento !== 'string') {
+          err(`${ref}: "${campo}[${j}]" debería ser texto, no ${JSON.stringify(elemento)}`);
+        }
+      });
     });
 
     // Separación pública/interna: el JSON público NUNCA debe volver a traer

@@ -7,6 +7,9 @@
  */
 'use strict';
 const assert = require('assert');
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
 const { slugify, esSlugValido, slugUnico } = require('../services/slug');
 const { verificarPassword } = require('../services/auth');
 const { runValidator } = require('../services/validator');
@@ -68,6 +71,166 @@ ok('esArchivoPermitido() acepta solo rutas del catálogo público');
 const v = runValidator();
 assert.strictEqual(v.errores.length, 0, 'validate-data.js no debería reportar errores sobre los datos actuales');
 ok('scripts/validate-data.js (real) pasa sin errores sobre los datos actuales');
+
+// --- scripts/validate-data.js (Fase V1): validaciones estructurales nuevas ---
+// runValidator() se ejecuta contra una copia "staged" de web/data/ con un
+// cursos.json de prueba (nunca se toca el real), igual que ya hace
+// admin/services/cursos-store.js antes de escribir en disco.
+function cursoDePruebaValidacion(overrides) {
+  return Object.assign({
+    id: 'curso-test-validacion', codigo: null, slug: 'curso-test-validacion',
+    nombre: 'Curso de prueba', descripcionCorta: 'Descripción corta de prueba.', descripcionCompleta: null,
+    imagen: { src: 'assets/curso-socorrismo-1200.webp', srcset: null, alt: 'foto', objectPosition: null },
+    familiaProfesional: null, situacionDestinataria: [], isla: 'Gran Canaria', municipio: null, sedeId: null,
+    modalidad: 'presencial', tipoPrecio: 'gratuito', precio: null, requisitos: [], nivel: null, certificacion: null,
+    tipoFormacion: null, duracionHoras: null, duracionTexto: null, fechaInicio: null,
+    fechaInicioAproximada: null, fechaFin: null, horario: null, ayudasBecas: null,
+    documentacionNecesaria: [], plazasDisponibles: null, inscripcionAbierta: false, urlInscripcion: null,
+    modulosUnidadesFormativas: [], prioridadColectivos: [], estado: 'borrador', destacado: null,
+    orden: null, urlFicha: null, palabrasClave: [],
+  }, overrides);
+}
+function ejecutarValidadorConCurso(curso) {
+  const dataDirReal = path.join(__dirname, '..', '..', 'web', 'data');
+  const stagingDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cem-validate-test-'));
+  try {
+    fs.readdirSync(dataDirReal).forEach((nombre) => {
+      const origen = path.join(dataDirReal, nombre);
+      if (fs.statSync(origen).isFile()) fs.copyFileSync(origen, path.join(stagingDir, nombre));
+    });
+    const cursosData = {
+      version: '1.2', actualizado: '2026-01-01', notas: '',
+      estadosPermitidos: ['borrador', 'proximamente', 'matricula-abierta', 'ultimas-plazas', 'en-curso', 'finalizado', 'archivado'],
+      estadosPublicos: [], cursos: [curso],
+    };
+    fs.writeFileSync(path.join(stagingDir, 'cursos.json'), JSON.stringify(cursosData, null, 2), 'utf8');
+    return runValidator(stagingDir);
+  } finally {
+    fs.rmSync(stagingDir, { recursive: true, force: true });
+  }
+}
+
+// Caso base: la fixture de prueba, sin modificar, debe validar sin errores
+// (confirma que el resto de los casos falla por la condición probada, no
+// por un fallo accidental de la fixture).
+assert.strictEqual(ejecutarValidadorConCurso(cursoDePruebaValidacion({})).errores.length, 0, 'la fixture base de prueba debería validar sin errores');
+ok('validate-data.js: la fixture base de prueba (sin modificar) valida sin errores');
+
+// --- Campos de texto obligatorios: isla, modalidad, tipoPrecio ---
+['isla', 'modalidad', 'tipoPrecio'].forEach(function (campo) {
+  [null, '', '   '].forEach(function (valorInvalido) {
+    const overrides = {};
+    overrides[campo] = valorInvalido;
+    const r = ejecutarValidadorConCurso(cursoDePruebaValidacion(overrides));
+    assert.ok(r.errores.length > 0, campo + ' = ' + JSON.stringify(valorInvalido) + ' debería producir un error');
+  });
+});
+ok('validate-data.js rechaza isla/modalidad/tipoPrecio ausentes, vacíos o solo espacios');
+
+// --- Campos de texto obligatorios ya existentes (id, slug, nombre, estado):
+// se refuerza con trim() para que un valor de solo espacios también cuente
+// como ausente, reutilizando el mismo mensaje de error ya existente. ---
+['id', 'slug', 'nombre', 'estado'].forEach(function (campo) {
+  [null, '', '   '].forEach(function (valorInvalido) {
+    const overrides = {};
+    overrides[campo] = valorInvalido;
+    const r = ejecutarValidadorConCurso(cursoDePruebaValidacion(overrides));
+    assert.ok(r.errores.length > 0, campo + ' = ' + JSON.stringify(valorInvalido) + ' debería producir un error');
+  });
+});
+ok('validate-data.js rechaza id/slug/nombre/estado ausentes, vacíos o solo espacios (trim reforzado)');
+
+// --- Enums: modalidad, tipoPrecio ---
+assert.strictEqual(ejecutarValidadorConCurso(cursoDePruebaValidacion({ modalidad: 'teleformacion' })).errores.length, 0, 'modalidad "teleformacion" es válida');
+assert.strictEqual(ejecutarValidadorConCurso(cursoDePruebaValidacion({ tipoPrecio: 'privado' })).errores.length, 0, 'tipoPrecio "privado" es válido');
+assert.ok(ejecutarValidadorConCurso(cursoDePruebaValidacion({ modalidad: 'online' })).errores.length > 0, 'modalidad "online" no está en el enum y debe rechazarse');
+assert.ok(ejecutarValidadorConCurso(cursoDePruebaValidacion({ tipoPrecio: 'subvencionado' })).errores.length > 0, 'tipoPrecio "subvencionado" no está en el enum y debe rechazarse');
+ok('validate-data.js acepta los valores reales del enum de modalidad/tipoPrecio y rechaza valores fuera de él');
+
+// --- Arrays: elementos deben ser texto (vacío/espacios permitidos; número,
+// booleano u objeto no) ---
+assert.strictEqual(ejecutarValidadorConCurso(cursoDePruebaValidacion({ requisitos: ['ESO'] })).errores.length, 0, '["ESO"] debe aceptarse');
+assert.strictEqual(ejecutarValidadorConCurso(cursoDePruebaValidacion({ requisitos: ['', ' ', 'ESO'] })).errores.length, 0, '["", " ", "ESO"] debe aceptarse en esta fase (limpieza editorial queda para otra fase)');
+assert.ok(ejecutarValidadorConCurso(cursoDePruebaValidacion({ requisitos: [123] })).errores.length > 0, '[123] debe rechazarse');
+assert.ok(ejecutarValidadorConCurso(cursoDePruebaValidacion({ requisitos: [true] })).errores.length > 0, '[true] debe rechazarse');
+assert.ok(ejecutarValidadorConCurso(cursoDePruebaValidacion({ requisitos: [{}] })).errores.length > 0, '[{}] debe rechazarse');
+ok('validate-data.js acepta elementos de texto (incluso vacíos) y rechaza número/booleano/objeto como elemento de array');
+
+// prioridadColectivos recibe la misma validación mínima de tipo que el
+// resto de arrays de texto (array + elementos string), aunque siga sin
+// consumidor ni semántica de negocio decidida — solo tipo, sin enum, sin
+// duplicados, sin avisos, sin obligatoriedad.
+assert.strictEqual(ejecutarValidadorConCurso(cursoDePruebaValidacion({ prioridadColectivos: ['ESO'] })).errores.length, 0, 'prioridadColectivos: ["ESO"] debe aceptarse');
+assert.strictEqual(ejecutarValidadorConCurso(cursoDePruebaValidacion({ prioridadColectivos: ['', ' ', 'ESO'] })).errores.length, 0, 'prioridadColectivos: ["", " ", "ESO"] debe aceptarse (misma política editorial que el resto)');
+assert.ok(ejecutarValidadorConCurso(cursoDePruebaValidacion({ prioridadColectivos: [123] })).errores.length > 0, 'prioridadColectivos: [123] debe rechazarse');
+assert.ok(ejecutarValidadorConCurso(cursoDePruebaValidacion({ prioridadColectivos: [true] })).errores.length > 0, 'prioridadColectivos: [true] debe rechazarse');
+assert.ok(ejecutarValidadorConCurso(cursoDePruebaValidacion({ prioridadColectivos: [{}] })).errores.length > 0, 'prioridadColectivos: [{}] debe rechazarse');
+ok('validate-data.js aplica a prioridadColectivos la misma validación mínima de tipo que al resto de arrays de texto');
+
+// Un array de texto explícitamente null se acepta (distinto de un valor que
+// no es un array en absoluto): "si existe y no es null, debe ser un array".
+assert.strictEqual(ejecutarValidadorConCurso(cursoDePruebaValidacion({ requisitos: null })).errores.length, 0, 'requisitos: null debe aceptarse, no es lo mismo que "no es un array"');
+ok('validate-data.js acepta null en un array de texto (distinto de un valor no-array)');
+
+// --- Números: duracionHoras, plazasDisponibles, orden ---
+['duracionHoras', 'plazasDisponibles', 'orden'].forEach(function (campo) {
+  [0, 1, 25, 999].forEach(function (valorValido) {
+    const overrides = {};
+    overrides[campo] = valorValido;
+    const r = ejecutarValidadorConCurso(cursoDePruebaValidacion(overrides));
+    assert.strictEqual(r.errores.length, 0, campo + ' = ' + valorValido + ' debería aceptarse');
+  });
+  [-1, '10'].forEach(function (valorInvalido) {
+    const overrides = {};
+    overrides[campo] = valorInvalido;
+    const r = ejecutarValidadorConCurso(cursoDePruebaValidacion(overrides));
+    assert.ok(r.errores.length > 0, campo + ' = ' + JSON.stringify(valorInvalido) + ' debería rechazarse');
+  });
+});
+ok('validate-data.js acepta 0/1/25/999 y rechaza -1 y "10" (string) en duracionHoras/plazasDisponibles/orden');
+
+// NaN e Infinity no se pueden probar como JSON.stringify(NaN/Infinity) real
+// porque JSON no tiene forma de representarlos (se convierten en null antes
+// de tocar el validador). Se prueba en su lugar que un cursos.json con el
+// token literal NaN (JSON inválido) ya es rechazado por el parseo — el caso
+// real "un número no finito llega al validador" es estructuralmente
+// imposible a través de un JSON.parse válido; esNumeroEstructuralmenteValido()
+// lo cubre igualmente por si algún día cursos.json deja de ser JSON estricto.
+(function () {
+  const dataDirReal = path.join(__dirname, '..', '..', 'web', 'data');
+  const stagingDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cem-validate-test-'));
+  try {
+    fs.readdirSync(dataDirReal).forEach(function (nombre) {
+      const origen = path.join(dataDirReal, nombre);
+      if (fs.statSync(origen).isFile()) fs.copyFileSync(origen, path.join(stagingDir, nombre));
+    });
+    const cursoJson = JSON.stringify({ version: '1.2', actualizado: '2026-01-01', notas: '', estadosPermitidos: [], estadosPublicos: [], cursos: [cursoDePruebaValidacion({})] }, null, 2);
+    const conNaN = cursoJson.replace('"duracionHoras": null', '"duracionHoras": NaN');
+    fs.writeFileSync(path.join(stagingDir, 'cursos.json'), conNaN, 'utf8');
+    const r = runValidator(stagingDir);
+    assert.ok(r.errores.length > 0, 'un cursos.json con el token NaN (JSON inválido) debe rechazarse');
+  } finally {
+    fs.rmSync(stagingDir, { recursive: true, force: true });
+  }
+})();
+ok('validate-data.js rechaza un cursos.json con NaN/Infinity literal (JSON inválido, no representable de otra forma)');
+
+// --- Booleanos: inscripcionAbierta, destacado ---
+['inscripcionAbierta', 'destacado'].forEach(function (campo) {
+  [true, false].forEach(function (valorValido) {
+    const overrides = {};
+    overrides[campo] = valorValido;
+    const r = ejecutarValidadorConCurso(cursoDePruebaValidacion(overrides));
+    assert.strictEqual(r.errores.length, 0, campo + ' = ' + valorValido + ' debería aceptarse');
+  });
+  ['true', 'false', 1, 0].forEach(function (valorInvalido) {
+    const overrides = {};
+    overrides[campo] = valorInvalido;
+    const r = ejecutarValidadorConCurso(cursoDePruebaValidacion(overrides));
+    assert.ok(r.errores.length > 0, campo + ' = ' + JSON.stringify(valorInvalido) + ' debería rechazarse');
+  });
+});
+ok('validate-data.js acepta true/false y rechaza "true"/"false"/1/0 en inscripcionAbierta/destacado');
 
 // --- scripts/lib/escape.js: escapeHTML / text ---
 assert.strictEqual(escape.text('<script>alert(1)</script>'), '&lt;script&gt;alert(1)&lt;/script&gt;');
