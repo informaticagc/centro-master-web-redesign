@@ -13,6 +13,7 @@ const { runValidator } = require('../services/validator');
 const publish = require('../services/publish');
 const model = require('../services/curso-model');
 const escape = require('../../scripts/lib/escape');
+const { renderFichaHTML } = require('../../scripts/build-fichas');
 
 let pasadas = 0;
 function ok(desc) { pasadas++; console.log('  ✓ ' + desc); }
@@ -132,5 +133,60 @@ ok('safeURL() rechaza rutas UNC (\\\\servidor) y rutas de Windows (C:\\archivo)'
 // --- safeURL: normalización de espacios exteriores ---
 assert.strictEqual(escape.safeURL('  https://example.com  '), 'https://example.com');
 ok('safeURL() recorta espacios exteriores en la URL devuelta');
+
+// --- renderFichaHTML(): texto visible escapado en la ficha real generada ---
+// Curso de prueba SOLO en memoria — nunca se escribe en web/data/cursos.json
+// ni en disco. sedesById={} y publicCourses=[] porque el estado elegido
+// (matricula-abierta) no activa la ruta de "cursos similares".
+const cursoConCaracteresProblematicos = {
+  id: 'curso-test-escape', slug: 'curso-test-escape',
+  nombre: 'Curso <Especial> & "Seguro"',
+  descripcionCorta: "O'Reilly",
+  descripcionCompleta: '<script>alert(1)</script>',
+  imagen: { src: null, srcset: null, alt: null, objectPosition: null },
+  situacionDestinataria: [], isla: 'Gran Canaria "especial"', municipio: null, sedeId: null,
+  modalidad: 'presencial', tipoPrecio: 'gratuito', precio: null,
+  requisitos: ['<script>alert(1)</script>', "O'Reilly"],
+  nivel: null, certificacion: null, tipoFormacion: 'Curso <Especial> & "Seguro"',
+  duracionHoras: null, duracionTexto: null,
+  fechaInicio: null, fechaInicioAproximada: null, fechaFin: null,
+  horario: null, ayudasBecas: null,
+  documentacionNecesaria: [], plazasDisponibles: null,
+  inscripcionAbierta: false, urlInscripcion: null,
+  modulosUnidadesFormativas: [], estado: 'matricula-abierta',
+};
+const htmlGenerado = renderFichaHTML(cursoConCaracteresProblematicos, {}, []);
+
+assert.ok(htmlGenerado.indexOf('<script>alert(1)</script>') === -1, 'no debe aparecer el <script> inyectado sin escapar');
+assert.ok(htmlGenerado.indexOf('&lt;script&gt;alert(1)&lt;/script&gt;') !== -1, 'el <script> inyectado debe aparecer escapado');
+ok('renderFichaHTML() no introduce ninguna etiqueta <script> a partir de datos de curso');
+
+assert.ok(htmlGenerado.indexOf('Curso &lt;Especial&gt; &amp; &quot;Seguro&quot;') !== -1, 'el nombre del curso debe aparecer escapado en el HTML');
+const h1Match = /<h1>([\s\S]*?)<\/h1>/.exec(htmlGenerado);
+assert.ok(h1Match, 'debe existir un <h1> en el HTML generado');
+assert.strictEqual(h1Match[1], 'Curso &lt;Especial&gt; &amp; &quot;Seguro&quot;', 'el <h1> debe contener el nombre del curso ya escapado, sin HTML crudo');
+// Nota: <title>/<meta>/breadcrumb siguen mostrando el nombre sin escapar
+// en esta etapa a propósito — quedan fuera de alcance (ver informe).
+ok('renderFichaHTML() escapa curso.nombre en el <h1> y en las tarjetas donde se reutiliza como texto');
+
+assert.ok(htmlGenerado.indexOf('O&#39;Reilly') !== -1, 'la comilla simple debe aparecer escapada');
+ok('renderFichaHTML() escapa comillas simples en descripcionCorta/requisitos');
+
+// El HTML estructural interno (partials, iconos SVG, header/footer) debe
+// seguir intacto: solo debe haber los <script> legítimos del propio
+// documento (el de help-widget.js y el del menú móvil), ninguno más.
+const totalScriptTags = (htmlGenerado.match(/<script/g) || []).length;
+assert.strictEqual(totalScriptTags, 2, 'solo deben existir los 2 <script> legítimos de la plantilla (help-widget.js y el del menú móvil)');
+assert.ok(htmlGenerado.indexOf('<div class="wrap">') !== -1, 'el contenedor raíz de la plantilla debe seguir intacto');
+assert.ok(htmlGenerado.indexOf('<div class="course-hero">') !== -1, 'la estructura del hero debe seguir intacta');
+assert.ok(htmlGenerado.indexOf('<h1>') !== -1, 'el <h1> estructural debe seguir presente');
+assert.ok(htmlGenerado.indexOf('<header>') !== -1 && htmlGenerado.indexOf('<footer>') !== -1, 'header y footer (partials.js) deben seguir intactos');
+ok('renderFichaHTML() mantiene intacto el HTML estructural interno (partials, hero, iconos)');
+
+// Sin doble escape: un "&" que ya fue escapado a "&amp;" no debe volver a
+// escaparse a "&amp;amp;".
+assert.ok(htmlGenerado.indexOf('&amp;amp;') === -1, 'no debe producirse doble escape de &');
+assert.ok(htmlGenerado.indexOf('&amp;lt;') === -1, 'no debe producirse doble escape de <');
+ok('renderFichaHTML() no aplica doble escape');
 
 console.log('\n' + pasadas + ' comprobaciones superadas.');

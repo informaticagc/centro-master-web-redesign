@@ -54,6 +54,7 @@ const ESTADOS_PUBLICABLES = ['proximamente', 'matricula-abierta', 'ultimas-plaza
 const tokens = require(path.join(__dirname, 'lib', 'tokens.js'));
 const partials = require(path.join(__dirname, 'lib', 'partials.js'));
 const format = require(path.join(__dirname, 'lib', 'format.js'));
+const { text } = require(path.join(__dirname, 'lib', 'escape.js'));
 
 const ESTADO_ORDEN_SIMILARES = { 'matricula-abierta': 0, 'ultimas-plazas': 1, 'en-curso': 2, 'proximamente': 3 };
 
@@ -129,9 +130,9 @@ function similarCardHTML(c) {
     ? '<img src="../../' + img.src + '" alt="' + (img.alt || '') + '" loading="lazy" decoding="async">'
     : '';
   return '<div class="similar-card"><div class="photo">' + photo +
-    '<span class="similar-status" style="background:' + meta.color + '">' + meta.label + '</span></div>' +
-    '<div class="body"><h3>' + c.nombre + '</h3><div class="meta">' + (MODALIDAD_LABELS[c.modalidad] || c.modalidad) + ' · ' + c.isla +
-    (durationLabel(c) ? ' · ' + durationLabel(c) : '') + '</div>' +
+    '<span class="similar-status" style="background:' + meta.color + '">' + text(meta.label) + '</span></div>' +
+    '<div class="body"><h3>' + text(c.nombre) + '</h3><div class="meta">' + text(MODALIDAD_LABELS[c.modalidad] || c.modalidad) + ' · ' + text(c.isla) +
+    (durationLabel(c) ? ' · ' + text(durationLabel(c)) : '') + '</div>' +
     '<a href="' + fichaHrefDesdeFicha(c) + '">Ver curso →</a></div></div>';
 }
 
@@ -155,8 +156,13 @@ const HERO_FACT_ICONS = {
 // el valor está vacío — mismo criterio que ya usaba format.metaLine.
 function heroFactHTML(iconKey, label, value) {
   if (esVacio(value)) return '';
+  // `label` es siempre un literal fijo pasado desde este mismo archivo
+  // (nunca dato editorial) — no necesita escape. `value` sí es dato de
+  // curso/sede y se escapa aquí, en el único punto de ensamblado, para
+  // cubrir a la vez tipoFormacion, duracionTexto, fechaInicioAproximada,
+  // fechaFin, municipio y los datos de sede que llegan ya combinados.
   return '<li class="fact-item"><span class="fact-icon" aria-hidden="true">' + HERO_FACT_ICONS[iconKey] + '</span>' +
-    '<span class="fact-text"><span class="fact-label">' + label + '</span><span class="fact-value">' + value + '</span></span></li>';
+    '<span class="fact-text"><span class="fact-label">' + label + '</span><span class="fact-value">' + text(value) + '</span></span></li>';
 }
 
 function renderFichaHTML(curso, sedesById, publicCourses) {
@@ -310,16 +316,16 @@ finishedBanner + '\n' +
   const t = part.trim(); const i = t.indexOf(' ');
   return '../../' + (i === -1 ? t : t.slice(0, i)) + (i === -1 ? '' : t.slice(i));
 }).join(', ') + '" ' : '') + 'sizes="(max-width:1180px) 92vw, 50vw" alt="' + (img.alt || '') + '" style="object-position:' + (img.objectPosition || 'center') + ';"' + (isFinished ? ' class="finished"' : '') + '>\n' : '') +
-'        <span class="status-badge" style="background:' + meta.color + '">' + meta.label + '</span>\n' +
+'        <span class="status-badge" style="background:' + meta.color + '">' + text(meta.label) + '</span>\n' +
 '      </div>\n' +
 '      <div>\n' +
 '        <div class="tag-row">\n' +
-'          <span class="tag-modalidad">' + (MODALIDAD_LABELS[curso.modalidad] || curso.modalidad) + '</span>\n' +
-'          <span class="tag-isla">' + curso.isla + '</span>\n' +
+'          <span class="tag-modalidad">' + text(MODALIDAD_LABELS[curso.modalidad] || curso.modalidad) + '</span>\n' +
+'          <span class="tag-isla">' + text(curso.isla) + '</span>\n' +
 (tagPrice ? '          <span class="tag-price">' + tagPrice + '</span>\n' : '') +
 '        </div>\n' +
-'        <h1>' + curso.nombre + '</h1>\n' +
-(!esVacio(curso.descripcionCorta) ? '        <p class="intro">' + curso.descripcionCorta + '</p>\n' : '') +
+'        <h1>' + text(curso.nombre) + '</h1>\n' +
+(!esVacio(curso.descripcionCorta) ? '        <p class="intro">' + text(curso.descripcionCorta) + '</p>\n' : '') +
 (facts ? '        <ul class="fact-grid">' + facts + '</ul>\n' : '') +
 '        <div class="cta-row">\n' +
 '          ' + primaryCta + '\n' +
@@ -329,15 +335,15 @@ finishedBanner + '\n' +
 '    </div>\n' +
 '  </div>\n' +
 '  <div class="detail-wrap">\n' +
-detailSection('Sobre este curso', !esVacio(curso.descripcionCompleta) ? '<p>' + curso.descripcionCompleta + '</p>' : '') +
-detailSection('Certificación / nivel', certNivel ? '<p>' + certNivel + '</p>' : '') +
-detailSection('Destinatarios', destinatarios ? '<p>' + destinatarios + '</p>' : '') +
-detailSection('Requisitos de acceso', !esVacio(curso.requisitos) ? '<p>' + curso.requisitos.join(', ') + '</p>' : '') +
-detailSection('Horario', !esVacio(curso.horario) ? '<p>' + curso.horario + '</p>' : '') +
-detailSection('Ayudas y becas', !esVacio(curso.ayudasBecas) ? '<p>' + curso.ayudasBecas + '</p>' : '') +
-detailSection('Documentación necesaria', !esVacio(curso.documentacionNecesaria) ? '<p>' + curso.documentacionNecesaria.join(', ') + '</p>' : '') +
-detailSection('Plazas disponibles', curso.plazasDisponibles != null ? '<p>' + curso.plazasDisponibles + '</p>' : '') +
-detailSection('Módulos / unidades formativas', !esVacio(curso.modulosUnidadesFormativas) ? '<div class="module-box"><p>' + curso.modulosUnidadesFormativas.join(', ') + '</p></div>' : '') +
+detailSection('Sobre este curso', !esVacio(curso.descripcionCompleta) ? '<p>' + text(curso.descripcionCompleta) + '</p>' : '') +
+detailSection('Certificación / nivel', certNivel ? '<p>' + text(certNivel) + '</p>' : '') +
+detailSection('Destinatarios', destinatarios ? '<p>' + text(destinatarios) + '</p>' : '') +
+detailSection('Requisitos de acceso', !esVacio(curso.requisitos) ? '<p>' + curso.requisitos.map(text).join(', ') + '</p>' : '') +
+detailSection('Horario', !esVacio(curso.horario) ? '<p>' + text(curso.horario) + '</p>' : '') +
+detailSection('Ayudas y becas', !esVacio(curso.ayudasBecas) ? '<p>' + text(curso.ayudasBecas) + '</p>' : '') +
+detailSection('Documentación necesaria', !esVacio(curso.documentacionNecesaria) ? '<p>' + curso.documentacionNecesaria.map(text).join(', ') + '</p>' : '') +
+detailSection('Plazas disponibles', curso.plazasDisponibles != null ? '<p>' + text(curso.plazasDisponibles) + '</p>' : '') +
+detailSection('Módulos / unidades formativas', !esVacio(curso.modulosUnidadesFormativas) ? '<div class="module-box"><p>' + curso.modulosUnidadesFormativas.map(text).join(', ') + '</p></div>' : '') +
 '  </div>\n' +
 similarHTML + '\n' +
 partials.renderFooterHTML() +
@@ -450,7 +456,17 @@ function main() {
   });
 }
 
-main().catch(function (e) {
-  console.error('build-fichas.js: error inesperado:', e);
-  process.exitCode = 1;
-});
+// Ejecuta el build solo cuando el archivo se invoca directamente (node
+// scripts/build-fichas.js), nunca al hacer require() desde otro módulo —
+// así admin/test/smoke.js puede importar renderFichaHTML() para probarla
+// de forma aislada sin disparar una generación real de fichas ni escribir
+// en disco. Patrón estándar de Node, sin cambiar el comportamiento del
+// script cuando se ejecuta como CLI (uso normal, sin cambios).
+if (require.main === module) {
+  main().catch(function (e) {
+    console.error('build-fichas.js: error inesperado:', e);
+    process.exitCode = 1;
+  });
+}
+
+module.exports = { renderFichaHTML: renderFichaHTML };
