@@ -20,6 +20,8 @@ const { renderFichaHTML, __test: buildFichasTest } = require('../../scripts/buil
 const { safeInternalHref, safeHttpsURL, safeHttpURL } = buildFichasTest;
 const editorialRules = require('../../scripts/lib/editorial-rules');
 const editorial = require('../services/editorial');
+const ejs = require('ejs');
+const cfg = require('../config');
 
 let pasadas = 0;
 function ok(desc) { pasadas++; console.log('  ✓ ' + desc); }
@@ -929,5 +931,115 @@ ok('scripts/validate-data.js: la estadística global de campos sin uso distingue
   });
 })();
 ok('scripts/validate-data.js: la lista de campos auditables excluye explícitamente identificadores técnicos, ordenación, URLs generadas y campos dormidos');
+
+// --- Fase V5B: agrupación de recomendaciones para la confirmación de publicación ---
+const publishTest = publish.__test;
+
+function cursoMinimo(overrides) {
+  return Object.assign({ id: 'curso-x', nombre: 'Curso X' }, overrides);
+}
+
+// Categorías/campos visibles: conocidos y desconocidos.
+assert.strictEqual(publishTest.categoriaVisible('seo'), 'SEO');
+assert.strictEqual(publishTest.categoriaVisible('image'), 'Imagen');
+assert.strictEqual(publishTest.categoriaVisible('content'), 'Contenido');
+assert.strictEqual(publishTest.categoriaVisible('otra-categoria'), 'otra-categoria', 'categoría desconocida: se muestra el valor original, sin fallar');
+assert.strictEqual(publishTest.categoriaVisible(null), 'General', 'categoría vacía: etiqueta genérica "General"');
+assert.strictEqual(publishTest.campoVisible('palabrasClave'), 'Palabras clave');
+assert.strictEqual(publishTest.campoVisible('imagen.alt'), 'Texto alternativo de la imagen');
+assert.strictEqual(publishTest.campoVisible('descripcionCompleta'), 'Descripción completa');
+assert.strictEqual(publishTest.campoVisible('otroCampo'), 'otroCampo', 'campo desconocido: se muestra el valor original, sin fallar');
+assert.strictEqual(publishTest.campoVisible(null), 'Contenido general', 'campo vacío: etiqueta genérica "Contenido general"');
+ok('publish.js: categoriaVisible()/campoVisible() traducen los valores conocidos y muestran el original (o una etiqueta genérica) para los desconocidos, sin lanzar excepción');
+
+// Agrupación por curso: orden estable, asociación por id (no slug), curso no encontrado.
+const cursosPrueba = [cursoMinimo({ id: 'curso-a', nombre: 'Curso A' }), cursoMinimo({ id: 'curso-b', nombre: 'Curso B' })];
+const recomendacionesPrueba = [
+  { codigo: 'SEO_KEYWORDS_SPARSE', ref: 'curso-b', campo: 'palabrasClave', categoria: 'seo', mensaje: 'Mensaje 1' },
+  { codigo: 'IMAGE_ALT_IDENTICAL_TO_NAME', ref: 'curso-a', campo: 'imagen.alt', categoria: 'image', mensaje: 'Mensaje 2' },
+  { codigo: 'CONTENT_DUPLICATED_TEXT', ref: 'curso-a', campo: 'descripcionCompleta', categoria: 'content', mensaje: 'Mensaje 3' },
+];
+const agrupadas = publishTest.agruparRecomendacionesPorElemento(recomendacionesPrueba, cursosPrueba);
+assert.strictEqual(agrupadas.length, 2, 'debe haber un grupo por curso distinto referenciado, no uno por recomendación');
+assert.strictEqual(agrupadas[0].id, 'curso-b', 'el orden de los grupos sigue el orden de aparición de las recomendaciones');
+assert.strictEqual(agrupadas[0].nombre, 'Curso B', 'el nombre se obtiene del curso real, nunca de la recomendación');
+assert.strictEqual(agrupadas[0].recomendaciones.length, 1);
+assert.strictEqual(agrupadas[1].id, 'curso-a');
+assert.strictEqual(agrupadas[1].recomendaciones.length, 2, 'dos recomendaciones del mismo curso.id deben agruparse juntas, en orden');
+assert.strictEqual(agrupadas[1].recomendaciones[0].mensaje, 'Mensaje 2');
+assert.strictEqual(agrupadas[1].recomendaciones[1].mensaje, 'Mensaje 3');
+ok('publish.js: agruparRecomendacionesPorElemento() agrupa por curso.id (nunca slug), en orden estable, tomando el nombre del curso real');
+
+// curso.slug parecido a un ref no debe confundirse con curso.id (asociación por id, nunca slug).
+const cursosConSlugParecido = [{ id: 'curso-real-id', slug: 'curso-b', nombre: 'Nombre real' }];
+const agrupadasPorSlug = publishTest.agruparRecomendacionesPorElemento([{ codigo: 'X', ref: 'curso-b', campo: 'x', categoria: 'seo', mensaje: 'm' }], cursosConSlugParecido);
+assert.strictEqual(agrupadasPorSlug[0].id, null, 'un "ref" que coincide con el slug (no con el id) debe tratarse como curso no encontrado');
+ok('publish.js: la asociación usa curso.id === recomendacion.ref con comparación estricta, nunca el slug');
+
+// Curso no encontrado / ref "??": no lanza excepción, se agrupa sin id ni enlace.
+const agrupadasSinCurso = publishTest.agruparRecomendacionesPorElemento([
+  { codigo: 'X', ref: 'curso-inexistente', campo: 'x', categoria: 'seo', mensaje: 'm1' },
+  { codigo: 'Y', ref: '??', campo: 'y', categoria: 'seo', mensaje: 'm2' },
+], cursosPrueba);
+assert.strictEqual(agrupadasSinCurso.length, 1, 'ref inexistente y "??" deben agruparse juntos bajo el mismo grupo "sin curso"');
+assert.strictEqual(agrupadasSinCurso[0].id, null);
+assert.strictEqual(agrupadasSinCurso[0].nombre, null);
+assert.strictEqual(agrupadasSinCurso[0].recomendaciones.length, 2);
+ok('publish.js: un curso no encontrado (incluido ref === "??") no lanza excepción y se agrupa sin id ni nombre');
+
+// Sin recomendaciones: array vacío, sin fallar.
+assert.deepStrictEqual(publishTest.agruparRecomendacionesPorElemento([], cursosPrueba), []);
+ok('publish.js: sin recomendaciones, agruparRecomendacionesPorElemento() devuelve un array vacío');
+
+// --- admin/views/publish-confirm.ejs: renderizado real (ejs.render, sin
+// framework HTTP — el proyecto no tiene supertest ni pruebas de vista
+// aisladas hoy; se usa el propio "ejs" ya instalado, sin añadir
+// dependencias nuevas, compilando el fichero real con la misma resolución
+// de includes que usa el servidor). ---
+const vistaPublishConfirmPath = path.join(__dirname, '..', 'views', 'publish-confirm.ejs');
+const vistaPublishConfirmSrc = fs.readFileSync(vistaPublishConfirmPath, 'utf8');
+function planDePrueba(overrides) {
+  return Object.assign({
+    ok: true, problemas: [], avisos: [], editorial: [], recomendaciones: [],
+    permitidos: [], desconocidos: [], mensaje: 'content: prueba', dryRun: true,
+  }, overrides);
+}
+function renderVistaPublishConfirm(plan) {
+  return ejs.render(vistaPublishConfirmSrc, { titulo: 'Publicar', cfg, plan, bloqueado: false, csrfToken: 'token-de-prueba' }, { filename: vistaPublishConfirmPath });
+}
+
+const htmlVacio = renderVistaPublishConfirm(planDePrueba({}));
+assert.ok(htmlVacio.indexOf('Recomendaciones') !== -1, 'debe aparecer el título "Recomendaciones"');
+assert.ok(htmlVacio.indexOf('Sin recomendaciones editoriales pendientes.') !== -1, 'estado vacío coherente cuando no hay recomendaciones');
+ok('publish-confirm.ejs: aparece el título "Recomendaciones" y el estado vacío cuando no hay ninguna');
+
+const mensajePeligroso = '<script>alert("x")</script> & < > " \' áéíóú ñ';
+const gruposConDatos = publishTest.agruparRecomendacionesPorElemento(
+  [{ codigo: 'SEO_KEYWORDS_SPARSE', ref: 'curso-ofimatica', campo: 'palabrasClave', categoria: 'seo', mensaje: mensajePeligroso }],
+  [{ id: 'curso-ofimatica', nombre: 'Curso de Ofimática' }]
+);
+const htmlConDatos = renderVistaPublishConfirm(planDePrueba({ recomendaciones: gruposConDatos }));
+assert.ok(htmlConDatos.indexOf('Curso de Ofimática') !== -1, 'debe aparecer el nombre del curso');
+assert.ok(htmlConDatos.indexOf('/cursos/curso-ofimatica/editar') !== -1, 'debe aparecer el enlace de edición cuando el curso es conocido');
+assert.ok(htmlConDatos.indexOf('SEO') !== -1 && htmlConDatos.indexOf('Palabras clave') !== -1, 'debe aparecer la categoría y el campo visibles');
+assert.ok(htmlConDatos.indexOf('SEO_KEYWORDS_SPARSE') === -1, 'el código interno nunca debe mostrarse');
+assert.ok(htmlConDatos.indexOf('<script>alert') === -1, 'el contenido HTML del mensaje debe escaparse, nunca renderizarse como HTML ejecutable');
+assert.ok(htmlConDatos.indexOf('&lt;script&gt;') !== -1, 'el mensaje escapado debe aparecer como entidades HTML');
+assert.ok(htmlConDatos.indexOf('&amp;') !== -1 && htmlConDatos.indexOf('&#34;') !== -1 && htmlConDatos.indexOf('&#39;') !== -1, 'los caracteres &, " y \' deben escaparse (EJS usa &#34; para las comillas dobles, no &quot;)');
+assert.ok(htmlConDatos.indexOf('áéíóú ñ') !== -1, 'las tildes y la ñ deben conservarse intactas');
+ok('publish-confirm.ejs: muestra curso/enlace/categoría/campo/mensaje, escapa HTML y caracteres especiales, y nunca muestra el código interno');
+
+const gruposSinCurso = publishTest.agruparRecomendacionesPorElemento(
+  [{ codigo: 'X', ref: '??', campo: 'x', categoria: 'seo', mensaje: 'mensaje sin curso' }], []
+);
+const htmlSinCurso = renderVistaPublishConfirm(planDePrueba({ recomendaciones: gruposSinCurso }));
+assert.ok(htmlSinCurso.indexOf('Curso no identificado') !== -1, 'un grupo sin curso conocido debe mostrarse como "Curso no identificado"');
+assert.ok(htmlSinCurso.indexOf('/cursos/null/editar') === -1, 'nunca debe construirse un enlace de edición con un identificador desconocido');
+ok('publish-confirm.ejs: una recomendación sin curso identificable se muestra sin enlace de edición');
+
+const htmlConErroresYAvisos = renderVistaPublishConfirm(planDePrueba({ ok: false, problemas: ['Problema bloqueante de prueba'], avisos: ['Aviso técnico de prueba'] }));
+assert.ok(htmlConErroresYAvisos.indexOf('Problema bloqueante de prueba') !== -1, 'los problemas bloqueantes deben seguir mostrándose igual que antes');
+assert.ok(htmlConErroresYAvisos.indexOf('Aviso técnico de prueba') !== -1, 'los avisos técnicos deben seguir mostrándose igual que antes');
+ok('publish-confirm.ejs: errores y avisos técnicos siguen renderizándose exactamente igual que antes de esta fase');
 
 console.log('\n' + pasadas + ' comprobaciones superadas.');

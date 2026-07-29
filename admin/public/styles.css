@@ -184,8 +184,22 @@ code{font:12px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--
 .flash-exito{background:var(--success-bg);color:var(--success);}
 .flash-error{background:var(--danger-bg);color:var(--danger);}
 .flash-warning{background:var(--warning-bg);color:var(--warning);}
+/* Variante informativa: contenido opcional que nunca bloquea nada (p.ej.
+   recomendaciones editoriales) — menor intensidad visual que warning/error,
+   reutilizable en cualquier módulo administrable, no solo cursos. */
+.flash-info{background:var(--primary-50);color:var(--primary-700);box-shadow:none;}
 .flash ul{margin:6px 0 0;padding-left:18px;}
 .flash strong{color:inherit;}
+.flash p{margin:2px 0 0;}
+
+/* ---------- agrupación genérica de elementos asociados a un registro
+   (p.ej. recomendaciones de un curso) — reutilizable fuera del módulo de
+   cursos ---------- */
+.item-group{margin-bottom:14px;}
+.item-group:last-child{margin-bottom:0;}
+.item-group-header{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px;}
+.item-group-header strong{font-size:13.5px;}
+.meta-tag{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.02em;margin-bottom:2px;}
 
 .unsaved-indicator{position:fixed;top:58px;right:20px;background:var(--warning-bg);color:var(--warning);padding:6px 14px;border-radius:100px;font-size:12px;font-weight:700;box-shadow:var(--shadow-md);z-index:45;}
 .form-actions{position:sticky;bottom:0;background:var(--bg);padding:14px 0;display:flex;gap:10px;border-top:1px solid var(--line);}
