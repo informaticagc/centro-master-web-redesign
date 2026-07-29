@@ -189,4 +189,63 @@ assert.ok(htmlGenerado.indexOf('&amp;amp;') === -1, 'no debe producirse doble es
 assert.ok(htmlGenerado.indexOf('&amp;lt;') === -1, 'no debe producirse doble escape de <');
 ok('renderFichaHTML() no aplica doble escape');
 
+// --- renderFichaHTML(): atributos HTML escapados en la ficha real generada ---
+// Curso de prueba SOLO en memoria — nunca se escribe en disco. imagen.src
+// apunta a una ruta ficticia (no necesita existir: renderFichaHTML no
+// accede al disco para las imágenes, solo concatena texto).
+const cursoConAtributosProblematicos = {
+  id: 'curso-test-attr', slug: 'curso-test-attr',
+  nombre: 'Curso "Especial" & <Seguro>',
+  descripcionCorta: 'Curso "seguro" & <útil>',
+  descripcionCompleta: null,
+  imagen: {
+    src: 'assets/curso-test.webp', srcset: null,
+    alt: 'Imagen "especial" <curso>',
+    objectPosition: '50% 40%;" onload="alert(1)',
+  },
+  situacionDestinataria: [], isla: 'Gran Canaria', municipio: null, sedeId: null,
+  modalidad: 'presencial', tipoPrecio: 'gratuito', precio: null, requisitos: [],
+  nivel: null, certificacion: null, tipoFormacion: null, duracionHoras: null, duracionTexto: null,
+  fechaInicio: null, fechaInicioAproximada: null, fechaFin: null, horario: null, ayudasBecas: null,
+  documentacionNecesaria: [], plazasDisponibles: null, inscripcionAbierta: false, urlInscripcion: null,
+  modulosUnidadesFormativas: [], estado: 'matricula-abierta',
+};
+const htmlAtributos = renderFichaHTML(cursoConAtributosProblematicos, {}, []);
+
+// alt no puede cerrar el atributo ni inyectar uno nuevo.
+assert.ok(htmlAtributos.indexOf('alt="Imagen &quot;especial&quot; &lt;curso&gt;"') !== -1, 'el alt de la imagen del hero debe aparecer escapado');
+assert.ok(htmlAtributos.indexOf('alt="Imagen "especial"') === -1, 'el alt no debe romper el atributo con comillas sin escapar');
+ok('renderFichaHTML() escapa el atributo alt de la imagen del hero');
+
+// El valor malicioso de objectPosition no debe crear un atributo onload real:
+// debe quedar contenido, escapado, dentro del propio atributo style (con
+// &quot; en vez de comillas reales) y no debe existir en ningún punto del
+// HTML la secuencia con comilla real que cerraría el atributo de verdad.
+assert.ok(htmlAtributos.indexOf('style="object-position:50% 40%;&quot; onload=&quot;alert(1);"') !== -1, 'object-position debe quedar contenido dentro del propio atributo style, escapado');
+assert.ok(htmlAtributos.indexOf(';" onload="alert(1)') === -1, 'no debe aparecer una comilla real que cierre el atributo style seguida de un onload real');
+ok('renderFichaHTML() neutraliza el intento de inyección de onload vía object-position');
+
+// content de las metaetiquetas escapado (&, <, > convertidos a entidades,
+// comillas sin romper el atributo).
+assert.ok(htmlAtributos.indexOf('<meta name="description" content="Curso &quot;seguro&quot; &amp; &lt;útil&gt;. Formación') !== -1 || htmlAtributos.indexOf('name="description" content="Curso &quot;seguro&quot; &amp; &lt;útil&gt;') !== -1, 'meta description debe quedar escapada');
+assert.ok(htmlAtributos.indexOf('property="og:title" content="Curso &quot;Especial&quot; &amp; &lt;Seguro&gt; — Centro de Estudios Máster"') !== -1, 'og:title debe quedar escapado, incluyendo el sufijo del centro');
+ok('renderFichaHTML() escapa el content de las metaetiquetas (description, og:title, og:description)');
+
+// El HTML estructural sigue siendo válido tras aplicar attr().
+assert.ok(htmlAtributos.indexOf('<div class="wrap">') !== -1, 'el contenedor raíz debe seguir intacto');
+assert.ok(htmlAtributos.indexOf('<header>') !== -1 && htmlAtributos.indexOf('<footer>') !== -1, 'header y footer deben seguir intactos');
+ok('renderFichaHTML() mantiene el HTML estructural válido tras escapar atributos');
+
+// Sin doble escape en los atributos.
+assert.ok(htmlAtributos.indexOf('&amp;quot;') === -1, 'no debe producirse doble escape de comillas en atributos');
+assert.ok(htmlAtributos.indexOf('&amp;amp;') === -1, 'no debe producirse doble escape de & en atributos');
+ok('renderFichaHTML() no aplica doble escape en atributos');
+
+// Los atributos URL permanecen sin cambios en esta etapa: el src de la
+// imagen se inserta tal cual (sin attr()) y el href de WhatsApp sigue
+// codificado con encodeURIComponent (URL-encoding), no con entidades HTML.
+assert.ok(htmlAtributos.indexOf('src="../../assets/curso-test.webp"') !== -1, 'el src de la imagen debe insertarse sin attr() en esta etapa');
+assert.ok(htmlAtributos.indexOf('href="https://wa.me/34682821956?text=Hola%2C%20quiero%20informaci%C3%B3n') !== -1, 'el href de WhatsApp debe seguir usando encodeURIComponent, no attr()/entidades HTML');
+ok('renderFichaHTML() deja los atributos URL (src, href) sin tocar en esta etapa');
+
 console.log('\n' + pasadas + ' comprobaciones superadas.');

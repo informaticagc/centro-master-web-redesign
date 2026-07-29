@@ -54,7 +54,7 @@ const ESTADOS_PUBLICABLES = ['proximamente', 'matricula-abierta', 'ultimas-plaza
 const tokens = require(path.join(__dirname, 'lib', 'tokens.js'));
 const partials = require(path.join(__dirname, 'lib', 'partials.js'));
 const format = require(path.join(__dirname, 'lib', 'format.js'));
-const { text } = require(path.join(__dirname, 'lib', 'escape.js'));
+const { text, attr } = require(path.join(__dirname, 'lib', 'escape.js'));
 
 const ESTADO_ORDEN_SIMILARES = { 'matricula-abierta': 0, 'ultimas-plazas': 1, 'en-curso': 2, 'proximamente': 3 };
 
@@ -127,7 +127,7 @@ function similarCardHTML(c) {
   const meta = estadoMeta(c.estado);
   const img = c.imagen || {};
   const photo = img.src
-    ? '<img src="../../' + img.src + '" alt="' + (img.alt || '') + '" loading="lazy" decoding="async">'
+    ? '<img src="../../' + img.src + '" alt="' + attr(img.alt || '') + '" loading="lazy" decoding="async">'
     : '';
   return '<div class="similar-card"><div class="photo">' + photo +
     '<span class="similar-status" style="background:' + meta.color + '">' + text(meta.label) + '</span></div>' +
@@ -225,10 +225,10 @@ function renderFichaHTML(curso, sedesById, publicCourses) {
 '<meta charset="utf-8">\n' +
 '<meta name="viewport" content="width=device-width, initial-scale=1">\n' +
 '<title>' + title + '</title>\n' +
-'<meta name="description" content="' + description.replace(/"/g, '&quot;') + '">\n' +
+'<meta name="description" content="' + attr(description) + '">\n' +
 '<meta property="og:type" content="article">\n' +
-'<meta property="og:title" content="' + title.replace(/"/g, '&quot;') + '">\n' +
-'<meta property="og:description" content="' + description.replace(/"/g, '&quot;') + '">\n' +
+'<meta property="og:title" content="' + attr(title) + '">\n' +
+'<meta property="og:description" content="' + attr(description) + '">\n' +
 (ogImage ? '<meta property="og:image" content="' + ogImage + '">\n' : '') +
 canonicalTag + '\n' +
 '<link rel="preconnect" href="https://fonts.googleapis.com">\n' +
@@ -315,7 +315,10 @@ finishedBanner + '\n' +
 (img.src ? '        <img src="../../' + img.src + '" ' + (img.srcset ? 'srcset="' + img.srcset.split(',').map(function (part) {
   const t = part.trim(); const i = t.indexOf(' ');
   return '../../' + (i === -1 ? t : t.slice(0, i)) + (i === -1 ? '' : t.slice(i));
-}).join(', ') + '" ' : '') + 'sizes="(max-width:1180px) 92vw, 50vw" alt="' + (img.alt || '') + '" style="object-position:' + (img.objectPosition || 'center') + ';"' + (isFinished ? ' class="finished"' : '') + '>\n' : '') +
+}).join(', ') + '" ' : '') + 'sizes="(max-width:1180px) 92vw, 50vw" alt="' + attr(img.alt || '') +
+// attr() protege el atributo HTML, no valida gramática CSS — la sintaxis
+// de object-position queda pendiente de validar en una etapa futura.
+'" style="object-position:' + attr(img.objectPosition || 'center') + ';"' + (isFinished ? ' class="finished"' : '') + '>\n' : '') +
 '        <span class="status-badge" style="background:' + meta.color + '">' + text(meta.label) + '</span>\n' +
 '      </div>\n' +
 '      <div>\n' +
