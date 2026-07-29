@@ -18,6 +18,8 @@ const model = require('../services/curso-model');
 const escape = require('../../scripts/lib/escape');
 const { renderFichaHTML, __test: buildFichasTest } = require('../../scripts/build-fichas');
 const { safeInternalHref, safeHttpsURL, safeHttpURL } = buildFichasTest;
+const editorialRules = require('../../scripts/lib/editorial-rules');
+const editorial = require('../services/editorial');
 
 let pasadas = 0;
 function ok(desc) { pasadas++; console.log('  ✓ ' + desc); }
@@ -743,5 +745,189 @@ ok('renderFichaHTML() acepta una urlInscripcion relativa sin prefijo, como "insc
   assert.ok(html.indexOf('file:') === -1, 'no debe aparecer file: en ningún atributo');
 });
 ok('renderFichaHTML() no deja rastro de esquemas javascript:, data: ni file: en ningún atributo URL');
+
+// --- Fase V4B: motor editorial unificado (scripts/lib/editorial-rules.js) ---
+
+// Regresión: admin/services/editorial.js sigue devolviendo exactamente los
+// mismos avisos {campo, mensaje} que antes de la extracción — mismo curso
+// de referencia usado ya en esta sesión para verificar el comportamiento.
+const cursoSinNada = {
+  nombre: 'x', imagen: {}, estado: 'borrador',
+  descripcionCorta: null, descripcionCompleta: null, fechaInicio: null, fechaInicioAproximada: null,
+  horario: null, requisitos: [], certificacion: null, familiaProfesional: null, palabrasClave: [],
+  sedeId: null, municipio: null, inscripcionAbierta: false, urlInscripcion: null,
+};
+const avisosEditorial = editorial.revisarCurso(cursoSinNada);
+assert.strictEqual(avisosEditorial.length, 8, 'revisarCurso() debe seguir devolviendo 8 avisos para un curso sin nada informado');
+assert.deepStrictEqual(avisosEditorial.map(function (a) { return a.campo; }), ['descripcionCorta', 'fechaInicio', 'horario', 'requisitos', 'certificacion', 'familiaProfesional', 'palabrasClave', 'municipio'], 'revisarCurso() debe seguir devolviendo los mismos campos en el mismo orden');
+assert.strictEqual(editorial.revisarCurso(Object.assign({}, cursoSinNada, { descripcionCorta: 'x', fechaInicio: '2026-01-01', horario: 'x', requisitos: ['x'], certificacion: 'x', familiaProfesional: 'x', palabrasClave: ['x'], municipio: 'x' })).length, 0, 'revisarCurso() no debe avisar de nada cuando todo está informado');
+assert.strictEqual(editorial.resumenEditorial([cursoSinNada]).length, 1, 'resumenEditorial() debe incluir cursos con avisos');
+assert.strictEqual(editorial.resumenEditorial([Object.assign({}, cursoSinNada, { descripcionCorta: 'x', fechaInicio: '2026-01-01', horario: 'x', requisitos: ['x'], certificacion: 'x', familiaProfesional: 'x', palabrasClave: ['x'], municipio: 'x' })]).length, 0, 'resumenEditorial() debe excluir cursos sin avisos');
+ok('admin/services/editorial.js: revisarCurso()/resumenEditorial() se comportan exactamente igual tras extraerse a scripts/lib/editorial-rules.js');
+
+// --- evaluarRecomendaciones(): SEO_KEYWORDS_SPARSE ---
+function conPalabrasClave(palabrasClave) {
+  return { nombre: 'Curso de prueba', imagen: { alt: 'foto descriptiva' }, palabrasClave: palabrasClave, descripcionCorta: null, descripcionCompleta: null };
+}
+[[], ['unica']].forEach(function (pk) {
+  const recs = editorialRules.evaluarRecomendaciones(conPalabrasClave(pk));
+  assert.ok(recs.some(function (r) { return r.codigo === 'SEO_KEYWORDS_SPARSE'; }), 'palabrasClave = ' + JSON.stringify(pk) + ' debería generar SEO_KEYWORDS_SPARSE');
+});
+[['a', 'b'], ['a', 'b', 'c', 'd', 'e']].forEach(function (pk) {
+  const recs = editorialRules.evaluarRecomendaciones(conPalabrasClave(pk));
+  assert.ok(!recs.some(function (r) { return r.codigo === 'SEO_KEYWORDS_SPARSE'; }), 'palabrasClave = ' + JSON.stringify(pk) + ' NO debería generar SEO_KEYWORDS_SPARSE');
+});
+ok('evaluarRecomendaciones(): SEO_KEYWORDS_SPARSE se activa con 0 o 1 palabra clave y no con 2 o más');
+
+// --- evaluarRecomendaciones(): IMAGE_ALT_IDENTICAL_TO_NAME ---
+function conAltYNombre(alt, nombre) {
+  return { nombre: nombre, imagen: { alt: alt }, palabrasClave: ['a', 'b'], descripcionCorta: null, descripcionCompleta: null };
+}
+assert.ok(editorialRules.evaluarRecomendaciones(conAltYNombre('Curso de ofimática', 'Curso de ofimática')).some(function (r) { return r.codigo === 'IMAGE_ALT_IDENTICAL_TO_NAME'; }), 'alt idéntico al nombre debe generar IMAGE_ALT_IDENTICAL_TO_NAME');
+assert.ok(!editorialRules.evaluarRecomendaciones(conAltYNombre('Foto de alumnado en el aula', 'Curso de ofimática')).some(function (r) { return r.codigo === 'IMAGE_ALT_IDENTICAL_TO_NAME'; }), 'alt distinto del nombre no debe generar la recomendación');
+assert.ok(editorialRules.evaluarRecomendaciones(conAltYNombre('  Curso de ofimática  ', 'Curso de ofimática')).some(function (r) { return r.codigo === 'IMAGE_ALT_IDENTICAL_TO_NAME'; }), 'espacios exteriores no deben impedir la igualdad tras trim()');
+assert.ok(!editorialRules.evaluarRecomendaciones(conAltYNombre('curso de ofimática', 'Curso de ofimática')).some(function (r) { return r.codigo === 'IMAGE_ALT_IDENTICAL_TO_NAME'; }), 'la comparación es sensible a mayúsculas/minúsculas (solo trim, sin normalizar mayúsculas)');
+// Los 3 casos documentados expresamente en el encargo (política aprobada:
+// trim(alt) === trim(nombre), sensible a mayúsculas — sin cambiar a
+// comparación insensible en esta fase).
+assert.ok(editorialRules.evaluarRecomendaciones(conAltYNombre('Curso de ofimática', 'Curso de ofimática')).some(function (r) { return r.codigo === 'IMAGE_ALT_IDENTICAL_TO_NAME'; }), 'caso documentado 1: "Curso de ofimática" vs "Curso de ofimática" -> recomendación');
+assert.ok(editorialRules.evaluarRecomendaciones(conAltYNombre(' Curso de ofimática ', 'Curso de ofimática')).some(function (r) { return r.codigo === 'IMAGE_ALT_IDENTICAL_TO_NAME'; }), 'caso documentado 2: " Curso de ofimática " vs "Curso de ofimática" -> recomendación');
+assert.ok(!editorialRules.evaluarRecomendaciones(conAltYNombre('CURSO DE OFIMÁTICA', 'Curso de ofimática')).some(function (r) { return r.codigo === 'IMAGE_ALT_IDENTICAL_TO_NAME'; }), 'caso documentado 3: "CURSO DE OFIMÁTICA" vs "Curso de ofimática" -> sin recomendación (sensible a mayúsculas)');
+ok('evaluarRecomendaciones(): IMAGE_ALT_IDENTICAL_TO_NAME compara igualdad exacta tras trim(), sensible a mayúsculas/minúsculas');
+
+// --- evaluarRecomendaciones(): CONTENT_DUPLICATED_TEXT ---
+function conDescripciones(corta, completa) {
+  return { nombre: 'x', imagen: { alt: 'foto' }, palabrasClave: ['a', 'b'], descripcionCorta: corta, descripcionCompleta: completa };
+}
+assert.ok(editorialRules.evaluarRecomendaciones(conDescripciones('Curso de ofimática.', 'Curso de ofimática.')).some(function (r) { return r.codigo === 'CONTENT_DUPLICATED_TEXT'; }), 'descripciones idénticas deben generar CONTENT_DUPLICATED_TEXT');
+assert.ok(editorialRules.evaluarRecomendaciones(conDescripciones('Curso de ofimática.', 'Curso de ofimática. Aprenderás Word, Excel y Outlook en sesiones prácticas.')).some(function (r) { return r.codigo === 'CONTENT_DUPLICATED_TEXT'; }), 'descripcionCompleta que contiene literalmente descripcionCorta debe generar la recomendación');
+assert.ok(!editorialRules.evaluarRecomendaciones(conDescripciones('Curso de ofimática.', 'Programa dirigido a personas desempleadas de Gran Canaria.')).some(function (r) { return r.codigo === 'CONTENT_DUPLICATED_TEXT'; }), 'descripciones completamente distintas no deben generar la recomendación');
+assert.ok(!editorialRules.evaluarRecomendaciones(conDescripciones(null, 'Curso de ofimática.')).some(function (r) { return r.codigo === 'CONTENT_DUPLICATED_TEXT'; }), 'con descripcionCorta vacía no debe generarse la recomendación');
+assert.ok(!editorialRules.evaluarRecomendaciones(conDescripciones('Curso de ofimática.', null)).some(function (r) { return r.codigo === 'CONTENT_DUPLICATED_TEXT'; }), 'con descripcionCompleta vacía no debe generarse la recomendación');
+ok('evaluarRecomendaciones(): CONTENT_DUPLICATED_TEXT detecta igualdad y contención literal (trim + minúsculas), nunca con alguna descripción vacía');
+
+// --- admin/services/validator.js: parsearSalidaValidador() (código real,
+// no una réplica de su lógica) ---
+const { parsearSalidaValidador } = require('../services/validator').__test;
+
+function lineaRecomendacion(obj) { return '  ? ' + JSON.stringify(obj); }
+const recomendacionValida = { codigo: 'SEO_KEYWORDS_SPARSE', ref: 'curso-ofimatica', campo: 'palabrasClave', categoria: 'seo', mensaje: 'Mensaje válido' };
+
+// Recomendación válida.
+const pUna = parsearSalidaValidador('--- x ---\n' + lineaRecomendacion(recomendacionValida) + '\nRESULTADO: OK\n');
+assert.strictEqual(pUna.recomendaciones.length, 1, 'una línea de recomendación válida debe producir 1 objeto');
+assert.deepStrictEqual(pUna.recomendaciones[0], recomendacionValida, 'el objeto parseado debe ser idéntico al original serializado');
+assert.strictEqual(pUna.errores.length, 0, 'no debe interpretarse nada como error');
+assert.strictEqual(pUna.avisos.length, 0, 'no debe interpretarse nada como aviso');
+ok('parsearSalidaValidador(): una línea de recomendación válida produce un objeto idéntico al original, sin afectar a errores/avisos');
+
+// Varias recomendaciones: dos líneas JSON distintas producen dos objetos
+// independientes, conservando el orden.
+const recA = Object.assign({}, recomendacionValida, { codigo: 'AAA' });
+const recB = Object.assign({}, recomendacionValida, { codigo: 'BBB' });
+const pVarias = parsearSalidaValidador(lineaRecomendacion(recA) + '\n' + lineaRecomendacion(recB) + '\n');
+assert.deepStrictEqual(pVarias.recomendaciones.map(function (r) { return r.codigo; }), ['AAA', 'BBB'], 'dos líneas distintas deben producir dos objetos, en el mismo orden en que aparecen');
+ok('parsearSalidaValidador(): varias líneas de recomendación producen objetos independientes, en el orden en que aparecen');
+
+// Caracteres especiales en "mensaje" — construidos con JSON.stringify() en
+// el propio fixture para no producir accidentalmente un JSON inválido.
+const mensajeEspecial = 'Contiene : | · " \\ áéíóú ñ sin romper nada';
+const recEspecial = Object.assign({}, recomendacionValida, { mensaje: mensajeEspecial });
+const pEspecial = parsearSalidaValidador(lineaRecomendacion(recEspecial) + '\n');
+assert.strictEqual(pEspecial.recomendaciones.length, 1, 'un mensaje con caracteres especiales sigue produciendo una recomendación');
+assert.strictEqual(pEspecial.recomendaciones[0].mensaje, mensajeEspecial, 'el mensaje debe conservarse exactamente igual, incluidos ":", "|", "·", comillas, barra invertida y tildes/ñ');
+ok('parsearSalidaValidador(): un mensaje con ":", "|", "·", comillas, barra invertida y tildes/ñ se conserva exactamente igual');
+
+// JSON inválido: ignorado sin lanzar excepción.
+['{', 'texto que no es JSON', '{"codigo":'].forEach(function (jsonRoto) {
+  let pRoto;
+  assert.doesNotThrow(function () { pRoto = parsearSalidaValidador('  ? ' + jsonRoto + '\n'); }, 'un JSON inválido ("' + jsonRoto + '") nunca debe lanzar una excepción');
+  assert.strictEqual(pRoto.recomendaciones.length, 0, 'un JSON inválido ("' + jsonRoto + '") no debe añadir ninguna recomendación');
+  assert.strictEqual(pRoto.errores.length, 0, 'un JSON inválido nunca se convierte en error de datos del curso');
+});
+ok('parsearSalidaValidador(): "{", texto sin forma de JSON y JSON truncado se ignoran sin lanzar excepción y sin convertirse en error');
+
+// Objeto incompleto: falta una de las 5 propiedades requeridas.
+['codigo', 'ref', 'campo', 'categoria', 'mensaje'].forEach(function (propAOmitir) {
+  const incompleto = Object.assign({}, recomendacionValida);
+  delete incompleto[propAOmitir];
+  const pIncompleto = parsearSalidaValidador(lineaRecomendacion(incompleto) + '\n');
+  assert.strictEqual(pIncompleto.recomendaciones.length, 0, 'un objeto sin "' + propAOmitir + '" debe ignorarse');
+});
+ok('parsearSalidaValidador(): un objeto al que le falta cualquiera de las 5 propiedades requeridas se ignora');
+
+// Tipo incorrecto: codigo numérico en vez de string.
+const pTipoIncorrecto = parsearSalidaValidador(lineaRecomendacion({ codigo: 123, ref: 'curso', campo: 'nombre', categoria: 'seo', mensaje: 'texto' }) + '\n');
+assert.strictEqual(pTipoIncorrecto.recomendaciones.length, 0, 'codigo numérico (no string) debe ignorarse');
+ok('parsearSalidaValidador(): una propiedad con tipo incorrecto (codigo numérico en vez de string) se ignora');
+
+// Valores no-objeto.
+['null', '[]', '"texto"', '123'].forEach(function (valorNoObjeto) {
+  const pNoObjeto = parsearSalidaValidador('  ? ' + valorNoObjeto + '\n');
+  assert.strictEqual(pNoObjeto.recomendaciones.length, 0, valorNoObjeto + ' (no es un objeto) debe ignorarse');
+});
+ok('parsearSalidaValidador(): valores JSON válidos pero no-objeto (null, [], "texto", 123) se ignoran');
+
+// Línea ordinaria con un "?" en medio, pero que no empieza por "?": no debe
+// interpretarse como recomendación.
+const pLineaOrdinaria = parsearSalidaValidador('  Se preguntó: ¿todo bien? sí, todo correcto.\n');
+assert.strictEqual(pLineaOrdinaria.recomendaciones.length, 0, 'una línea que contiene "?" en medio, pero no empieza por él, no debe interpretarse como recomendación');
+ok('parsearSalidaValidador(): una línea ordinaria con "?" en medio del texto no se interpreta como recomendación');
+
+// Seguridad: una propiedad adicional con apariencia de código no se
+// ejecuta — el parser se limita a JSON.parse(). Las 5 propiedades
+// obligatorias válidas ya bastan para aceptar el objeto; el contrato es
+// "como mínimo estas 5 claves", no "exactamente estas 5", así que una
+// propiedad extra no invalida la recomendación (ver comentario en
+// esRecomendacionValida(), admin/services/validator.js).
+let variableNoTocada = 'intacta';
+const recConPropiedadSospechosa = Object.assign({}, recomendacionValida, {
+  extra: 'require("child_process").execSync("echo pwned"); variableNoTocada = "modificada";',
+});
+const pSospechoso = parsearSalidaValidador(lineaRecomendacion(recConPropiedadSospechosa) + '\n');
+assert.strictEqual(pSospechoso.recomendaciones.length, 1, 'una propiedad adicional válida (string) no debe invalidar la recomendación');
+assert.strictEqual(typeof pSospechoso.recomendaciones[0].extra, 'string', 'la propiedad adicional debe llegar como texto plano, nunca ejecutarse');
+assert.strictEqual(variableNoTocada, 'intacta', 'el contenido de la recomendación nunca debe ejecutarse: ninguna variable del entorno de prueba debe verse alterada');
+ok('parsearSalidaValidador(): una propiedad adicional con apariencia de código nunca se ejecuta — el parser se limita a JSON.parse()');
+
+// --- runValidator(): prueba integrada contra los datos reales ---
+const resultadoIntegrado = runValidator();
+assert.strictEqual(resultadoIntegrado.ok, true, 'runValidator() sobre los datos reales debe dar ok === true');
+assert.strictEqual(resultadoIntegrado.errores.length, 0, 'runValidator() sobre los datos reales no debe reportar errores');
+assert.strictEqual(resultadoIntegrado.avisos.length, 5, 'runValidator() sobre los datos reales debe reportar exactamente 5 avisos');
+assert.strictEqual(resultadoIntegrado.recomendaciones.length, 1, 'runValidator() sobre los datos reales debe reportar exactamente 1 recomendación');
+const recomendacionReal = resultadoIntegrado.recomendaciones[0];
+assert.strictEqual(recomendacionReal.codigo, 'SEO_KEYWORDS_SPARSE');
+assert.strictEqual(recomendacionReal.ref, 'curso-ofimatica');
+assert.strictEqual(recomendacionReal.campo, 'palabrasClave');
+assert.strictEqual(recomendacionReal.categoria, 'seo');
+assert.strictEqual(typeof recomendacionReal.mensaje, 'string');
+assert.ok(recomendacionReal.mensaje.length > 0, 'el mensaje real no debe estar vacío');
+ok('runValidator(): prueba integrada contra los datos reales — ok/errores/avisos/recomendaciones con la estructura y cifras esperadas');
+
+// --- scripts/validate-data.js: estadística global "campos nunca utilizados" ---
+// 2 cursos: certificacion informada solo en uno (parcial, 50%), ayudasBecas
+// nunca informada (0%), modalidad siempre informada (100%, ya obligatoria).
+(function () {
+  const cursoA = cursoDePruebaValidacion({ id: 'curso-stat-a', slug: 'curso-stat-a', certificacion: 'Certificado', ayudasBecas: null });
+  const cursoB = cursoDePruebaValidacion({ id: 'curso-stat-b', slug: 'curso-stat-b', certificacion: null, ayudasBecas: null });
+  const r = ejecutarValidadorConCursos([cursoA, cursoB]);
+  assert.ok(/ayudasBecas\.+ 0\/2/.test(r.raw), 'ayudasBecas (0% informado) debe listarse en "Campos nunca utilizados"');
+  assert.ok(!/\bcertificacion\.+ /.test(r.raw), 'certificacion (50% informado, parcial) NO debe listarse en "Campos nunca utilizados"');
+  assert.ok(!/modalidad\.+ 0\/2/.test(r.raw), 'modalidad (100% informado) NO debe listarse en "Campos nunca utilizados"');
+})();
+ok('scripts/validate-data.js: la estadística global de campos sin uso distingue 0%, parcial y 100%, y no afecta a errores/avisos/recomendaciones');
+
+// Campos técnicos, internos, generados o dormidos deben quedar SIEMPRE
+// fuera de "Campos nunca utilizados", aunque estén al 0% (codigo,
+// prioridadColectivos y precio son 0% en la fixture base por defecto).
+(function () {
+  const r = ejecutarValidadorConCurso(cursoDePruebaValidacion({}));
+  ['codigo', 'prioridadColectivos', 'precio', 'sedeId', 'destacado', 'urlFicha'].forEach(function (campo) {
+    const regexCampo = new RegExp('· ' + campo + '\\.* \\d+/\\d+');
+    assert.ok(!regexCampo.test(r.raw), '"' + campo + '" es técnico/interno/dormido y nunca debe listarse en "Campos nunca utilizados", aunque esté al 0%');
+  });
+})();
+ok('scripts/validate-data.js: la lista de campos auditables excluye explícitamente identificadores técnicos, ordenación, URLs generadas y campos dormidos');
 
 console.log('\n' + pasadas + ' comprobaciones superadas.');

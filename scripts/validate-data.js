@@ -13,6 +13,7 @@ const path = require('path');
 const {
   safeHttpOrRelativeURL, safeImageURL, esDescriptorSrcsetValido,
 } = require('./lib/url-policy.js');
+const { evaluarRecomendaciones } = require('./lib/editorial-rules.js');
 
 const ROOT = path.join(__dirname, '..');
 // VALIDATE_DATA_DIR: override opcional (usado por admin/ para validar una
@@ -80,6 +81,28 @@ const CAMPOS_CRITICOS_SI_VACIOS = [
   'fechaInicio', 'descripcionCorta', 'descripcionCompleta', 'urlFicha',
 ];
 
+// Campos con significado editorial real, auditados por la estadística
+// global de "campos nunca utilizados" (Fase V4B). Lista explícita y fija
+// (subconjunto de CAMPOS_RAIZ_CURSO, no derivada de las claves presentes en
+// los cursos reales — un campo editorial legítimo ausente en los 4 cursos
+// actuales no debe desaparecer silenciosamente de la auditoría). Se
+// excluye deliberadamente lo que NO representa una carencia de contenido
+// editorial si aparece en 0%:
+//  - identificadores/estructurales: id, slug, estado (ya son obligatorios
+//    y se validan aparte; 0% en ellos sería un error, no información)
+//  - dormidos, sin ningún consumidor hoy (ver informe de auditoría):
+//    codigo, precio, prioridadColectivos
+//  - técnicos/internos, no son contenido editorial en sí mismos:
+//    sedeId (FK a sedes.json), inscripcionAbierta (flag booleano),
+//    destacado (flag de Home), orden (ordenación técnica)
+//  - generados automáticamente si faltan: urlFicha (usa cursos/{slug}/)
+//  - imagen (objeto compuesto, no un campo escalar — sus subcampos no se
+//    auditan aquí)
+const CAMPOS_AUDITABLES_EDITORIAL = CAMPOS_RAIZ_CURSO.filter((campo) => [
+  'id', 'codigo', 'slug', 'imagen', 'sedeId', 'inscripcionAbierta',
+  'estado', 'destacado', 'orden', 'urlFicha', 'precio', 'prioridadColectivos',
+].indexOf(campo) === -1);
+
 function esNombreDeCampoValido(nombre) {
   if (CAMPOS_RAIZ_CURSO.indexOf(nombre) !== -1) return true;
   if (nombre.indexOf('administrativo.') === 0) {
@@ -103,9 +126,14 @@ function esBooleanoValido(valor) {
 
 const errores = [];
 const avisos = [];
+// recomendaciones: tercera colección (Fase V4B), objetos estructurados
+// {codigo, ref, campo, categoria, mensaje} — nunca bloquean el guardado ni
+// el build, nunca se cuentan como error ni como aviso.
+const recomendaciones = [];
 
 function err(msg) { errores.push(msg); }
 function warn(msg) { avisos.push(msg); }
+function recomendar(obj) { recomendaciones.push(obj); }
 
 function leerJson(nombreArchivo) {
   const p = path.join(DATA_DIR, nombreArchivo);
@@ -244,6 +272,8 @@ if (sedesData) {
 // ---------------------------------------------------------------------
 // cursos.json
 // ---------------------------------------------------------------------
+// Informativo (Fase V4B), no error/aviso/recomendación — ver más abajo.
+let camposNuncaUtilizados = [];
 if (cursosData) {
   const cursos = cursosData.cursos || [];
   const estadosPermitidos = cursosData.estadosPermitidos || ESTADOS_VALIDOS;
@@ -510,7 +540,31 @@ if (cursosData) {
         }
       });
     }
+
+    // Recomendaciones (Fase V4B): oportunidades de mejora editorial/SEO
+    // objetivas, nunca error ni aviso — ver scripts/lib/editorial-rules.js.
+    evaluarRecomendaciones(c).forEach((r) => {
+      recomendar(Object.assign({ ref: c.id || '??' }, r));
+    });
   });
+
+  // Estadística global de campos sin uso (Fase V4B): informativa para
+  // desarrolladores, no es error/aviso/recomendación y no afecta al código
+  // de salida. Se calcula sobre TODOS los cursos de cursos.json, no solo
+  // los publicables. "Informado" reutiliza el mismo criterio que esVacio()
+  // (null/undefined/array vacío) más string vacía o solo espacios.
+  function campoInformado(valor) {
+    if (valor === null || valor === undefined) return false;
+    if (Array.isArray(valor)) return valor.length > 0;
+    if (typeof valor === 'string') return valor.trim() !== '';
+    return true;
+  }
+  camposNuncaUtilizados = cursos.length
+    ? CAMPOS_AUDITABLES_EDITORIAL.map((campo) => {
+      const informados = cursos.filter((c) => campoInformado(c[campo])).length;
+      return { campo, informados, total: cursos.length };
+    }).filter((x) => x.informados === 0)
+    : [];
 
   // Colisiones de URL de ficha: cada curso publicable resuelve a
   // urlFicha || "cursos/{slug}/" — dos cursos no pueden resolver a la misma
@@ -591,6 +645,23 @@ console.log(`Errores: ${errores.length}`);
 errores.forEach((e) => console.log('  ✗ ' + e));
 console.log(`Avisos: ${avisos.length}`);
 avisos.forEach((a) => console.log('  ! ' + a));
+// Formato "? " + JSON.stringify(...): a diferencia de errores/avisos (texto
+// libre, nunca contiene los caracteres delimitadores usados por su propio
+// parser), una recomendación sí puede contener ":", "|" o "·" dentro de
+// "mensaje" o "campo" — separar por esos caracteres sería un parser frágil.
+// JSON.stringify() ya escapa cualquier carácter problemático (incluidas
+// comillas o saltos de línea), así que admin/services/validator.js puede
+// extraer la parte tras "? " y aplicar JSON.parse() de forma segura.
+console.log(`Recomendaciones: ${recomendaciones.length}`);
+recomendaciones.forEach((r) => console.log('  ? ' + JSON.stringify(r)));
+
+if (camposNuncaUtilizados.length) {
+  console.log('\nCampos nunca utilizados (informativo, no afecta al resultado):');
+  const anchoMax = Math.max.apply(null, camposNuncaUtilizados.map((x) => x.campo.length));
+  camposNuncaUtilizados.forEach((x) => {
+    console.log('  · ' + x.campo.padEnd(anchoMax, '.') + ' ' + x.informados + '/' + x.total);
+  });
+}
 
 if (errores.length > 0) {
   console.log('\nRESULTADO: FALLÓ');
