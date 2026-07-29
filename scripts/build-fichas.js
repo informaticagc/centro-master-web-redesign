@@ -54,7 +54,7 @@ const ESTADOS_PUBLICABLES = ['proximamente', 'matricula-abierta', 'ultimas-plaza
 const tokens = require(path.join(__dirname, 'lib', 'tokens.js'));
 const partials = require(path.join(__dirname, 'lib', 'partials.js'));
 const format = require(path.join(__dirname, 'lib', 'format.js'));
-const { text, attr } = require(path.join(__dirname, 'lib', 'escape.js'));
+const { text, attr, safeURL } = require(path.join(__dirname, 'lib', 'escape.js'));
 
 const ESTADO_ORDEN_SIMILARES = { 'matricula-abierta': 0, 'ultimas-plazas': 1, 'en-curso': 2, 'proximamente': 3 };
 
@@ -85,6 +85,115 @@ const TIPO_PRECIO_LABELS = format.TIPO_PRECIO_LABELS;
 // ---------------------------------------------------------------------
 const CatalogRepository = require(path.join(WEB_DIR, 'js', 'catalog-repository.js'));
 CatalogRepository.setBaseUrl(DATA_DIR);
+
+// ---------------------------------------------------------------------
+// Validación de URLs por destino. safeURL() (scripts/lib/escape.js) ya
+// filtra esquemas peligrosos (javascript:, data:, vbscript:, file:...),
+// rutas UNC/Windows y URLs protocol-relative — lista blanca de esquemas
+// permitidos (http/https/mailto/tel) o ruta relativa. Las funciones de
+// aquí añaden, sobre esa base, la política concreta de cada destino: qué
+// subconjunto de lo que safeURL() ya considera "seguro" es además
+// apropiado para ESE atributo. Ninguna sustituye el escape de atributo:
+// toda URL aceptada se envuelve siempre en attr() en el punto de
+// inserción, nunca se inserta solo con safeURL().
+// ---------------------------------------------------------------------
+
+// Extrae el esquema de una URL ya validada por safeURL() (en minúsculas,
+// con los dos puntos, p.ej. "https:") o null si no tiene esquema (es decir,
+// es una ruta relativa). Se usa para comprobar el esquema real en vez de
+// depender de que la URL empiece por un prefijo de texto como "https://".
+function extraerEsquema(url) {
+  const m = /^([a-zA-Z][a-zA-Z0-9+.-]*):/.exec(url);
+  return m ? (m[1].toLowerCase() + ':') : null;
+}
+
+// Política compartida por imágenes y por la CTA de inscripción: absoluta
+// http(s) o ruta relativa web. Nunca mailto:, tel:, ni una ancla/consulta
+// sueltas (sin base). No es una política "de imágenes": es la política
+// http-o-relativo que ambos destinos comparten hoy.
+// Acepta rutas relativas sin prefijo porque los recursos del proyecto
+// se almacenan también como "assets/archivo.webp".
+function safeHttpOrRelativeURL(value) {
+  const url = safeURL(value);
+  if (!url) return null;
+  const esquema = extraerEsquema(url);
+  if (esquema) return (esquema === 'http:' || esquema === 'https:') ? url : null;
+  if (url.charAt(0) === '#' || url.charAt(0) === '?') return null;
+  return url;
+}
+
+// Imágenes (src): una inscripción no es una imagen, pero hoy comparten la
+// misma política — se delega en safeHttpOrRelativeURL() en vez de duplicar
+// la lógica. El día que diverjan, esta función deja de ser un alias.
+function safeImageURL(value) {
+  return safeHttpOrRelativeURL(value);
+}
+
+// Enlaces internos entre fichas (fichaHrefDesdeFicha): solo se aceptan
+// rutas que empiecen por "/", "./" o "../" — nunca una URL absoluta (ni
+// siquiera http/https) ni una ancla/consulta sueltas, ni una cadena
+// relativa ambigua como "curso.html" (fichaHrefDesdeFicha() siempre
+// devuelve algo que empieza por "../", ver scripts/lib/format.js). Si
+// alguna vez devolviera otra cosa, es un error de programación (se
+// registra con err() en similarCardHTML y se omite el enlace).
+function safeInternalHref(value) {
+  const url = safeURL(value);
+  if (!url) return null;
+  if (url.charAt(0) === '/' || url.indexOf('./') === 0 || url.indexOf('../') === 0) return url;
+  return null;
+}
+
+// WhatsApp (whatsappCourseHref/whatsappNextIntakeHref): siempre debe ser
+// una URL absoluta https — es lo único que construyen esas funciones
+// internas, pero se valida igualmente antes de insertarla, comprobando el
+// esquema real (no un prefijo de texto).
+function safeHttpsURL(value) {
+  const url = safeURL(value);
+  if (!url) return null;
+  return extraerEsquema(url) === 'https:' ? url : null;
+}
+
+// Canonical y og:image: absoluta, http o https — nunca una ruta relativa,
+// aunque safeURL() la considere válida en general (hoy inactivas mientras
+// SITE_BASE_URL esté vacío, ver más abajo).
+function safeHttpURL(value) {
+  const url = safeURL(value);
+  if (!url) return null;
+  const esquema = extraerEsquema(url);
+  return (esquema === 'http:' || esquema === 'https:') ? url : null;
+}
+
+// Descriptor de srcset: entero positivo seguido de "w" o "x" — el único
+// patrón que necesita hoy el proyecto (ver imagen.srcset en cursos.json).
+// Deliberadamente no admite densidades decimales (p.ej. "1.5x") ni texto
+// arbitrario; no se amplía mientras los datos reales solo usen enteros.
+function esDescriptorSrcsetValido(descriptor) {
+  return /^[1-9]\d*(w|x)$/.test(descriptor);
+}
+
+// srcset no es una URL suelta: es una lista "url descriptor, url
+// descriptor" con sintaxis propia. Cada candidato se valida por separado
+// (URL con la misma política que las imágenes, descriptor contra el
+// patrón numérico de arriba) y el atributo se reconstruye solo con los
+// candidatos válidos. Un candidato sin descriptor, o con más de dos
+// componentes separados por espacio, se descarta entero. Si ninguno es
+// válido, no se genera el atributo (nunca srcset="").
+function safeSrcset(rawSrcset) {
+  if (esVacio(rawSrcset)) return null;
+  const candidatos = rawSrcset.split(',').map(function (part) {
+    const trimmed = part.trim();
+    if (!trimmed) return null;
+    const espacio = trimmed.indexOf(' ');
+    if (espacio === -1) return null; // sin descriptor: se descarta el candidato completo
+    const urlBruta = trimmed.slice(0, espacio);
+    const descriptor = trimmed.slice(espacio + 1).trim();
+    if (!esDescriptorSrcsetValido(descriptor)) return null;
+    const url = safeImageURL(urlBruta);
+    if (!url) return null;
+    return '../../' + url + ' ' + descriptor;
+  }).filter(function (c) { return c !== null; });
+  return candidatos.length ? candidatos.join(', ') : null;
+}
 
 /**
  * Algoritmo de "cursos similares" (solo se usa en fichas de curso
@@ -126,14 +235,18 @@ function calcularSimilares(curso, publicCourses) {
 function similarCardHTML(c) {
   const meta = estadoMeta(c.estado);
   const img = c.imagen || {};
-  const photo = img.src
-    ? '<img src="../../' + img.src + '" alt="' + attr(img.alt || '') + '" loading="lazy" decoding="async">'
+  const safeSrc = safeImageURL(img.src);
+  const photo = safeSrc
+    ? '<img src="' + attr('../../' + safeSrc) + '" alt="' + attr(img.alt || '') + '" loading="lazy" decoding="async">'
     : '';
+  const safeHref = safeInternalHref(fichaHrefDesdeFicha(c));
+  if (!safeHref) err('similarCardHTML: fichaHrefDesdeFicha() devolvió un enlace interno inválido para "' + (c.id || '??') + '" — se omite el enlace "Ver curso".');
+  const enlace = safeHref ? '<a href="' + attr(safeHref) + '">Ver curso →</a>' : '';
   return '<div class="similar-card"><div class="photo">' + photo +
     '<span class="similar-status" style="background:' + meta.color + '">' + text(meta.label) + '</span></div>' +
     '<div class="body"><h3>' + text(c.nombre) + '</h3><div class="meta">' + text(MODALIDAD_LABELS[c.modalidad] || c.modalidad) + ' · ' + text(c.isla) +
     (durationLabel(c) ? ' · ' + text(durationLabel(c)) : '') + '</div>' +
-    '<a href="' + fichaHrefDesdeFicha(c) + '">Ver curso →</a></div></div>';
+    enlace + '</div></div>';
 }
 
 // ---------------------------------------------------------------------
@@ -171,8 +284,18 @@ function renderFichaHTML(curso, sedesById, publicCourses) {
   const img = curso.imagen || {};
   const title = curso.nombre + ' — Centro de Estudios Máster';
   const description = buildMetaDescription(curso);
-  const canonicalTag = SITE_BASE_URL ? '\n<link rel="canonical" href="' + SITE_BASE_URL + '/cursos/' + curso.slug + '/">' : '';
-  const ogImage = SITE_BASE_URL && img.src ? SITE_BASE_URL + '/' + img.src : '';
+  // Ambas URL son absolutas por construcción (http o https) — hoy siempre
+  // null porque SITE_BASE_URL está vacío (ver comentario junto a su
+  // declaración). Si en el futuro se configura, safeHttpURL() sigue
+  // exigiendo que el resultado sea una URL absoluta http/https válida.
+  const canonicalURL = SITE_BASE_URL ? safeHttpURL(SITE_BASE_URL + '/cursos/' + curso.slug + '/') : null;
+  const canonicalTag = canonicalURL ? '\n<link rel="canonical" href="' + attr(canonicalURL) + '">' : '';
+  const ogImageURL = SITE_BASE_URL && img.src ? safeHttpURL(SITE_BASE_URL + '/' + img.src) : null;
+  // Mismo fallback que ya existía: sin imagen válida, no se genera <img> —
+  // .hero-photo sigue mostrando el fondo (var(--tint)) y el badge de
+  // estado, que se renderiza aparte, fuera de este condicional.
+  const safeHeroImgSrc = safeImageURL(img.src);
+  const safeHeroSrcset = safeSrcset(img.srcset);
 
   const certNivel = certificacionNivelText(curso);
   const destinatarios = destinatariosText(curso);
@@ -187,21 +310,41 @@ function renderFichaHTML(curso, sedesById, publicCourses) {
 
   // CTA principal: nunca un enlace muerto. Si no hay urlInscripcion real ni
   // inscripción abierta, no se muestra ninguna CTA de "inscripción" falsa —
-  // solo queda el WhatsApp de contacto.
+  // solo queda el WhatsApp de contacto. Ahora, además: ninguna CTA se
+  // genera si su URL no pasa la validación de destino correspondiente —
+  // "enlace muerto" incluye también "enlace peligroso".
   let primaryCta = '';
   let showSecondaryWhatsapp = true;
   if (isFinished) {
-    primaryCta = '<a href="' + whatsappNextIntakeHref(curso.nombre) + '" target="_blank" rel="noopener" class="cta-solid">Consultar próxima convocatoria</a>';
-    showSecondaryWhatsapp = false; // la CTA principal ya es el WhatsApp contextual
+    const safeNextIntake = safeHttpsURL(whatsappNextIntakeHref(curso.nombre));
+    if (safeNextIntake) {
+      primaryCta = '<a href="' + attr(safeNextIntake) + '" target="_blank" rel="noopener" class="cta-solid">Consultar próxima convocatoria</a>';
+      showSecondaryWhatsapp = false; // la CTA principal ya es el WhatsApp contextual
+    } else {
+      err('renderFichaHTML: whatsappNextIntakeHref() devolvió una URL inválida para "' + curso.id + '".');
+    }
   } else if (curso.urlInscripcion) {
-    const external = /^https?:\/\//.test(curso.urlInscripcion);
-    primaryCta = '<a href="' + curso.urlInscripcion + '" class="cta-solid"' + (external ? ' target="_blank" rel="noopener"' : '') + '>Solicitar plaza</a>';
+    // Una inscripción no es una imagen: usa directamente la política
+    // http-o-relativo, no la función pensada para imágenes.
+    const safeInscripcion = safeHttpOrRelativeURL(curso.urlInscripcion);
+    if (safeInscripcion) {
+      const external = /^https?:\/\//.test(safeInscripcion);
+      primaryCta = '<a href="' + attr(safeInscripcion) + '" class="cta-solid"' + (external ? ' target="_blank" rel="noopener"' : '') + '>Solicitar plaza</a>';
+    } else {
+      warn('renderFichaHTML: curso.urlInscripcion inválida para "' + curso.id + '" — se omite la CTA de inscripción (dato editorial, no bloquea el build).');
+    }
   } else if (curso.inscripcionAbierta) {
-    primaryCta = '<a href="' + whatsappCourseHref(curso.nombre) + '" target="_blank" rel="noopener" class="cta-solid">Solicitar información</a>';
-    showSecondaryWhatsapp = false; // sería el mismo enlace duplicado
+    const safeCourseHref = safeHttpsURL(whatsappCourseHref(curso.nombre));
+    if (safeCourseHref) {
+      primaryCta = '<a href="' + attr(safeCourseHref) + '" target="_blank" rel="noopener" class="cta-solid">Solicitar información</a>';
+      showSecondaryWhatsapp = false; // sería el mismo enlace duplicado
+    } else {
+      err('renderFichaHTML: whatsappCourseHref() devolvió una URL inválida para "' + curso.id + '".');
+    }
   }
-  const secondaryWhatsapp = showSecondaryWhatsapp
-    ? '<a href="' + whatsappCourseHref(curso.nombre) + '" target="_blank" rel="noopener" class="cta-outline">📱 WhatsApp</a>'
+  const safeSecondaryHref = showSecondaryWhatsapp ? safeHttpsURL(whatsappCourseHref(curso.nombre)) : null;
+  const secondaryWhatsapp = safeSecondaryHref
+    ? '<a href="' + attr(safeSecondaryHref) + '" target="_blank" rel="noopener" class="cta-outline">📱 WhatsApp</a>'
     : '';
 
   const finishedBanner = isFinished
@@ -229,7 +372,7 @@ function renderFichaHTML(curso, sedesById, publicCourses) {
 '<meta property="og:type" content="article">\n' +
 '<meta property="og:title" content="' + attr(title) + '">\n' +
 '<meta property="og:description" content="' + attr(description) + '">\n' +
-(ogImage ? '<meta property="og:image" content="' + ogImage + '">\n' : '') +
+(ogImageURL ? '<meta property="og:image" content="' + attr(ogImageURL) + '">\n' : '') +
 canonicalTag + '\n' +
 '<link rel="preconnect" href="https://fonts.googleapis.com">\n' +
 '<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">\n' +
@@ -312,10 +455,7 @@ finishedBanner + '\n' +
 '  <div class="course-wrap">\n' +
 '    <div class="course-hero">\n' +
 '      <div class="hero-photo">\n' +
-(img.src ? '        <img src="../../' + img.src + '" ' + (img.srcset ? 'srcset="' + img.srcset.split(',').map(function (part) {
-  const t = part.trim(); const i = t.indexOf(' ');
-  return '../../' + (i === -1 ? t : t.slice(0, i)) + (i === -1 ? '' : t.slice(i));
-}).join(', ') + '" ' : '') + 'sizes="(max-width:1180px) 92vw, 50vw" alt="' + attr(img.alt || '') +
+(safeHeroImgSrc ? '        <img src="' + attr('../../' + safeHeroImgSrc) + '" ' + (safeHeroSrcset ? 'srcset="' + attr(safeHeroSrcset) + '" ' : '') + 'sizes="(max-width:1180px) 92vw, 50vw" alt="' + attr(img.alt || '') +
 // attr() protege el atributo HTML, no valida gramática CSS — la sintaxis
 // de object-position queda pendiente de validar en una etapa futura.
 '" style="object-position:' + attr(img.objectPosition || 'center') + ';"' + (isFinished ? ' class="finished"' : '') + '>\n' : '') +
@@ -472,4 +612,23 @@ if (require.main === module) {
   });
 }
 
-module.exports = { renderFichaHTML: renderFichaHTML };
+// API pública normal de este fichero: solo renderFichaHTML(). Los
+// validadores de URL por destino son detalles internos de implementación.
+// __test expone, únicamente para admin/test/smoke.js, los tres que no se
+// pueden ejercitar de forma realista a través de renderFichaHTML() con la
+// configuración actual del proyecto: safeInternalHref() (fichaHrefDesdeFicha
+// siempre devuelve una ruta que empieza por "../", nunca se puede provocar
+// con datos reales el caso de un enlace absoluto) y safeHttpsURL()/
+// safeHttpURL() (whatsappCourseHref/whatsappNextIntakeHref siempre
+// construyen https, y SITE_BASE_URL está vacío, así que sus ramas de
+// rechazo son inalcanzables por esta vía). No se convierten en
+// infraestructura compartida — siguen siendo funciones internas de este
+// fichero, no del módulo scripts/lib/escape.js.
+module.exports = {
+  renderFichaHTML: renderFichaHTML,
+  __test: {
+    safeInternalHref: safeInternalHref,
+    safeHttpsURL: safeHttpsURL,
+    safeHttpURL: safeHttpURL,
+  },
+};

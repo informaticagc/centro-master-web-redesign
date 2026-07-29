@@ -13,7 +13,8 @@ const { runValidator } = require('../services/validator');
 const publish = require('../services/publish');
 const model = require('../services/curso-model');
 const escape = require('../../scripts/lib/escape');
-const { renderFichaHTML } = require('../../scripts/build-fichas');
+const { renderFichaHTML, __test: buildFichasTest } = require('../../scripts/build-fichas');
+const { safeInternalHref, safeHttpsURL, safeHttpURL } = buildFichasTest;
 
 let pasadas = 0;
 function ok(desc) { pasadas++; console.log('  ✓ ' + desc); }
@@ -247,5 +248,151 @@ ok('renderFichaHTML() no aplica doble escape en atributos');
 assert.ok(htmlAtributos.indexOf('src="../../assets/curso-test.webp"') !== -1, 'el src de la imagen debe insertarse sin attr() en esta etapa');
 assert.ok(htmlAtributos.indexOf('href="https://wa.me/34682821956?text=Hola%2C%20quiero%20informaci%C3%B3n') !== -1, 'el href de WhatsApp debe seguir usando encodeURIComponent, no attr()/entidades HTML');
 ok('renderFichaHTML() deja los atributos URL (src, href) sin tocar en esta etapa');
+
+// --- safeInternalHref() (__test): fichaHrefDesdeFicha() SIEMPRE devuelve
+// algo que empieza por "../" (ver scripts/lib/format.js), así que el caso
+// de un enlace interno absoluto es imposible de provocar con datos reales
+// a través de renderFichaHTML() — se prueba directamente vía __test. ---
+assert.strictEqual(safeInternalHref('/cursos/ofimatica/'), '/cursos/ofimatica/');
+assert.strictEqual(safeInternalHref('./ofimatica/'), './ofimatica/');
+assert.strictEqual(safeInternalHref('../ofimatica/'), '../ofimatica/');
+ok('safeInternalHref() acepta rutas que empiezan por "/", "./" o "../"');
+
+assert.strictEqual(safeInternalHref('curso.html'), null, 'una ruta relativa ambigua sin prefijo "/", "./" ni "../" no es la forma que produce fichaHrefDesdeFicha() y debe rechazarse');
+assert.strictEqual(safeInternalHref('https://example.com'), null, 'un enlace interno absoluto es un error de programación y debe rechazarse');
+assert.strictEqual(safeInternalHref('http://example.com'), null);
+assert.strictEqual(safeInternalHref('//example.com'), null);
+assert.strictEqual(safeInternalHref('#fragmento'), null);
+assert.strictEqual(safeInternalHref('?consulta=1'), null);
+assert.strictEqual(safeInternalHref('mailto:info@example.com'), null);
+assert.strictEqual(safeInternalHref('tel:+34928000000'), null);
+ok('safeInternalHref() rechaza URLs absolutas, protocol-relative, mailto/tel, fragmento/consulta sueltos y rutas ambiguas sin prefijo');
+
+// --- safeHttpsURL() (__test): whatsappCourseHref()/whatsappNextIntakeHref()
+// siempre construyen https, así que su rama de rechazo es inalcanzable con
+// datos reales a través de renderFichaHTML() — se prueba directamente. ---
+assert.strictEqual(safeHttpsURL('https://wa.me/34682821956?text=hola'), 'https://wa.me/34682821956?text=hola');
+ok('safeHttpsURL() acepta una URL absoluta https');
+
+assert.strictEqual(safeHttpsURL('http://wa.me/34682821956'), null, 'una URL de WhatsApp no-https debe rechazarse, comprobando el esquema real, no un prefijo de texto');
+assert.strictEqual(safeHttpsURL('/wa.me/34682821956'), null);
+assert.strictEqual(safeHttpsURL('mailto:info@example.com'), null);
+assert.strictEqual(safeHttpsURL('tel:+34928000000'), null);
+assert.strictEqual(safeHttpsURL('#fragmento'), null);
+assert.strictEqual(safeHttpsURL('?consulta=1'), null);
+ok('safeHttpsURL() rechaza relativas, http, mailto, tel y fragmento/consulta sueltos');
+
+// --- safeHttpURL() (__test): canonical/og:image, siempre null hoy porque
+// SITE_BASE_URL está vacío — su rama de rechazo de rutas relativas es
+// inalcanzable con datos reales a través de renderFichaHTML(). ---
+assert.strictEqual(safeHttpURL('https://example.com/cursos/ofimatica/'), 'https://example.com/cursos/ofimatica/');
+assert.strictEqual(safeHttpURL('http://example.com/cursos/ofimatica/'), 'http://example.com/cursos/ofimatica/');
+ok('safeHttpURL() acepta URLs absolutas http o https');
+
+assert.strictEqual(safeHttpURL('/cursos/ofimatica/'), null, 'un canonical/og:image relativo debe rechazarse aunque safeURL() lo considere válido en general (se omite la etiqueta)');
+assert.strictEqual(safeHttpURL('mailto:info@example.com'), null);
+assert.strictEqual(safeHttpURL('tel:+34928000000'), null);
+assert.strictEqual(safeHttpURL('#fragmento'), null);
+assert.strictEqual(safeHttpURL('?consulta=1'), null);
+ok('safeHttpURL() rechaza rutas relativas, mailto, tel y fragmento/consulta sueltos');
+
+// --- renderFichaHTML(): política de URLs aplicada a una ficha real ---
+// Fixture base reutilizada para los casos funcionales de esta sección.
+function cursoBaseURL(overrides) {
+  return Object.assign({
+    id: 'curso-test-url', slug: 'curso-test-url', nombre: 'Curso de prueba de URLs',
+    descripcionCorta: null, descripcionCompleta: null,
+    imagen: { src: null, srcset: null, alt: null, objectPosition: null },
+    situacionDestinataria: [], isla: 'Gran Canaria', municipio: null, sedeId: null,
+    modalidad: 'presencial', tipoPrecio: 'gratuito', precio: null, requisitos: [],
+    nivel: null, certificacion: null, tipoFormacion: null, duracionHoras: null, duracionTexto: null,
+    fechaInicio: null, fechaInicioAproximada: null, fechaFin: null, horario: null, ayudasBecas: null,
+    documentacionNecesaria: [], plazasDisponibles: null, inscripcionAbierta: false, urlInscripcion: null,
+    modulosUnidadesFormativas: [], estado: 'matricula-abierta',
+  }, overrides);
+}
+
+// Imagen del hero con esquema peligroso (mailto:): no debe generarse <img>,
+// ni un src="" vacío, en el bloque .hero-photo.
+const htmlImgInvalido = renderFichaHTML(cursoBaseURL({ imagen: { src: 'mailto:info@example.com', srcset: null, alt: 'foto', objectPosition: null } }), {}, []);
+assert.ok(htmlImgInvalido.indexOf('<div class="hero-photo">\n<img') === -1, 'no debe insertarse <img> inmediatamente tras abrir .hero-photo si la URL es insegura');
+assert.ok(htmlImgInvalido.indexOf('src=""') === -1, 'nunca debe generarse un src="" vacío');
+assert.ok(htmlImgInvalido.indexOf('mailto:info@example.com') === -1, 'la URL mailto: rechazada no debe aparecer en ningún atributo de la imagen');
+ok('renderFichaHTML() omite la imagen del hero cuando imagen.src usa un esquema no permitido (mailto:)');
+
+// Imagen del hero con ruta relativa válida: sí debe aparecer, con el
+// prefijo "../../" y escapada con attr().
+const htmlImgValido = renderFichaHTML(cursoBaseURL({ imagen: { src: 'assets/curso-valido.webp', srcset: null, alt: 'foto válida', objectPosition: null } }), {}, []);
+assert.ok(htmlImgValido.indexOf('src="../../assets/curso-valido.webp"') !== -1, 'una imagen con ruta relativa válida debe insertarse con el prefijo ../../');
+ok('renderFichaHTML() inserta la imagen del hero cuando imagen.src es una ruta relativa válida');
+
+// srcset: estructura "url descriptor, url descriptor". Se prueba a través
+// de renderFichaHTML() (no de safeSrcset() directamente, ya no exportada)
+// inspeccionando el atributo srcset del <img> del hero.
+function heroImg(html) {
+  const m = /<img [^>]*sizes="\(max-width:1180px\)[^>]*>/.exec(html);
+  return m ? m[0] : '';
+}
+function imagenFixture(srcset) {
+  return cursoBaseURL({ imagen: { src: 'assets/a.webp', srcset: srcset, alt: 'a', objectPosition: null } });
+}
+
+const htmlSrcsetValido = renderFichaHTML(imagenFixture('assets/a.webp 1x, assets/a@2x.webp 2x'), {}, []);
+assert.ok(heroImg(htmlSrcsetValido).indexOf('srcset="../../assets/a.webp 1x, ../../assets/a@2x.webp 2x"') !== -1, 'un srcset con todos los candidatos válidos debe reconstruirse completo');
+ok('renderFichaHTML() conserva un srcset con todos los candidatos válidos');
+
+const htmlSrcsetMixto = renderFichaHTML(imagenFixture('assets/a.webp 1x, javascript:alert(1) 2x, assets/a@3x.webp 3x'), {}, []);
+assert.ok(heroImg(htmlSrcsetMixto).indexOf('srcset="../../assets/a.webp 1x, ../../assets/a@3x.webp 3x"') !== -1, 'el candidato con esquema peligroso debe descartarse, conservando los demás');
+assert.ok(htmlSrcsetMixto.indexOf('javascript:') === -1, 'la URL javascript: descartada no debe aparecer en ningún punto de la ficha');
+ok('renderFichaHTML() descarta del srcset un candidato con URL inválida y conserva el resto');
+
+const htmlSrcsetSinDescriptor = renderFichaHTML(imagenFixture('assets/a.webp'), {}, []);
+assert.ok(heroImg(htmlSrcsetSinDescriptor).indexOf('srcset=') === -1, 'un único candidato sin descriptor debe descartarse entero, sin generar srcset=""');
+ok('renderFichaHTML() descarta un candidato de srcset sin descriptor');
+
+const htmlSrcsetDecimal = renderFichaHTML(imagenFixture('assets/a.webp 1.5x'), {}, []);
+assert.ok(heroImg(htmlSrcsetDecimal).indexOf('srcset=') === -1, 'una densidad decimal (1.5x) no está permitida por la política restringida actual');
+ok('renderFichaHTML() descarta un candidato de srcset con densidad decimal (1.5x)');
+
+const htmlSrcsetTresComponentes = renderFichaHTML(imagenFixture('assets/a.webp 1x texto-extra'), {}, []);
+assert.ok(heroImg(htmlSrcsetTresComponentes).indexOf('srcset=') === -1, 'un candidato con más de dos componentes separados por espacio debe descartarse entero');
+ok('renderFichaHTML() descarta un candidato de srcset con más de dos componentes');
+
+const htmlSrcsetVacio = renderFichaHTML(imagenFixture(null), {}, []);
+assert.ok(heroImg(htmlSrcsetVacio).indexOf('srcset=') === -1, 'sin srcset en los datos no debe generarse el atributo');
+ok('renderFichaHTML() no genera srcset cuando imagen.srcset es null');
+
+// curso.urlInscripcion insegura: se omite TODA la CTA de inscripción (ni
+// href="" ni href="#"), sin dejar el botón "Solicitar plaza" muerto.
+const htmlInscripcionInsegura = renderFichaHTML(cursoBaseURL({ urlInscripcion: 'javascript:alert(1)' }), {}, []);
+assert.ok(htmlInscripcionInsegura.indexOf('Solicitar plaza') === -1, 'con una urlInscripcion insegura no debe aparecer el botón "Solicitar plaza"');
+assert.ok(htmlInscripcionInsegura.indexOf('href=""') === -1, 'nunca debe aparecer un href="" vacío en toda la ficha');
+assert.ok(htmlInscripcionInsegura.indexOf('class="cta-solid"') === -1, 'no debe generarse ningún enlace con la clase cta-solid cuando urlInscripcion es insegura');
+assert.ok(htmlInscripcionInsegura.indexOf('javascript:') === -1, 'la URL javascript: rechazada no debe aparecer en ningún punto de la ficha');
+ok('renderFichaHTML() omite toda la CTA de inscripción cuando urlInscripcion es insegura, sin generar href="" ni href="#"');
+
+// curso.urlInscripcion válida con "&" en la consulta: debe insertarse
+// correctamente escapada (&amp;), nunca cruda ni doble-escapada.
+const htmlInscripcionConAmpersand = renderFichaHTML(cursoBaseURL({ urlInscripcion: 'https://example.com/inscripcion?curso=ofimatica&turno=manana' }), {}, []);
+assert.ok(htmlInscripcionConAmpersand.indexOf('href="https://example.com/inscripcion?curso=ofimatica&amp;turno=manana"') !== -1, 'el "&" de la URL de inscripción debe quedar escapado como &amp;');
+assert.ok(htmlInscripcionConAmpersand.indexOf('&amp;amp;') === -1, 'no debe producirse doble escape del "&" en la URL de inscripción');
+ok('renderFichaHTML() escapa correctamente un "&" presente en la query de urlInscripcion');
+
+// curso.urlInscripcion como ruta relativa editorial sin prefijo (mismo
+// formato que usan hoy imagen.src/srcset en web/data/cursos.json): debe
+// aceptarse igual que "assets/imagen.webp", ya que safeHttpOrRelativeURL()
+// no exige el prefijo estricto de safeInternalHref().
+const htmlInscripcionRelativa = renderFichaHTML(cursoBaseURL({ urlInscripcion: 'inscripcion.html' }), {}, []);
+assert.ok(htmlInscripcionRelativa.indexOf('href="inscripcion.html"') !== -1, 'una urlInscripcion relativa sin prefijo (formato editorial) debe aceptarse');
+ok('renderFichaHTML() acepta una urlInscripcion relativa sin prefijo, como "inscripcion.html"');
+
+// Ninguna URL insegura (javascript:, data:, file:) debe aparecer en ningún
+// atributo de la ficha, en ninguno de los casos anteriores.
+[htmlImgInvalido, htmlInscripcionInsegura].forEach(function (html) {
+  assert.ok(html.indexOf('javascript:') === -1, 'no debe aparecer javascript: en ningún atributo');
+  assert.ok(html.indexOf('data:') === -1, 'no debe aparecer data: en ningún atributo');
+  assert.ok(html.indexOf('file:') === -1, 'no debe aparecer file: en ningún atributo');
+});
+ok('renderFichaHTML() no deja rastro de esquemas javascript:, data: ni file: en ningún atributo URL');
 
 console.log('\n' + pasadas + ' comprobaciones superadas.');
