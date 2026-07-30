@@ -10,6 +10,10 @@
 
 const fs = require('fs');
 const path = require('path');
+const {
+  safeHttpOrRelativeURL, safeImageURL, esDescriptorSrcsetValido,
+} = require('./lib/url-policy.js');
+const { evaluarRecomendaciones } = require('./lib/editorial-rules.js');
 
 const ROOT = path.join(__dirname, '..');
 // VALIDATE_DATA_DIR: override opcional (usado por admin/ para validar una
@@ -30,6 +34,18 @@ const ESTADOS_PUBLICABLES = [
   'proximamente', 'matricula-abierta', 'ultimas-plazas', 'en-curso', 'finalizado',
 ];
 const SLUG_PATTERN = /^[a-z0-9]+(-[a-z0-9]+)*$/;
+
+// Enums cerrados que ya restringe el <select> del formulario admin
+// (admin/config.js) — un valor fuera de esta lista solo puede llegar por
+// una edición manual de cursos.json, nunca por el formulario. Duplicadas a
+// propósito (scripts/ no depende de admin/); extraerlas a una fuente común
+// queda pendiente para otra fase.
+const MODALIDADES_VALIDAS = ['presencial', 'teleformacion'];
+const TIPOS_PRECIO_VALIDOS = ['gratuito', 'privado'];
+// nivel/situacionDestinataria: enums opcionales de baja frecuencia — un
+// valor desconocido es solo aviso (ver Fase V2), nunca error.
+const NIVELES_VALIDOS = ['nivel-1', 'nivel-2', 'nivel-3'];
+const SITUACIONES_DESTINATARIA_VALIDAS = ['desempleado', 'ocupado'];
 
 // Campos válidos del modelo público de Curso (web/data/cursos.json), para
 // poder comprobar que 'pendientesVerificacion' (que ahora vive en
@@ -65,6 +81,28 @@ const CAMPOS_CRITICOS_SI_VACIOS = [
   'fechaInicio', 'descripcionCorta', 'descripcionCompleta', 'urlFicha',
 ];
 
+// Campos con significado editorial real, auditados por la estadística
+// global de "campos nunca utilizados" (Fase V4B). Lista explícita y fija
+// (subconjunto de CAMPOS_RAIZ_CURSO, no derivada de las claves presentes en
+// los cursos reales — un campo editorial legítimo ausente en los 4 cursos
+// actuales no debe desaparecer silenciosamente de la auditoría). Se
+// excluye deliberadamente lo que NO representa una carencia de contenido
+// editorial si aparece en 0%:
+//  - identificadores/estructurales: id, slug, estado (ya son obligatorios
+//    y se validan aparte; 0% en ellos sería un error, no información)
+//  - dormidos, sin ningún consumidor hoy (ver informe de auditoría):
+//    codigo, precio, prioridadColectivos
+//  - técnicos/internos, no son contenido editorial en sí mismos:
+//    sedeId (FK a sedes.json), inscripcionAbierta (flag booleano),
+//    destacado (flag de Home), orden (ordenación técnica)
+//  - generados automáticamente si faltan: urlFicha (usa cursos/{slug}/)
+//  - imagen (objeto compuesto, no un campo escalar — sus subcampos no se
+//    auditan aquí)
+const CAMPOS_AUDITABLES_EDITORIAL = CAMPOS_RAIZ_CURSO.filter((campo) => [
+  'id', 'codigo', 'slug', 'imagen', 'sedeId', 'inscripcionAbierta',
+  'estado', 'destacado', 'orden', 'urlFicha', 'precio', 'prioridadColectivos',
+].indexOf(campo) === -1);
+
 function esNombreDeCampoValido(nombre) {
   if (CAMPOS_RAIZ_CURSO.indexOf(nombre) !== -1) return true;
   if (nombre.indexOf('administrativo.') === 0) {
@@ -77,11 +115,25 @@ function esVacio(valor) {
   return valor === null || valor === undefined || (Array.isArray(valor) && valor.length === 0);
 }
 
+// Validación estructural pura: tipo correcto, sin convertir nada. Un string
+// numérico como "10" no es un número válido aquí a propósito.
+function esNumeroEstructuralmenteValido(valor) {
+  return typeof valor === 'number' && Number.isFinite(valor) && valor >= 0;
+}
+function esBooleanoValido(valor) {
+  return typeof valor === 'boolean';
+}
+
 const errores = [];
 const avisos = [];
+// recomendaciones: tercera colección (Fase V4B), objetos estructurados
+// {codigo, ref, campo, categoria, mensaje} — nunca bloquean el guardado ni
+// el build, nunca se cuentan como error ni como aviso.
+const recomendaciones = [];
 
 function err(msg) { errores.push(msg); }
 function warn(msg) { avisos.push(msg); }
+function recomendar(obj) { recomendaciones.push(obj); }
 
 function leerJson(nombreArchivo) {
   const p = path.join(DATA_DIR, nombreArchivo);
@@ -106,6 +158,22 @@ function esFechaValida(str) {
 
 function archivoExiste(rutaRelativaAWeb) {
   return fs.existsSync(path.join(WEB_DIR, rutaRelativaAWeb));
+}
+
+// Resuelve una ruta local (ya validada por la política de URL) dentro de
+// /web/, sin permitir que "../" (o un "/" inicial mal interpretado) escape
+// del directorio raíz. Devuelve la ruta absoluta resuelta, o null si queda
+// fuera de /web/. Se quita cualquier "/" inicial antes de resolver porque
+// aquí una ruta como "/assets/x.webp" es relativa a la raíz del sitio
+// (/web/), no a la raíz del sistema de archivos — path.resolve() trataría
+// un segundo argumento absoluto como una ruta del sistema de archivos e
+// ignoraría por completo la base, así que hay que evitarlo explícitamente.
+function resolverRutaLocalDentroDeWeb(rutaRelativa) {
+  const sinBarraInicial = rutaRelativa.replace(/^\/+/, '');
+  const resuelto = path.resolve(WEB_DIR, sinBarraInicial);
+  const base = path.resolve(WEB_DIR);
+  if (resuelto !== base && resuelto.indexOf(base + path.sep) !== 0) return null;
+  return resuelto;
 }
 
 function duplicados(lista) {
@@ -204,6 +272,8 @@ if (sedesData) {
 // ---------------------------------------------------------------------
 // cursos.json
 // ---------------------------------------------------------------------
+// Informativo (Fase V4B), no error/aviso/recomendación — ver más abajo.
+let camposNuncaUtilizados = [];
 if (cursosData) {
   const cursos = cursosData.cursos || [];
   const estadosPermitidos = cursosData.estadosPermitidos || ESTADOS_VALIDOS;
@@ -213,14 +283,34 @@ if (cursosData) {
   duplicados(ids).forEach((id) => err(`cursos.json: id duplicado "${id}"`));
   duplicados(slugs).forEach((slug) => err(`cursos.json: slug duplicado "${slug}"`));
 
+  // Nombres duplicados (aviso, no error): distintas convocatorias pueden
+  // compartir legítimamente el mismo nombre (ver nuevaConvocatoria() en
+  // admin/services/curso-model.js). Comparación normalizada (trim +
+  // minúsculas) para detectar también variantes como " Curso X " y
+  // "curso x". Un solo aviso por grupo duplicado, no uno por curso.
+  const gruposPorNombre = {};
+  cursos.forEach((c) => {
+    if (typeof c.nombre !== 'string') return;
+    const clave = c.nombre.trim().toLowerCase();
+    if (!clave) return;
+    (gruposPorNombre[clave] = gruposPorNombre[clave] || []).push(c.id || '??');
+  });
+  Object.keys(gruposPorNombre).forEach((clave) => {
+    const idsImplicados = gruposPorNombre[clave];
+    if (idsImplicados.length > 1) {
+      warn(`cursos.json: nombre duplicado (comparación sin mayúsculas ni espacios exteriores) entre ${idsImplicados.map((id) => `"${id}"`).join(', ')}`);
+    }
+  });
+
   cursos.forEach((c, i) => {
     const ref = `cursos.json[${i}] (id=${c.id || '??'})`;
 
-    // Campos obligatorios críticos
-    if (!c.id || typeof c.id !== 'string') err(`${ref}: "id" ausente o no es texto`);
-    if (!c.slug || typeof c.slug !== 'string') err(`${ref}: "slug" ausente o no es texto`);
-    if (!c.nombre || typeof c.nombre !== 'string') err(`${ref}: "nombre" ausente o no es texto`);
-    if (!c.estado) err(`${ref}: "estado" ausente`);
+    // Campos obligatorios críticos (string no vacía tras trim — un valor
+    // de solo espacios no cuenta como presente).
+    if (!c.id || typeof c.id !== 'string' || c.id.trim() === '') err(`${ref}: "id" ausente o no es texto`);
+    if (!c.slug || typeof c.slug !== 'string' || c.slug.trim() === '') err(`${ref}: "slug" ausente o no es texto`);
+    if (!c.nombre || typeof c.nombre !== 'string' || c.nombre.trim() === '') err(`${ref}: "nombre" ausente o no es texto`);
+    if (!c.estado || typeof c.estado !== 'string' || c.estado.trim() === '') err(`${ref}: "estado" ausente`);
 
     // Estado dentro del enum
     if (c.estado && ESTADOS_VALIDOS.indexOf(c.estado) === -1) {
@@ -230,6 +320,50 @@ if (cursosData) {
       warn(`${ref}: estado "${c.estado}" válido pero no listado en cursos.json.estadosPermitidos`);
     }
 
+    // Campos de texto obligatorios (ya son "required" en el <select>/input
+    // del formulario admin — esto cierra el hueco de una edición manual del
+    // JSON que se salte esa restricción). Espacios en blanco cuentan como
+    // vacío.
+    ['isla', 'modalidad', 'tipoPrecio'].forEach((campo) => {
+      if (typeof c[campo] !== 'string' || c[campo].trim() === '') {
+        err(`${ref}: "${campo}" ausente o vacío`);
+      }
+    });
+
+    // Enums cerrados (modalidad, tipoPrecio): un valor fuera de la lista
+    // solo puede llegar por una edición manual del JSON. Solo se comprueba
+    // si el campo ya pasó el chequeo de "obligatorio" de arriba.
+    if (typeof c.modalidad === 'string' && c.modalidad.trim() !== '' && MODALIDADES_VALIDAS.indexOf(c.modalidad) === -1) {
+      err(`${ref}: modalidad "${c.modalidad}" no está en el enum ${JSON.stringify(MODALIDADES_VALIDAS)}`);
+    }
+    if (typeof c.tipoPrecio === 'string' && c.tipoPrecio.trim() !== '' && TIPOS_PRECIO_VALIDOS.indexOf(c.tipoPrecio) === -1) {
+      err(`${ref}: tipoPrecio "${c.tipoPrecio}" no está en el enum ${JSON.stringify(TIPOS_PRECIO_VALIDOS)}`);
+    }
+
+    // nivel: enum opcional — null o ausente es válido y sin aviso. Un valor
+    // desconocido es solo aviso (no bloquea el guardado ni el build: la
+    // ficha ya omite limpiamente el sufijo de nivel si no lo reconoce).
+    if (c.nivel != null && NIVELES_VALIDOS.indexOf(c.nivel) === -1) {
+      warn(`${ref}: nivel "${c.nivel}" no está en el enum ${JSON.stringify(NIVELES_VALIDOS)}`);
+    }
+
+    // Números: si existen, deben ser number finito y no negativo. Nunca se
+    // convierte un string numérico como "10" — es un error, no un dato a
+    // normalizar aquí.
+    ['duracionHoras', 'plazasDisponibles', 'orden'].forEach((campo) => {
+      if (c[campo] != null && !esNumeroEstructuralmenteValido(c[campo])) {
+        err(`${ref}: "${campo}" = ${JSON.stringify(c[campo])} debería ser un número finito no negativo, o null`);
+      }
+    });
+
+    // Booleanos: si existen, deben ser boolean real — "true"/"false" (texto)
+    // o 1/0 no cuentan.
+    ['inscripcionAbierta', 'destacado'].forEach((campo) => {
+      if (c[campo] != null && !esBooleanoValido(c[campo])) {
+        err(`${ref}: "${campo}" = ${JSON.stringify(c[campo])} debería ser un booleano, o null`);
+      }
+    });
+
     // Referencia sedeId
     if (c.sedeId != null) {
       if (sedeIds.indexOf(c.sedeId) === -1) {
@@ -237,11 +371,65 @@ if (cursosData) {
       }
     }
 
-    // Imagen
+    // Imagen: política de URL primero (misma que aplica build-fichas.js en
+    // la salida — impide guardar lo que el generador ya descartaría),
+    // después existencia local solo para rutas dentro de /web/, nunca para
+    // URLs externas (ni peticiones de red).
     if (c.imagen && c.imagen.src) {
-      if (!archivoExiste(c.imagen.src)) err(`${ref}: imagen.src no existe en /web/: ${c.imagen.src}`);
+      if (typeof c.imagen.src !== 'string' || c.imagen.src.trim() === '') {
+        err(`${ref}: "imagen.src" debería ser una URL o ruta de texto no vacía`);
+      } else {
+        const urlSegura = safeImageURL(c.imagen.src);
+        if (!urlSegura) {
+          err(`${ref}: "imagen.src" contiene una URL o ruta no permitida: "${c.imagen.src}"`);
+        } else if (!/^https?:\/\//i.test(urlSegura)) {
+          const resuelto = resolverRutaLocalDentroDeWeb(urlSegura);
+          if (!resuelto) {
+            err(`${ref}: "imagen.src" queda fuera del directorio "web/": "${c.imagen.src}"`);
+          } else if (!fs.existsSync(resuelto)) {
+            err(`${ref}: imagen.src no existe en /web/: ${c.imagen.src}`);
+          }
+        }
+      }
     } else {
       err(`${ref}: falta imagen.src`);
+    }
+
+    // imagen.srcset: misma política que imagen.src por candidato, más el
+    // descriptor. A diferencia de safeSrcset() (protección de salida, que
+    // filtra en silencio), aquí CUALQUIER candidato inválido rechaza el
+    // campo entero — los datos persistidos deben ser íntegramente válidos.
+    if (c.imagen && c.imagen.srcset != null) {
+      if (typeof c.imagen.srcset !== 'string' || c.imagen.srcset.trim() === '') {
+        err(`${ref}: "imagen.srcset" debería ser una lista de texto no vacía, o null`);
+      } else {
+        c.imagen.srcset.split(',').forEach((parteBruta) => {
+          const candidato = parteBruta.trim();
+          if (!candidato) {
+            err(`${ref}: "imagen.srcset" contiene un candidato inválido: "${parteBruta}"`);
+            return;
+          }
+          const componentes = candidato.split(/\s+/);
+          if (componentes.length !== 2 || !esDescriptorSrcsetValido(componentes[1])) {
+            err(`${ref}: "imagen.srcset" contiene un candidato inválido: "${candidato}"`);
+            return;
+          }
+          const urlBruta = componentes[0];
+          const urlSegura = safeImageURL(urlBruta);
+          if (!urlSegura) {
+            err(`${ref}: "imagen.srcset" contiene un candidato inválido: "${candidato}"`);
+            return;
+          }
+          if (!/^https?:\/\//i.test(urlSegura)) {
+            const resuelto = resolverRutaLocalDentroDeWeb(urlSegura);
+            if (!resuelto) {
+              err(`${ref}: el recurso local de "imagen.srcset" queda fuera del directorio "web/": "${urlBruta}"`);
+            } else if (!fs.existsSync(resuelto)) {
+              err(`${ref}: el recurso local de "imagen.srcset" no existe: "${urlBruta}"`);
+            }
+          }
+        });
+      }
     }
 
     // slug: formato válido (necesario como nombre de directorio y segmento
@@ -253,12 +441,27 @@ if (cursosData) {
 
     // urlFicha: si existe, debe ser una ruta relativa a /web/ (nunca
     // absoluta ni externa), para que Home/catálogo/fichas puedan resolverla
-    // igual en local, /design-preview/, raíz o un futuro dominio.
+    // igual en local, /design-preview/, raíz o un futuro dominio. Semántica
+    // sin cambios en esta fase: no se convierte a la política general de
+    // safeHttpOrRelativeURL() porque su regla ("sin '/' inicial") es más
+    // estricta que esa política.
     if (c.urlFicha != null) {
       if (typeof c.urlFicha !== 'string' || c.urlFicha === '') {
         err(`${ref}: "urlFicha" debería ser una ruta de texto no vacía, o null`);
       } else if (c.urlFicha.charAt(0) === '/' || /^[a-z]+:\/\//i.test(c.urlFicha)) {
         err(`${ref}: "urlFicha" = "${c.urlFicha}" debe ser una ruta relativa a /web/ (sin "/" inicial ni protocolo)`);
+      }
+    }
+
+    // urlInscripcion: misma política que build-fichas.js aplica en la
+    // salida (safeHttpOrRelativeURL) — impide guardar una URL que el
+    // generador ya descartaría. null o ausente sigue siendo válido y sin
+    // aviso (dato editorial opcional).
+    if (c.urlInscripcion != null) {
+      if (typeof c.urlInscripcion !== 'string' || c.urlInscripcion.trim() === '') {
+        err(`${ref}: "urlInscripcion" debería ser una URL o ruta de texto no vacía, o null`);
+      } else if (!safeHttpOrRelativeURL(c.urlInscripcion)) {
+        err(`${ref}: "urlInscripcion" contiene una URL o ruta no permitida: "${c.urlInscripcion}"`);
       }
     }
 
@@ -276,12 +479,46 @@ if (cursosData) {
       }
     });
 
-    // Tipos de array esperados
-    ['situacionDestinataria', 'requisitos', 'documentacionNecesaria', 'modulosUnidadesFormativas', 'prioridadColectivos', 'palabrasClave'].forEach((campo) => {
-      if (c[campo] !== undefined && !Array.isArray(c[campo])) {
-        err(`${ref}: "${campo}" debería ser un array`);
-      }
+    // Coherencia fechaInicio/fechaFin (aviso, no error): solo si ambas
+    // existen y ya son fechas ISO válidas — si alguna es inválida, ya se
+    // reportó como error arriba y no se duplica con este aviso. Formato
+    // YYYY-MM-DD: la comparación de strings ya respeta el orden cronológico.
+    // fechaInicioAproximada es texto editorial libre y no se interpreta
+    // aquí como fecha.
+    if (c.fechaInicio != null && c.fechaFin != null && esFechaValida(c.fechaInicio) && esFechaValida(c.fechaFin) && c.fechaInicio > c.fechaFin) {
+      warn(`${ref}: "fechaInicio" (${c.fechaInicio}) es posterior a "fechaFin" (${c.fechaFin})`);
+    }
+
+    // Tipos de array esperados. prioridadColectivos recibe exactamente la
+    // misma validación mínima de tipo que el resto (array + elementos de
+    // texto) aunque siga sin consumidor ni semántica de negocio decidida
+    // (ver informe) — solo tipo, sin enum, sin duplicados, sin avisos, sin
+    // obligatoriedad.
+    const CAMPOS_ARRAY_DE_TEXTO = ['situacionDestinataria', 'requisitos', 'documentacionNecesaria', 'modulosUnidadesFormativas', 'prioridadColectivos', 'palabrasClave'];
+    CAMPOS_ARRAY_DE_TEXTO.forEach((campo) => {
+      if (c[campo] == null) return;
+      if (!Array.isArray(c[campo])) { err(`${ref}: "${campo}" debería ser un array`); return; }
+      // Cada elemento debe ser texto (aunque sea vacío o solo espacios: esa
+      // es una comprobación editorial, no estructural, y queda fuera de esta
+      // fase). Un número, booleano u objeto como elemento sí es un error
+      // estructural: no es el tipo que espera build-fichas.js.
+      c[campo].forEach((elemento, j) => {
+        if (typeof elemento !== 'string') {
+          err(`${ref}: "${campo}[${j}]" debería ser texto, no ${JSON.stringify(elemento)}`);
+        }
+      });
     });
+
+    // situacionDestinataria: valores semánticos reconocidos (aviso, no
+    // error — dato editorial de baja frecuencia, no bloquea el guardado).
+    // No se elimina ni transforma ningún elemento.
+    if (Array.isArray(c.situacionDestinataria)) {
+      c.situacionDestinataria.forEach((valor) => {
+        if (typeof valor === 'string' && SITUACIONES_DESTINATARIA_VALIDAS.indexOf(valor) === -1) {
+          warn(`${ref}: situacionDestinataria contiene un valor no reconocido: "${valor}"`);
+        }
+      });
+    }
 
     // Separación pública/interna: el JSON público NUNCA debe volver a traer
     // 'administrativo' ni 'origenLegacy' — ese contenido vive en
@@ -303,7 +540,31 @@ if (cursosData) {
         }
       });
     }
+
+    // Recomendaciones (Fase V4B): oportunidades de mejora editorial/SEO
+    // objetivas, nunca error ni aviso — ver scripts/lib/editorial-rules.js.
+    evaluarRecomendaciones(c).forEach((r) => {
+      recomendar(Object.assign({ ref: c.id || '??' }, r));
+    });
   });
+
+  // Estadística global de campos sin uso (Fase V4B): informativa para
+  // desarrolladores, no es error/aviso/recomendación y no afecta al código
+  // de salida. Se calcula sobre TODOS los cursos de cursos.json, no solo
+  // los publicables. "Informado" reutiliza el mismo criterio que esVacio()
+  // (null/undefined/array vacío) más string vacía o solo espacios.
+  function campoInformado(valor) {
+    if (valor === null || valor === undefined) return false;
+    if (Array.isArray(valor)) return valor.length > 0;
+    if (typeof valor === 'string') return valor.trim() !== '';
+    return true;
+  }
+  camposNuncaUtilizados = cursos.length
+    ? CAMPOS_AUDITABLES_EDITORIAL.map((campo) => {
+      const informados = cursos.filter((c) => campoInformado(c[campo])).length;
+      return { campo, informados, total: cursos.length };
+    }).filter((x) => x.informados === 0)
+    : [];
 
   // Colisiones de URL de ficha: cada curso publicable resuelve a
   // urlFicha || "cursos/{slug}/" — dos cursos no pueden resolver a la misma
@@ -384,6 +645,23 @@ console.log(`Errores: ${errores.length}`);
 errores.forEach((e) => console.log('  ✗ ' + e));
 console.log(`Avisos: ${avisos.length}`);
 avisos.forEach((a) => console.log('  ! ' + a));
+// Formato "? " + JSON.stringify(...): a diferencia de errores/avisos (texto
+// libre, nunca contiene los caracteres delimitadores usados por su propio
+// parser), una recomendación sí puede contener ":", "|" o "·" dentro de
+// "mensaje" o "campo" — separar por esos caracteres sería un parser frágil.
+// JSON.stringify() ya escapa cualquier carácter problemático (incluidas
+// comillas o saltos de línea), así que admin/services/validator.js puede
+// extraer la parte tras "? " y aplicar JSON.parse() de forma segura.
+console.log(`Recomendaciones: ${recomendaciones.length}`);
+recomendaciones.forEach((r) => console.log('  ? ' + JSON.stringify(r)));
+
+if (camposNuncaUtilizados.length) {
+  console.log('\nCampos nunca utilizados (informativo, no afecta al resultado):');
+  const anchoMax = Math.max.apply(null, camposNuncaUtilizados.map((x) => x.campo.length));
+  camposNuncaUtilizados.forEach((x) => {
+    console.log('  · ' + x.campo.padEnd(anchoMax, '.') + ' ' + x.informados + '/' + x.total);
+  });
+}
 
 if (errores.length > 0) {
   console.log('\nRESULTADO: FALLÓ');

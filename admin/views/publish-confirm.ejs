@@ -35,6 +35,28 @@
 </div>
 
 <div class="card">
+  <legend>Recomendaciones</legend>
+  <% if (!plan.recomendaciones.length) { %>
+    <p class="muted">Sin recomendaciones editoriales pendientes.</p>
+  <% } else { %>
+    <% plan.recomendaciones.forEach(function(grupo) { %>
+      <div class="item-group">
+        <div class="item-group-header">
+          <strong><%= grupo.nombre || 'Curso no identificado' %></strong>
+          <% if (grupo.id) { %><a href="/cursos/<%= grupo.id %>/editar" class="link-btn">Editar curso</a><% } %>
+        </div>
+        <% grupo.recomendaciones.forEach(function(r) { %>
+          <div class="flash flash-info">
+            <span class="meta-tag"><%= r.categoriaVisible %> · <%= r.campoVisible %></span>
+            <p><%= r.mensaje %></p>
+          </div>
+        <% }) %>
+      </div>
+    <% }) %>
+  <% } %>
+</div>
+
+<div class="card">
   <legend>Archivos que cambiarán (<%= plan.permitidos.length %>)</legend>
   <ul class="plain-list"><% plan.permitidos.forEach(function(f) { %><li><code><%= f %></code></li><% }) %></ul>
   <% if (plan.desconocidos.length) { %>

@@ -54,6 +54,11 @@ const ESTADOS_PUBLICABLES = ['proximamente', 'matricula-abierta', 'ultimas-plaza
 const tokens = require(path.join(__dirname, 'lib', 'tokens.js'));
 const partials = require(path.join(__dirname, 'lib', 'partials.js'));
 const format = require(path.join(__dirname, 'lib', 'format.js'));
+const { text, attr } = require(path.join(__dirname, 'lib', 'escape.js'));
+const {
+  safeHttpOrRelativeURL, safeImageURL, safeInternalHref,
+  safeHttpsURL, safeHttpURL, safeSrcset,
+} = require(path.join(__dirname, 'lib', 'url-policy.js'));
 
 const ESTADO_ORDEN_SIMILARES = { 'matricula-abierta': 0, 'ultimas-plazas': 1, 'en-curso': 2, 'proximamente': 3 };
 
@@ -84,6 +89,14 @@ const TIPO_PRECIO_LABELS = format.TIPO_PRECIO_LABELS;
 // ---------------------------------------------------------------------
 const CatalogRepository = require(path.join(WEB_DIR, 'js', 'catalog-repository.js'));
 CatalogRepository.setBaseUrl(DATA_DIR);
+
+// Las políticas de validación de URLs por destino (imágenes, srcset,
+// enlaces internos, WhatsApp, canonical/og:image) viven en
+// scripts/lib/url-policy.js — compartidas con scripts/validate-data.js,
+// que las aplica en la entrada con la misma política exacta que aquí se
+// aplica en la salida. Ninguna sustituye el escape de atributo: toda URL
+// aceptada se envuelve siempre en attr() en el punto de inserción, nunca
+// se inserta solo con la política de URL.
 
 /**
  * Algoritmo de "cursos similares" (solo se usa en fichas de curso
@@ -125,14 +138,18 @@ function calcularSimilares(curso, publicCourses) {
 function similarCardHTML(c) {
   const meta = estadoMeta(c.estado);
   const img = c.imagen || {};
-  const photo = img.src
-    ? '<img src="../../' + img.src + '" alt="' + (img.alt || '') + '" loading="lazy" decoding="async">'
+  const safeSrc = safeImageURL(img.src);
+  const photo = safeSrc
+    ? '<img src="' + attr('../../' + safeSrc) + '" alt="' + attr(img.alt || '') + '" loading="lazy" decoding="async">'
     : '';
+  const safeHref = safeInternalHref(fichaHrefDesdeFicha(c));
+  if (!safeHref) err('similarCardHTML: fichaHrefDesdeFicha() devolvió un enlace interno inválido para "' + (c.id || '??') + '" — se omite el enlace "Ver curso".');
+  const enlace = safeHref ? '<a href="' + attr(safeHref) + '">Ver curso →</a>' : '';
   return '<div class="similar-card"><div class="photo">' + photo +
-    '<span class="similar-status" style="background:' + meta.color + '">' + meta.label + '</span></div>' +
-    '<div class="body"><h3>' + c.nombre + '</h3><div class="meta">' + (MODALIDAD_LABELS[c.modalidad] || c.modalidad) + ' · ' + c.isla +
-    (durationLabel(c) ? ' · ' + durationLabel(c) : '') + '</div>' +
-    '<a href="' + fichaHrefDesdeFicha(c) + '">Ver curso →</a></div></div>';
+    '<span class="similar-status" style="background:' + meta.color + '">' + text(meta.label) + '</span></div>' +
+    '<div class="body"><h3>' + text(c.nombre) + '</h3><div class="meta">' + text(MODALIDAD_LABELS[c.modalidad] || c.modalidad) + ' · ' + text(c.isla) +
+    (durationLabel(c) ? ' · ' + text(durationLabel(c)) : '') + '</div>' +
+    enlace + '</div></div>';
 }
 
 // ---------------------------------------------------------------------
@@ -155,8 +172,13 @@ const HERO_FACT_ICONS = {
 // el valor está vacío — mismo criterio que ya usaba format.metaLine.
 function heroFactHTML(iconKey, label, value) {
   if (esVacio(value)) return '';
+  // `label` es siempre un literal fijo pasado desde este mismo archivo
+  // (nunca dato editorial) — no necesita escape. `value` sí es dato de
+  // curso/sede y se escapa aquí, en el único punto de ensamblado, para
+  // cubrir a la vez tipoFormacion, duracionTexto, fechaInicioAproximada,
+  // fechaFin, municipio y los datos de sede que llegan ya combinados.
   return '<li class="fact-item"><span class="fact-icon" aria-hidden="true">' + HERO_FACT_ICONS[iconKey] + '</span>' +
-    '<span class="fact-text"><span class="fact-label">' + label + '</span><span class="fact-value">' + value + '</span></span></li>';
+    '<span class="fact-text"><span class="fact-label">' + label + '</span><span class="fact-value">' + text(value) + '</span></span></li>';
 }
 
 function renderFichaHTML(curso, sedesById, publicCourses) {
@@ -165,8 +187,18 @@ function renderFichaHTML(curso, sedesById, publicCourses) {
   const img = curso.imagen || {};
   const title = curso.nombre + ' — Centro de Estudios Máster';
   const description = buildMetaDescription(curso);
-  const canonicalTag = SITE_BASE_URL ? '\n<link rel="canonical" href="' + SITE_BASE_URL + '/cursos/' + curso.slug + '/">' : '';
-  const ogImage = SITE_BASE_URL && img.src ? SITE_BASE_URL + '/' + img.src : '';
+  // Ambas URL son absolutas por construcción (http o https) — hoy siempre
+  // null porque SITE_BASE_URL está vacío (ver comentario junto a su
+  // declaración). Si en el futuro se configura, safeHttpURL() sigue
+  // exigiendo que el resultado sea una URL absoluta http/https válida.
+  const canonicalURL = SITE_BASE_URL ? safeHttpURL(SITE_BASE_URL + '/cursos/' + curso.slug + '/') : null;
+  const canonicalTag = canonicalURL ? '\n<link rel="canonical" href="' + attr(canonicalURL) + '">' : '';
+  const ogImageURL = SITE_BASE_URL && img.src ? safeHttpURL(SITE_BASE_URL + '/' + img.src) : null;
+  // Mismo fallback que ya existía: sin imagen válida, no se genera <img> —
+  // .hero-photo sigue mostrando el fondo (var(--tint)) y el badge de
+  // estado, que se renderiza aparte, fuera de este condicional.
+  const safeHeroImgSrc = safeImageURL(img.src);
+  const safeHeroSrcset = safeSrcset(img.srcset);
 
   const certNivel = certificacionNivelText(curso);
   const destinatarios = destinatariosText(curso);
@@ -181,21 +213,41 @@ function renderFichaHTML(curso, sedesById, publicCourses) {
 
   // CTA principal: nunca un enlace muerto. Si no hay urlInscripcion real ni
   // inscripción abierta, no se muestra ninguna CTA de "inscripción" falsa —
-  // solo queda el WhatsApp de contacto.
+  // solo queda el WhatsApp de contacto. Ahora, además: ninguna CTA se
+  // genera si su URL no pasa la validación de destino correspondiente —
+  // "enlace muerto" incluye también "enlace peligroso".
   let primaryCta = '';
   let showSecondaryWhatsapp = true;
   if (isFinished) {
-    primaryCta = '<a href="' + whatsappNextIntakeHref(curso.nombre) + '" target="_blank" rel="noopener" class="cta-solid">Consultar próxima convocatoria</a>';
-    showSecondaryWhatsapp = false; // la CTA principal ya es el WhatsApp contextual
+    const safeNextIntake = safeHttpsURL(whatsappNextIntakeHref(curso.nombre));
+    if (safeNextIntake) {
+      primaryCta = '<a href="' + attr(safeNextIntake) + '" target="_blank" rel="noopener" class="cta-solid">Consultar próxima convocatoria</a>';
+      showSecondaryWhatsapp = false; // la CTA principal ya es el WhatsApp contextual
+    } else {
+      err('renderFichaHTML: whatsappNextIntakeHref() devolvió una URL inválida para "' + curso.id + '".');
+    }
   } else if (curso.urlInscripcion) {
-    const external = /^https?:\/\//.test(curso.urlInscripcion);
-    primaryCta = '<a href="' + curso.urlInscripcion + '" class="cta-solid"' + (external ? ' target="_blank" rel="noopener"' : '') + '>Solicitar plaza</a>';
+    // Una inscripción no es una imagen: usa directamente la política
+    // http-o-relativo, no la función pensada para imágenes.
+    const safeInscripcion = safeHttpOrRelativeURL(curso.urlInscripcion);
+    if (safeInscripcion) {
+      const external = /^https?:\/\//.test(safeInscripcion);
+      primaryCta = '<a href="' + attr(safeInscripcion) + '" class="cta-solid"' + (external ? ' target="_blank" rel="noopener"' : '') + '>Solicitar plaza</a>';
+    } else {
+      warn('renderFichaHTML: curso.urlInscripcion inválida para "' + curso.id + '" — se omite la CTA de inscripción (dato editorial, no bloquea el build).');
+    }
   } else if (curso.inscripcionAbierta) {
-    primaryCta = '<a href="' + whatsappCourseHref(curso.nombre) + '" target="_blank" rel="noopener" class="cta-solid">Solicitar información</a>';
-    showSecondaryWhatsapp = false; // sería el mismo enlace duplicado
+    const safeCourseHref = safeHttpsURL(whatsappCourseHref(curso.nombre));
+    if (safeCourseHref) {
+      primaryCta = '<a href="' + attr(safeCourseHref) + '" target="_blank" rel="noopener" class="cta-solid">Solicitar información</a>';
+      showSecondaryWhatsapp = false; // sería el mismo enlace duplicado
+    } else {
+      err('renderFichaHTML: whatsappCourseHref() devolvió una URL inválida para "' + curso.id + '".');
+    }
   }
-  const secondaryWhatsapp = showSecondaryWhatsapp
-    ? '<a href="' + whatsappCourseHref(curso.nombre) + '" target="_blank" rel="noopener" class="cta-outline">📱 WhatsApp</a>'
+  const safeSecondaryHref = showSecondaryWhatsapp ? safeHttpsURL(whatsappCourseHref(curso.nombre)) : null;
+  const secondaryWhatsapp = safeSecondaryHref
+    ? '<a href="' + attr(safeSecondaryHref) + '" target="_blank" rel="noopener" class="cta-outline">📱 WhatsApp</a>'
     : '';
 
   const finishedBanner = isFinished
@@ -219,11 +271,11 @@ function renderFichaHTML(curso, sedesById, publicCourses) {
 '<meta charset="utf-8">\n' +
 '<meta name="viewport" content="width=device-width, initial-scale=1">\n' +
 '<title>' + title + '</title>\n' +
-'<meta name="description" content="' + description.replace(/"/g, '&quot;') + '">\n' +
+'<meta name="description" content="' + attr(description) + '">\n' +
 '<meta property="og:type" content="article">\n' +
-'<meta property="og:title" content="' + title.replace(/"/g, '&quot;') + '">\n' +
-'<meta property="og:description" content="' + description.replace(/"/g, '&quot;') + '">\n' +
-(ogImage ? '<meta property="og:image" content="' + ogImage + '">\n' : '') +
+'<meta property="og:title" content="' + attr(title) + '">\n' +
+'<meta property="og:description" content="' + attr(description) + '">\n' +
+(ogImageURL ? '<meta property="og:image" content="' + attr(ogImageURL) + '">\n' : '') +
 canonicalTag + '\n' +
 '<link rel="preconnect" href="https://fonts.googleapis.com">\n' +
 '<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">\n' +
@@ -306,20 +358,20 @@ finishedBanner + '\n' +
 '  <div class="course-wrap">\n' +
 '    <div class="course-hero">\n' +
 '      <div class="hero-photo">\n' +
-(img.src ? '        <img src="../../' + img.src + '" ' + (img.srcset ? 'srcset="' + img.srcset.split(',').map(function (part) {
-  const t = part.trim(); const i = t.indexOf(' ');
-  return '../../' + (i === -1 ? t : t.slice(0, i)) + (i === -1 ? '' : t.slice(i));
-}).join(', ') + '" ' : '') + 'sizes="(max-width:1180px) 92vw, 50vw" alt="' + (img.alt || '') + '" style="object-position:' + (img.objectPosition || 'center') + ';"' + (isFinished ? ' class="finished"' : '') + '>\n' : '') +
-'        <span class="status-badge" style="background:' + meta.color + '">' + meta.label + '</span>\n' +
+(safeHeroImgSrc ? '        <img src="' + attr('../../' + safeHeroImgSrc) + '" ' + (safeHeroSrcset ? 'srcset="' + attr(safeHeroSrcset) + '" ' : '') + 'sizes="(max-width:1180px) 92vw, 50vw" alt="' + attr(img.alt || '') +
+// attr() protege el atributo HTML, no valida gramática CSS — la sintaxis
+// de object-position queda pendiente de validar en una etapa futura.
+'" style="object-position:' + attr(img.objectPosition || 'center') + ';"' + (isFinished ? ' class="finished"' : '') + '>\n' : '') +
+'        <span class="status-badge" style="background:' + meta.color + '">' + text(meta.label) + '</span>\n' +
 '      </div>\n' +
 '      <div>\n' +
 '        <div class="tag-row">\n' +
-'          <span class="tag-modalidad">' + (MODALIDAD_LABELS[curso.modalidad] || curso.modalidad) + '</span>\n' +
-'          <span class="tag-isla">' + curso.isla + '</span>\n' +
+'          <span class="tag-modalidad">' + text(MODALIDAD_LABELS[curso.modalidad] || curso.modalidad) + '</span>\n' +
+'          <span class="tag-isla">' + text(curso.isla) + '</span>\n' +
 (tagPrice ? '          <span class="tag-price">' + tagPrice + '</span>\n' : '') +
 '        </div>\n' +
-'        <h1>' + curso.nombre + '</h1>\n' +
-(!esVacio(curso.descripcionCorta) ? '        <p class="intro">' + curso.descripcionCorta + '</p>\n' : '') +
+'        <h1>' + text(curso.nombre) + '</h1>\n' +
+(!esVacio(curso.descripcionCorta) ? '        <p class="intro">' + text(curso.descripcionCorta) + '</p>\n' : '') +
 (facts ? '        <ul class="fact-grid">' + facts + '</ul>\n' : '') +
 '        <div class="cta-row">\n' +
 '          ' + primaryCta + '\n' +
@@ -329,15 +381,15 @@ finishedBanner + '\n' +
 '    </div>\n' +
 '  </div>\n' +
 '  <div class="detail-wrap">\n' +
-detailSection('Sobre este curso', !esVacio(curso.descripcionCompleta) ? '<p>' + curso.descripcionCompleta + '</p>' : '') +
-detailSection('Certificación / nivel', certNivel ? '<p>' + certNivel + '</p>' : '') +
-detailSection('Destinatarios', destinatarios ? '<p>' + destinatarios + '</p>' : '') +
-detailSection('Requisitos de acceso', !esVacio(curso.requisitos) ? '<p>' + curso.requisitos.join(', ') + '</p>' : '') +
-detailSection('Horario', !esVacio(curso.horario) ? '<p>' + curso.horario + '</p>' : '') +
-detailSection('Ayudas y becas', !esVacio(curso.ayudasBecas) ? '<p>' + curso.ayudasBecas + '</p>' : '') +
-detailSection('Documentación necesaria', !esVacio(curso.documentacionNecesaria) ? '<p>' + curso.documentacionNecesaria.join(', ') + '</p>' : '') +
-detailSection('Plazas disponibles', curso.plazasDisponibles != null ? '<p>' + curso.plazasDisponibles + '</p>' : '') +
-detailSection('Módulos / unidades formativas', !esVacio(curso.modulosUnidadesFormativas) ? '<div class="module-box"><p>' + curso.modulosUnidadesFormativas.join(', ') + '</p></div>' : '') +
+detailSection('Sobre este curso', !esVacio(curso.descripcionCompleta) ? '<p>' + text(curso.descripcionCompleta) + '</p>' : '') +
+detailSection('Certificación / nivel', certNivel ? '<p>' + text(certNivel) + '</p>' : '') +
+detailSection('Destinatarios', destinatarios ? '<p>' + text(destinatarios) + '</p>' : '') +
+detailSection('Requisitos de acceso', !esVacio(curso.requisitos) ? '<p>' + curso.requisitos.map(text).join(', ') + '</p>' : '') +
+detailSection('Horario', !esVacio(curso.horario) ? '<p>' + text(curso.horario) + '</p>' : '') +
+detailSection('Ayudas y becas', !esVacio(curso.ayudasBecas) ? '<p>' + text(curso.ayudasBecas) + '</p>' : '') +
+detailSection('Documentación necesaria', !esVacio(curso.documentacionNecesaria) ? '<p>' + curso.documentacionNecesaria.map(text).join(', ') + '</p>' : '') +
+detailSection('Plazas disponibles', curso.plazasDisponibles != null ? '<p>' + text(curso.plazasDisponibles) + '</p>' : '') +
+detailSection('Módulos / unidades formativas', !esVacio(curso.modulosUnidadesFormativas) ? '<div class="module-box"><p>' + curso.modulosUnidadesFormativas.map(text).join(', ') + '</p></div>' : '') +
 '  </div>\n' +
 similarHTML + '\n' +
 partials.renderFooterHTML() +
@@ -450,7 +502,36 @@ function main() {
   });
 }
 
-main().catch(function (e) {
-  console.error('build-fichas.js: error inesperado:', e);
-  process.exitCode = 1;
-});
+// Ejecuta el build solo cuando el archivo se invoca directamente (node
+// scripts/build-fichas.js), nunca al hacer require() desde otro módulo —
+// así admin/test/smoke.js puede importar renderFichaHTML() para probarla
+// de forma aislada sin disparar una generación real de fichas ni escribir
+// en disco. Patrón estándar de Node, sin cambiar el comportamiento del
+// script cuando se ejecuta como CLI (uso normal, sin cambios).
+if (require.main === module) {
+  main().catch(function (e) {
+    console.error('build-fichas.js: error inesperado:', e);
+    process.exitCode = 1;
+  });
+}
+
+// API pública normal de este fichero: solo renderFichaHTML(). Los
+// validadores de URL por destino son detalles internos de implementación.
+// __test expone, únicamente para admin/test/smoke.js, los tres que no se
+// pueden ejercitar de forma realista a través de renderFichaHTML() con la
+// configuración actual del proyecto: safeInternalHref() (fichaHrefDesdeFicha
+// siempre devuelve una ruta que empieza por "../", nunca se puede provocar
+// con datos reales el caso de un enlace absoluto) y safeHttpsURL()/
+// safeHttpURL() (whatsappCourseHref/whatsappNextIntakeHref siempre
+// construyen https, y SITE_BASE_URL está vacío, así que sus ramas de
+// rechazo son inalcanzables por esta vía). No se convierten en
+// infraestructura compartida — siguen siendo funciones internas de este
+// fichero, no del módulo scripts/lib/escape.js.
+module.exports = {
+  renderFichaHTML: renderFichaHTML,
+  __test: {
+    safeInternalHref: safeInternalHref,
+    safeHttpsURL: safeHttpsURL,
+    safeHttpURL: safeHttpURL,
+  },
+};
